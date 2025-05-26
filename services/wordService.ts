@@ -1,7 +1,7 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { getSupabaseClient, WordRow, isSupabaseConfigured as isSupabaseReady } from './supabaseClient';
 
-const apiKey = process.env.API_KEY; 
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY; 
 
 let ai: GoogleGenAI | null = null;
 let geminiInitialized = false;

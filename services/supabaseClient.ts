@@ -4,7 +4,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl = "https://ldujhtwxnbwqbchhchcf.supabase.co"; 
 
 // Using service_role key for write operations (as requested by user)
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 let supabase: SupabaseClient | null = null;
 let initializationError: string | null = null;

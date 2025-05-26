@@ -39,8 +39,8 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
   const canPlay = (apiKeyExists || supabaseConfigured) && selectedCategories.length > 0;
   const canPopulateDatabase = apiKeyExists && supabaseConfigured;
 
-  const generalError = error && !error.toLowerCase().includes("api_key") && !error.toLowerCase().includes("supabase_anon_key") ? error : null;
-  const configError = error && (error.toLowerCase().includes("api_key") || error.toLowerCase().includes("supabase_anon_key")) ? error : null;
+  const generalError = error && !error.toLowerCase().includes("vite_gemini_api_key") && !error.toLowerCase().includes("vite_supabase_anon_key") ? error : null;
+  const configError = error && (error.toLowerCase().includes("vite_gemini_api_key") || error.toLowerCase().includes("vite_supabase_anon_key")) ? error : null;
 
   return (
     <>
@@ -78,7 +78,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
         {(!apiKeyExists || !supabaseConfigured) && (
            <div className="mb-6 p-3 bg-yellow-800/80 border border-yellow-600 text-yellow-100 text-sm rounded-lg shadow-md">
               <strong>Atenção:</strong>
-              {!apiKeyExists && <p>- A chave da API do Gemini não foi configurada (<code>API_KEY</code>). A geração de novas palavras pode não funcionar.</p>}
+              {!apiKeyExists && <p>- A chave da API do Gemini não foi configurada (<code>VITE_GEMINI_API_KEY</code>). A geração de novas palavras pode não funcionar.</p>}
               {!supabaseConfigured && <p>- A configuração do Supabase não foi encontrada ou está incorreta. O armazenamento e busca de palavras no banco de dados não funcionarão.</p>}
               {(apiKeyExists && !supabaseConfigured) && <p>O jogo usará apenas a API Gemini para palavras (Supabase não configurado corretamente).</p>}
               {(!apiKeyExists && supabaseConfigured) && <p>O jogo usará apenas o banco de dados Supabase para palavras (API Gemini não configurada). Novas palavras não serão geradas dinamicamente.</p>}

@@ -10,8 +10,8 @@ import { fetchWordsForCategories } from './services/wordService';
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 
 // Log environment variables for debugging
-console.log("API_KEY configured:", !!process.env.API_KEY);
-console.log("SUPABASE_ANON_KEY configured:", !!process.env.SUPABASE_ANON_KEY);
+console.log("VITE_GEMINI_API_KEY configured:", !!import.meta.env.VITE_GEMINI_API_KEY);
+console.log("VITE_SUPABASE_ANON_KEY configured:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
 console.log("Supabase URL:", "https://ldujhtwxnbwqbchhchcf.supabase.co");
 
 const INITIAL_WORDS_COUNT = 40;
@@ -35,20 +35,20 @@ const App: React.FC = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>(DIFFICULTIES.find(d => d.id === 'medio') || DIFFICULTIES[1]);
 
   useEffect(() => {
-    const geminiApiKey = process.env.API_KEY; 
+    const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY; 
     if (geminiApiKey) {
       setApiKeyExists(true);
       setError(prevError => {
-        if (prevError && prevError.includes("API_KEY")) {
-            const parts = prevError.split('. ').filter(part => !part.includes("API_KEY"));
+        if (prevError && prevError.includes("VITE_GEMINI_API_KEY")) {
+            const parts = prevError.split('. ').filter(part => !part.includes("VITE_GEMINI_API_KEY"));
             return parts.length > 0 ? parts.join('. ') + '.' : null;
         }
         return prevError;
       });
     } else {
-       console.warn("API_KEY environment variable not found. Gemini API calls for word generation will fail if Supabase has no words.");
+       console.warn("VITE_GEMINI_API_KEY environment variable not found. Gemini API calls for word generation will fail if Supabase has no words.");
        setError(prevError => {
-        const newError = "Chave de API (API_KEY) do Gemini não configurada.";
+        const newError = "Chave de API (VITE_GEMINI_API_KEY) do Gemini não configurada.";
         return prevError && !prevError.includes(newError) ? prevError + " " + newError : newError;
        });
     }
@@ -65,7 +65,7 @@ const App: React.FC = () => {
         return prevError;
       });
     } else {
-      const supabaseError = "Configuração do Supabase incompleta. Verifique a variável SUPABASE_ANON_KEY.";
+      const supabaseError = "Configuração do Supabase incompleta. Verifique a variável VITE_SUPABASE_ANON_KEY.";
       console.warn(supabaseError);
       setError(prevError => {
         return prevError && !prevError.includes("Supabase") ? prevError + " " + supabaseError : supabaseError;
@@ -123,14 +123,14 @@ const App: React.FC = () => {
     }
     if (!apiKeyExists && !supabaseConfigured) {
       const currentConfigError = [];
-      if (!apiKeyExists) currentConfigError.push("Chave de API (API_KEY) do Gemini não configurada.");
+      if (!apiKeyExists) currentConfigError.push("Chave de API (VITE_GEMINI_API_KEY) do Gemini não configurada.");
       if (!supabaseConfigured) currentConfigError.push("Configuração do Supabase incompleta.");
       setError(`Não é possível buscar palavras. ${currentConfigError.join(' ')}`);
       return;
     }
 
     setCurrentScreen(GameScreenState.LoadingWords);
-    setError(prevError => (prevError && (prevError.includes("API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
+    setError(prevError => (prevError && (prevError.includes("VITE_GEMINI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
 
     try {
       const categoryIds = selectedCategories.map(c => c.id);
@@ -138,7 +138,7 @@ const App: React.FC = () => {
       const fetchedWords = await fetchWordsForCategories(categoryIds, difficulty.id, INITIAL_WORDS_COUNT);
       
       if (fetchedWords.length === 0) {
-         if (!error || (!error.includes("API_KEY") && !error.includes("Supabase"))) { 
+         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) { 
           setError("Não foi possível buscar palavras. Tente categorias diferentes, ajuste a dificuldade, ou verifique as configurações.");
         }
         setCurrentScreen(GameScreenState.CategorySelection);
@@ -154,11 +154,11 @@ const App: React.FC = () => {
     } catch (err) {
       console.error("Error starting game:",err);
       if (err instanceof Error) {
-         if (!error || (!error.includes("API_KEY") && !error.includes("Supabase"))) {
+         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) {
             setError(`Erro ao iniciar o jogo: ${err.message}`);
          }
       } else {
-         if (!error || (!error.includes("API_KEY") && !error.includes("Supabase"))) {
+         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) {
             setError("Ocorreu um erro desconhecido ao buscar palavras.");
          }
       }
@@ -192,7 +192,7 @@ const App: React.FC = () => {
     setWords([]);
     setCurrentWordIndex(0);
     setScore(0);
-    setError(prevError => (prevError && (prevError.includes("API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
+    setError(prevError => (prevError && (prevError.includes("VITE_GEMINI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
     setCurrentScreen(GameScreenState.CategorySelection);
   }, []);
 
@@ -226,10 +226,10 @@ const App: React.FC = () => {
           <div className="flex flex-col items-center justify-center min-h-screen text-slate-100 p-4">
             <LoadingSpinner />
             <p className="mt-6 text-2xl font-semibold">Buscando palavras {difficulty.name.toLowerCase()}...</p>
-            {error && (error.includes("API_KEY") || error.includes("Supabase")) &&
+            {error && (error.includes("VITE_GEMINI_API_KEY") || error.includes("Supabase")) &&
               <p className="mt-4 text-yellow-300 bg-yellow-900/70 p-3 rounded-lg text-sm shadow-md">{error}</p>
             }
-             {error && (!error.includes("API_KEY") && !error.includes("Supabase")) &&
+             {error && (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase")) &&
               <p className="mt-4 text-red-300 bg-red-900/70 p-3 rounded-lg text-sm shadow-md">{error}</p>
             }
           </div>
