@@ -1,21 +1,140 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/ldujhtwxnbwqbchhchcf\.supabase\.co\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'supabase-api',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+              },
+              cacheKeyWillBeUsed: async ({ request }) => {
+                return `${request.url}`;
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/generativelanguage\.googleapis\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'gemini-api',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60, // 1 hour
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+        ],
+      },
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      manifest: {
+        name: 'Adivinhe Já! - Jogo de Charadas',
+        short_name: 'AdivinheJá',
+        description: 'Jogo interativo de adivinhação de palavras por categorias com IA integrada',
+        theme_color: '#3b82f6',
+        background_color: '#0f172a',
+        display: 'standalone',
+        orientation: 'portrait',
+        scope: '/',
+        start_url: '/',
+        lang: 'pt-BR',
+        categories: ['games', 'entertainment'],
+        icons: [
+          {
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Jogo Rápido',
+            short_name: 'Rápido',
+            description: 'Iniciar um jogo rápido com configurações padrão',
+            url: '/?quick=true',
+            icons: [
+              {
+                src: 'pwa-192x192.png',
+                sizes: '192x192'
+              }
+            ]
+          }
+        ],
+        screenshots: [
+          {
+            src: 'screenshot-mobile.png',
+            sizes: '375x667',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Jogo em dispositivo móvel'
+          },
+          {
+            src: 'screenshot-desktop.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Jogo em desktop'
+          }
+        ]
+      },
+    })
+  ],
   
   // Configurações de build otimizadas
   build: {
-    // Target moderno para melhor otimização
     target: 'esnext',
-    
-    // Minificação avançada
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.log em produção
+        drop_console: true,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.warn'],
       },
@@ -24,33 +143,19 @@ export default defineConfig({
       },
     },
     
-    // Code splitting e chunk optimization
     rollupOptions: {
       output: {
-        // Estratégia de chunk splitting
         manualChunks: {
-          // Vendor chunks separados
           'react-vendor': ['react', 'react-dom'],
           'supabase-vendor': ['@supabase/supabase-js'],
           'gemini-vendor': ['@google/genai'],
-          
-          // Chunks por funcionalidade
           'game-components': [
             './components/GameScreen.tsx',
             './components/CategorySelectionScreen.tsx',
             './components/ConfigurationScreen.tsx',
           ],
-          'statistics-components': [
-            './components/StatisticsScreen.tsx',
-            './services/gameHistoryService.ts',
-          ],
-          'pwa-components': [
-            './components/PWAInstallPrompt.tsx',
-            './hooks/usePWA.ts',
-          ],
         },
         
-        // Nomes de arquivo otimizados
         chunkFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index') {
             return 'js/main-[hash].js';
@@ -79,28 +184,18 @@ export default defineConfig({
       },
     },
     
-    // Tamanho máximo de chunk para warnings
     chunkSizeWarningLimit: 1000,
-    
-    // Sourcemap apenas para desenvolvimento
     sourcemap: process.env.NODE_ENV === 'development',
-    
-    // Reportar tamanho do bundle
     reportCompressedSize: true,
   },
   
-  // Otimizações de desenvolvimento
   server: {
-    // Pré-bundling de dependências
     force: true,
-    
-    // Headers para PWA em desenvolvimento
     headers: {
       'Service-Worker-Allowed': '/',
     },
   },
   
-  // Configurações de preview (para testar build)
   preview: {
     headers: {
       'Service-Worker-Allowed': '/',
@@ -108,26 +203,16 @@ export default defineConfig({
     },
   },
   
-  // Configurações de dependências
   optimizeDeps: {
-    // Incluir dependências que devem ser pré-bundadas
     include: [
       'react',
       'react-dom',
       '@supabase/supabase-js',
       '@google/genai',
     ],
-    
-    // Excluir dependências que não devem ser pré-bundadas
-    exclude: [
-      // Service worker não deve ser bundado
-      '/sw.js',
-    ],
   },
   
-  // Configurações de assets
   assetsInclude: [
-    // Incluir tipos de arquivo adicionais como assets
     '**/*.png',
     '**/*.jpg',
     '**/*.jpeg',
@@ -138,31 +223,17 @@ export default defineConfig({
     '**/*.avif',
   ],
   
-  // Configurações de CSS
   css: {
-    // PostCSS plugins serão adicionados automaticamente pelo Tailwind
     postcss: {},
-    
-    // Configurações específicas do CSS
-    preprocessorOptions: {
-      scss: {
-        // Variáveis globais se necessário
-        additionalData: '',
-      },
-    },
   },
   
-  // Definir variáveis de ambiente
   define: {
-    // Substituir em tempo de build
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     __VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
   },
   
-  // Configurações de resolução
   resolve: {
     alias: {
-      // Aliases para imports mais limpos
       '@': resolve(__dirname, './'),
       '@components': resolve(__dirname, './components'),
       '@services': resolve(__dirname, './services'),
@@ -172,24 +243,8 @@ export default defineConfig({
     },
   },
   
-  // Configurações de performance
   esbuild: {
-    // Configurações do esbuild
     legalComments: 'none',
-    
-    // Drop console/debugger em produção
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-  },
-  
-  // Configurações experimentais
-  experimental: {
-    // Renderização em tempo de build (se suportado)
-    renderBuiltUrl(filename, { hostType }) {
-      if (hostType === 'js') {
-        return { js: `${filename}` };
-      } else {
-        return { relative: true };
-      }
-    },
   },
 });

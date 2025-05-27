@@ -7,9 +7,11 @@ import GameScreen from './components/GameScreen';
 import ScoreScreen from './components/ScoreScreen';
 import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
+import PWAInstallPrompt from './components/PWAInstallPromptSimple';
 import { fetchWordsForCategories } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
+import { usePWA, useOnlineStatus } from './hooks/usePWASimple';
 
 // Log environment variables for debugging
 console.log("VITE_GEMINI_API_KEY configured:", !!import.meta.env.VITE_GEMINI_API_KEY);
@@ -21,6 +23,10 @@ const MORE_WORDS_COUNT = 25;
 const WORDS_FETCH_THRESHOLD = 10;
 
 const App: React.FC = () => {
+  // PWA Hooks
+  const { isUpdateAvailable, updateApp } = usePWA();
+  const isOnline = useOnlineStatus();
+  
   const [currentScreen, setCurrentScreen] = useState<GameScreenState>(GameScreenState.CategorySelection);
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [words, setWords] = useState<string[]>([]);
@@ -300,7 +306,37 @@ const App: React.FC = () => {
     }
   };
 
-  return <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">{renderScreen()}</div>;
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
+      {/* Status de conectividade */}
+      {!isOnline && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">
+          📵 Modo offline - Algumas funcionalidades podem estar limitadas
+        </div>
+      )}
+      
+      {/* Notificação de atualização disponível */}
+      {isUpdateAvailable && (
+        <div className="fixed top-0 left-0 right-0 bg-blue-600 text-white text-center py-2 px-4 text-sm z-40">
+          🆕 Nova versão disponível! 
+          <button 
+            onClick={updateApp}
+            className="ml-2 underline hover:no-underline"
+          >
+            Atualizar agora
+          </button>
+        </div>
+      )}
+      
+      {renderScreen()}
+      
+      {/* Prompt de instalação PWA */}
+      <PWAInstallPrompt 
+        onInstall={() => console.log('App instalado!')}
+        onDismiss={() => console.log('Instalação dispensada')}
+      />
+    </div>
+  );
 };
 
 export default App;

@@ -2,9 +2,67 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Adivinhe Já! - Charadas Dinâmicas</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Jogo interativo de adivinhação de palavras por categorias com IA integrada" />
+    <meta name="keywords" content="jogo, charadas, adivinhação, palavras, categorias, IA, entretenimento" />
+    <meta name="author" content="Adivinhe Já!" />
+    
+    <!-- PWA Display -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AdivinheJá" />
+    <meta name="application-name" content="AdivinheJá" />
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-navbutton-color" content="#3b82f6" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/app-icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#3b82f6" />
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://ldujhtwxnbwqbchhchcf.supabase.co" />
+    <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://esm.sh" />
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Adivinhe Já!",
+      "description": "Jogo interativo de adivinhação de palavras por categorias com IA integrada",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Adivinhe Já!"
+      }
+    }
+    </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;700&family=Lexend:wght@300;400;500;600;700&display=swap');
       body {
@@ -69,7 +127,53 @@
 </script>
 </head>
   <body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100">
+    <!-- Loading screen para PWA -->
+    <div id="pwa-loading" class="fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center z-50">
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+          🎯
+        </div>
+        <h1 class="text-2xl font-bold text-white mb-2">Adivinhe Já!</h1>
+        <div class="flex justify-center">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    
+    <!-- PWA Registration Script -->
+    <script>
+      // Remove loading screen quando a página carregar
+      window.addEventListener('load', () => {
+        const loadingElement = document.getElementById('pwa-loading');
+        if (loadingElement) {
+          loadingElement.style.opacity = '0';
+          setTimeout(() => {
+            loadingElement.remove();
+          }, 300);
+        }
+      });
+      
+      // Registra o Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registrado com sucesso:', registration);
+            })
+            .catch((registrationError) => {
+              console.log('Falha no registro do SW:', registrationError);
+            });
+        });
+      }
+      
+      // Previne o zoom em inputs em iOS
+      document.addEventListener('touchstart', function(event) {
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+          event.target.style.fontSize = '16px';
+        }
+      });
+    </script>
   </body>
 </html>
