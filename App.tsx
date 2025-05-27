@@ -46,6 +46,28 @@ const App: React.FC = () => {
   const [gameDuration, setGameDuration] = useState<number>(GAME_DURATION_SECONDS);
   const [difficulty, setDifficulty] = useState<Difficulty>(DIFFICULTIES.find(d => d.id === 'medio') || DIFFICULTIES[1]);
 
+  // Effect para controlar scroll apenas durante o jogo
+  useEffect(() => {
+    const body = document.body;
+    const root = document.getElementById('root');
+    
+    if (currentScreen === GameScreenState.Playing) {
+      // Adicionar classes para bloquear scroll durante o jogo
+      body.classList.add('game-screen-active');
+      if (root) root.classList.add('game-screen-active');
+    } else {
+      // Remover classes para permitir scroll nas outras telas
+      body.classList.remove('game-screen-active');
+      if (root) root.classList.remove('game-screen-active');
+    }
+    
+    // Cleanup function
+    return () => {
+      body.classList.remove('game-screen-active');
+      if (root) root.classList.remove('game-screen-active');
+    };
+  }, [currentScreen]);
+
   useEffect(() => {
     const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY; 
     if (geminiApiKey) {
@@ -307,7 +329,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-hidden no-overscroll">
+    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll">
       {/* Status de conectividade */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">

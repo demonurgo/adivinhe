@@ -175,17 +175,27 @@
         }
       });
       
-      // Prevenir pull-to-refresh e outros gestos indesejados no mobile
+      // Prevenir pull-to-refresh APENAS quando em tela de jogo
       let lastTouchY = 0;
       let preventPullToRefresh = false;
       
       document.addEventListener('touchstart', function(e) {
+        // Apenas prevenir se estiver na tela de jogo
+        if (!document.body.classList.contains('game-screen-active')) {
+          return;
+        }
+        
         if (e.touches.length !== 1) return;
         lastTouchY = e.touches[0].clientY;
         preventPullToRefresh = window.pageYOffset === 0;
       }, { passive: false });
       
       document.addEventListener('touchmove', function(e) {
+        // Apenas prevenir se estiver na tela de jogo
+        if (!document.body.classList.contains('game-screen-active')) {
+          return;
+        }
+        
         const touchY = e.touches[0].clientY;
         const touchYDelta = touchY - lastTouchY;
         lastTouchY = touchY;
@@ -197,18 +207,20 @@
           }
         }
         
-        // Prevenir scroll horizontal e vertical indesejado
+        // Prevenir scroll vertical/horizontal indesejado apenas durante o jogo
         if (Math.abs(touchYDelta) > 5) {
           e.preventDefault();
         }
       }, { passive: false });
       
-      // Prevenir scroll com wheel no desktop quando necessário
+      // Prevenir scroll com wheel apenas durante o jogo
       document.addEventListener('wheel', function(e) {
-        // Permitir scroll apenas em elementos específicos se necessário
-        if (!e.target.closest('.allow-scroll')) {
-          e.preventDefault();
+        // Apenas prevenir se estiver na tela de jogo
+        if (!document.body.classList.contains('game-screen-active')) {
+          return;
         }
+        
+        e.preventDefault();
       }, { passive: false });
       
       // Configurar height dinâmica para viewport móvel

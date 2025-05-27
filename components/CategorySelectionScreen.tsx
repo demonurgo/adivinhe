@@ -46,7 +46,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
 
   return (
     <>
-      <div className="w-full max-w-3xl mx-auto p-5 sm:p-8 bg-slate-900/70 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-700/50">
+      <div className="w-full max-w-3xl mx-auto p-5 sm:p-8 bg-slate-900/70 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-700/50 allow-scroll">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gradient bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400">
             Adivinhe Já!
