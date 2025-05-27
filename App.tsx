@@ -329,7 +329,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll">
+    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll scrollbar-hide">
       {/* Status de conectividade */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">

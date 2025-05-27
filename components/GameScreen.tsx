@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 import TimerDisplay from './TimerDisplay';
 import useSwipe from '../hooks/useSwipe';
 import LoadingSpinner from './LoadingSpinner';
+import Button from './Button';
 
 interface GameScreenProps {
   wordToDisplay: string | null;
@@ -229,7 +230,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       <div className="relative w-full">
         <div 
           ref={wordCardRef}
-          className={`relative w-full bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-2xl text-center min-h-[150px] sm:min-h-[200px] flex items-center justify-center cursor-grab active:cursor-grabbing landscape:min-h-[120px] landscape:p-4 ${cardAnimationClass}`}
+          className={`relative w-full bg-white/90 p-6 sm:p-8 rounded-2xl shadow-lg text-center min-h-[150px] sm:min-h-[200px] flex items-center justify-center cursor-grab active:cursor-grabbing landscape:min-h-[120px] landscape:p-4 ${cardAnimationClass}`}
           style={{
             ...(isDragging && dragOffset !== 0 ? {
               transform: `translateX(${dragOffset}px) rotate(${(dragOffset / 8) * 0.3}deg)`, // Reduced rotation for smoother feel
@@ -260,7 +261,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
           {/* Drag feedback icon */}
           {getDragIcon()}
           
-          <p className="relative z-10 text-3xl sm:text-4xl md:text-5xl font-bold text-white break-words select-none landscape:text-2xl landscape:sm:text-3xl">
+          <p className="relative z-10 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 break-words select-none landscape:text-2xl landscape:sm:text-3xl">
             {wordToDisplay}
           </p>
         </div>
@@ -268,18 +269,22 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {/* Fallback buttons that appear after 5 seconds */}
         {showFallbackButtons && !swipeDirection && (
           <div className="absolute -bottom-16 left-0 right-0 flex justify-between px-4 animate-fade-in landscape:-bottom-12">
-            <button
+            <Button
               onClick={() => handleSwipeAction('skip')}
-              className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors landscape:px-3 landscape:py-1 landscape:text-sm"
+              variant="skip"
+              size="md"
+              className="shadow-lg"
             >
               ← Pular
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => handleSwipeAction('correct')}
-              className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors landscape:px-3 landscape:py-1 landscape:text-sm"
+              variant="correct"
+              size="md"
+              className="shadow-lg"
             >
               Correto →
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -288,7 +293,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
     wordAreaContent = (
       <div className="flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px]">
         <LoadingSpinner size="md" />
-        <p className="text-xl sm:text-2xl font-semibold text-indigo-300 mt-4 landscape:text-lg landscape:mt-2">
+        <p className="text-xl sm:text-2xl font-semibold text-blue-500 mt-4 landscape:text-lg landscape:mt-2">
           Buscando mais desafios...
         </p>
       </div>
@@ -296,7 +301,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   } else {
      wordAreaContent = (
       <div className="flex items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px]">
-        <p className="text-xl sm:text-2xl font-semibold text-slate-500 landscape:text-lg">
+        <p className="text-xl sm:text-2xl font-semibold text-slate-600 landscape:text-lg">
           Aguardando o tempo acabar... ⏳
         </p>
       </div>
@@ -304,7 +309,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   }
   
   return (
-    <div className="w-full max-w-xl mx-auto p-4 sm:p-6 bg-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 flex flex-col justify-between min-h-[85vh] sm:min-h-[580px] md:min-h-[620px] landscape:max-w-none landscape:h-[90vh] landscape:flex-row landscape:max-h-[90vh] landscape:w-[95vw]">
+    <div className="w-full max-w-3xl mx-auto p-5 sm:p-8 bg-sky-100/70 backdrop-blur-2xl rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col justify-between min-h-[85vh] sm:min-h-[580px] md:min-h-[620px] landscape:max-w-none landscape:h-[90vh] landscape:flex-row landscape:max-h-[90vh] landscape:w-[95vw]">
       <div className="w-full landscape:w-auto landscape:flex-shrink-0">
         <TimerDisplay timeLeft={timeLeft} duration={duration} />
       </div>
@@ -313,7 +318,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {wordAreaContent}
         
         {hasWords && wordToDisplay && !swipeDirection && !isDragging && !showFallbackButtons && (
-          <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 text-slate-500 text-xs sm:text-sm select-none opacity-70 landscape:bottom-4">
+          <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 text-slate-600 text-xs sm:text-sm select-none opacity-70 landscape:bottom-4">
             <span>&larr; Pular</span>
             <span>Correto &rarr;</span>
           </div>
@@ -322,7 +327,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {/* Instructions */}
         {hasWords && wordToDisplay && !swipeDirection && !isDragging && !showFallbackButtons && (
           <div className="absolute bottom-8 left-0 right-0 text-center landscape:bottom-12">
-            <p className="text-slate-400 text-xs opacity-60">
+            <p className="text-slate-600 text-xs opacity-60">
               🖱️ Arraste com mouse • 👆 Swipe • ⌨️ Use setas ← →
             </p>
           </div>
@@ -331,7 +336,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       
       <div className="h-10 sm:h-12 mt-4 landscape:w-auto landscape:flex-shrink-0 landscape:mt-0"> 
         {timeLeft > 0 && !hasWords && !isFetchingMoreWords && (
-             <p className="text-center text-sm text-slate-400">Sem mais palavras no momento.</p>
+             <p className="text-center text-sm text-slate-600">Sem mais palavras no momento.</p>
         )}
       </div>
     </div>

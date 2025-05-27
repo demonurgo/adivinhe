@@ -115,14 +115,14 @@ export default {
       // Cores customizadas para feedback visual
       colors: {
         game: {
-          'correct': '#22c55e',
-          'correct-light': '#86efac',
-          'correct-dark': '#16a34a',
-          'skip': '#ef4444',
-          'skip-light': '#fca5a5',
-          'skip-dark': '#dc2626',
-          'neutral': '#64748b',
-          'accent': '#6366f1',
+          'correct': '#4CAF50',
+          'correct-light': '#81C784',
+          'correct-dark': '#388E3C',
+          'skip': '#F44336',
+          'skip-light': '#E57373',
+          'skip-dark': '#D32F2F',
+          'neutral': '#9E9E9E',
+          'accent': '#2196F3',
         }
       },
       
@@ -177,6 +177,15 @@ export default {
         '.feedback-skip': {
           'background-color': 'rgba(239, 68, 68, 0.2)',
           'border-color': theme('colors.game.skip'),
+        },
+        
+        // Utility to hide scrollbars
+        '.scrollbar-hide': {
+          'scrollbar-width': 'none',
+          '-ms-overflow-style': 'none',
+          '&::-webkit-scrollbar': {
+            'display': 'none'
+          }
         },
       }
       

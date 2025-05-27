@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -37,7 +36,7 @@ const Button: React.FC<ButtonProps> = ({
     skip: 'bg-amber-500 hover:bg-amber-400 text-slate-900 focus:ring-amber-300', // Darker text for amber
     danger: 'bg-red-600 hover:bg-red-500 text-white focus:ring-red-400',
     config: `border-2 ${active ? 'bg-indigo-500 border-indigo-400 text-white scale-105 shadow-xl' : 'bg-slate-700 hover:bg-slate-600 border-slate-600 hover:border-slate-500 text-slate-200'} focus:ring-indigo-400`,
-    ghost: 'bg-transparent hover:bg-slate-700/70 text-slate-300 hover:text-white focus:ring-slate-500 shadow-none hover:shadow-none',
+    ghost: 'bg-transparent hover:bg-slate-700/70 text-slate-700 hover:text-indigo-600 focus:ring-slate-500 shadow-none hover:shadow-none',
   };
 
   const widthStyle = fullWidth ? 'w-full' : 'w-auto';

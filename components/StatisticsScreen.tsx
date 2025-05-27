@@ -200,7 +200,7 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
                 <p>Jogue algumas partidas para ver seu histórico aqui!</p>
               </div>
             ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto">
+              <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-hide">
                 {statistics.recent_games.map((game, index) => (
                   <div
                     key={`${game.created_at}-${index}`}
