@@ -257,6 +257,15 @@
     overscroll-behavior: contain;
   }
   
+  /* Otimização para emojis em categorias */
+  .category-emoji {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  
   /* Classes de feedback visual */
   .feedback-correct {
     background-color: rgba(34, 197, 94, 0.3);
