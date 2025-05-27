@@ -75,7 +75,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       if (action === 'correct') onCorrect();
       else onSkip();
       setSwipeDirection(null); // Reset for next word
-    }, 300); // Match animation duration
+    }, 150); // Reduced for faster gameplay
   }, [timeLeft, hasWords, wordToDisplay, onCorrect, onSkip]);
 
   const { 
@@ -87,11 +87,14 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onMouseUp,
     onMouseLeave,
     isDragging,
-    dragOffset 
+    dragOffset,
+    isActionTriggered
   } = useSwipe({
     onSwipeLeft: () => handleSwipeAction('skip'),
     onSwipeRight: () => handleSwipeAction('correct'),
-    threshold: 50, // Minimum swipe distance
+    threshold: 30, // Reduced for faster response
+    velocityThreshold: 0.5, // Fast swipe detection
+    debounceTime: 100, // Prevent duplicate actions
   });
 
   // Keyboard controls
@@ -117,34 +120,36 @@ const GameScreen: React.FC<GameScreenProps> = ({
     setShowFallbackButtons(false); // Reset fallback buttons for new word
   }, [wordToDisplay]);
 
-  // Get visual feedback styling
+  // Get visual feedback styling - More sensitive for faster response
   const getDragFeedbackStyling = () => {
     if (!isDragging || dragOffset === 0) return '';
     
-    const opacity = Math.min(Math.abs(dragOffset) / 100, 0.5); // Max 50% opacity
-    if (dragOffset < -30) {
+    const opacity = Math.min(Math.abs(dragOffset) / 80, 0.6); // Increased max opacity and reduced distance
+    if (dragOffset < -20) { // Reduced threshold from -30 to -20
       // Dragging left (skip) - red background
       return `rgba(239, 68, 68, ${opacity})`;
-    } else if (dragOffset > 30) {
+    } else if (dragOffset > 20) { // Reduced threshold from 30 to 20
       // Dragging right (correct) - green background
       return `rgba(34, 197, 94, ${opacity})`;
     }
     return '';
   };
 
-  // Get icon for drag feedback
+  // Get icon for drag feedback - More responsive
   const getDragIcon = () => {
-    if (!isDragging || Math.abs(dragOffset) < 30) return null;
+    if (!isDragging || Math.abs(dragOffset) < 20) return null; // Reduced threshold from 30 to 20
     
-    if (dragOffset < -30) {
+    const iconOpacity = Math.min(Math.abs(dragOffset) / 60, 1); // Dynamic opacity based on distance
+    
+    if (dragOffset < -20) {
       return (
-        <div className="absolute top-4 right-4 text-red-400 text-6xl opacity-70 pointer-events-none">
+        <div className="absolute top-4 right-4 text-red-400 text-6xl pointer-events-none transition-opacity duration-75" style={{ opacity: iconOpacity }}>
           ✖️
         </div>
       );
-    } else if (dragOffset > 30) {
+    } else if (dragOffset > 20) {
       return (
-        <div className="absolute top-4 left-4 text-green-400 text-6xl opacity-70 pointer-events-none">
+        <div className="absolute top-4 left-4 text-green-400 text-6xl pointer-events-none transition-opacity duration-75" style={{ opacity: iconOpacity }}>
           ✅
         </div>
       );
@@ -167,10 +172,13 @@ const GameScreen: React.FC<GameScreenProps> = ({
           className={`relative w-full bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-2xl text-center min-h-[150px] sm:min-h-[200px] flex items-center justify-center cursor-grab active:cursor-grabbing ${cardAnimationClass}`}
           style={{
             ...(isDragging && dragOffset !== 0 ? {
-              transform: `translateX(${dragOffset}px) rotate(${(dragOffset / 10) * 0.5}deg)`,
+              transform: `translateX(${dragOffset}px) rotate(${(dragOffset / 8) * 0.3}deg)`, // Reduced rotation for smoother feel
               transition: 'none',
-              backgroundColor: dragFeedback ? dragFeedback : undefined
-            } : {}),
+              backgroundColor: dragFeedback ? dragFeedback : undefined,
+              scale: Math.max(0.98, 1 - Math.abs(dragOffset) / 800) // Subtle scale effect
+            } : {
+              transition: 'transform 0.2s ease-out' // Smooth return to position
+            }),
             touchAction: 'pan-y',
           }}
           onTouchStart={onTouchStart}

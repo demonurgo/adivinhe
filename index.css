@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Otimizações customizadas para o jogo */
+@layer base {
+  /* Configurações globais para melhor performance */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  html {
+    /* Scroll suave */
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    /* Prevenir bounce no iOS */
+    overscroll-behavior: none;
+    /* Otimizar rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Componentes de jogo customizados */
+  .game-card {
+    @apply relative bg-slate-800 rounded-2xl shadow-2xl;
+    @apply transform-gpu will-change-transform;
+    /* Otimizações de hardware */
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  .game-card-dragging {
+    @apply cursor-grabbing;
+    /* Suavizar animações durante drag */
+    transition: none !important;
+  }
+  
+  .game-button {
+    @apply px-4 py-2 rounded-lg font-semibold shadow-lg;
+    @apply transition-all duration-150 ease-out;
+    @apply transform-gpu hover:scale-102 active:scale-98;
+  }
+  
+  .game-button-correct {
+    @apply bg-green-600 hover:bg-green-500 text-white;
+    @apply active:bg-green-700;
+  }
+  
+  .game-button-skip {
+    @apply bg-red-600 hover:bg-red-500 text-white;
+    @apply active:bg-red-700;
+  }
+}
+
+@layer utilities {
+  /* Utilitários de performance para o jogo */
+  .smooth-drag {
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: pan-y;
+    will-change: transform;
+  }
+  
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .prevent-zoom {
+    touch-action: manipulation;
+  }
+  
+  /* Classes de feedback visual */
+  .feedback-correct {
+    background-color: rgba(34, 197, 94, 0.3);
+    border-color: #22c55e;
+  }
+  
+  .feedback-skip {
+    background-color: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+  }
+  
+  /* Animações otimizadas */
+  .animate-card-swipe-out-left {
+    animation: swipeOutLeft 0.15s ease-in forwards;
+  }
+  
+  .animate-card-swipe-out-right {
+    animation: swipeOutRight 0.15s ease-in forwards;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+}
+
+/* Keyframes otimizados para performance */
+@keyframes swipeOutLeft {
+  0% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100vw) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeOutRight {
+  0% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Otimizações específicas para dispositivos móveis */
+@media (max-width: 768px) {
+  .game-card {
+    /* Reduzir complexidade visual em mobile */
+    backdrop-filter: none;
+  }
+  
+  /* Tornar botões mais acessíveis em touch */
+  .game-button {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Otimizações para dispositivos com baixa performance */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .animate-card-swipe-out-left,
+  .animate-card-swipe-out-right {
+    animation: none;
+    opacity: 0;
+    transform: translateX(-100vw);
+  }
+}
+
+/* Dark mode otimizações */
+@media (prefers-color-scheme: dark) {
+  .game-card {
+    /* Melhor contraste no dark mode */
+    @apply bg-slate-800/90 border border-slate-700/50;
+  }
+}

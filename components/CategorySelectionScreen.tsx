@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Category } from '../types';
 import Button from './Button';
-import { CogIcon } from '../constants';
+import { CogIcon, ChartBarIcon } from '../constants';
 import DatabasePopulator from './DatabasePopulator';
 
 interface CategorySelectionScreenProps {
@@ -10,6 +10,7 @@ interface CategorySelectionScreenProps {
   onSelectCategory: (categories: Category[]) => void;
   onStartGame: () => void;
   onNavigateToConfiguration: () => void;
+  onNavigateToStatistics: () => void;
   error?: string | null;
   apiKeyExists: boolean;
   supabaseConfigured: boolean; 
@@ -21,6 +22,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
   onSelectCategory,
   onStartGame,
   onNavigateToConfiguration,
+  onNavigateToStatistics,
   error,
   apiKeyExists,
   supabaseConfigured
@@ -61,6 +63,16 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                 Gerar Palavras
               </Button>
             )}
+            <Button 
+              onClick={onNavigateToStatistics} 
+              variant="ghost" 
+              size="md"
+              className="p-2 rounded-full"
+              aria-label="Histórico e Estatísticas"
+              title="Ver histórico de partidas"
+            >
+              {ChartBarIcon}
+            </Button>
             <Button 
               onClick={onNavigateToConfiguration} 
               variant="ghost" 

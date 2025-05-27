@@ -5,9 +5,11 @@ import CategorySelectionScreen from './components/CategorySelectionScreen';
 import ConfigurationScreen from './components/ConfigurationScreen';
 import GameScreen from './components/GameScreen';
 import ScoreScreen from './components/ScoreScreen';
+import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
 import { fetchWordsForCategories } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
+import { saveGameSession } from './services/gameHistoryService';
 
 // Log environment variables for debugging
 console.log("VITE_GEMINI_API_KEY configured:", !!import.meta.env.VITE_GEMINI_API_KEY);
@@ -29,6 +31,10 @@ const App: React.FC = () => {
   const [supabaseConfigured, setSupabaseConfigured] = useState<boolean>(false);
   const [isFetchingMoreWords, setIsFetchingMoreWords] = useState<boolean>(false);
   const [gameId, setGameId] = useState<number>(0);
+  
+  // Game session tracking
+  const [totalWordsShown, setTotalWordsShown] = useState<number>(0);
+  const [skippedWords, setSkippedWords] = useState<number>(0);
 
   // Game Settings
   const [gameDuration, setGameDuration] = useState<number>(GAME_DURATION_SECONDS);
@@ -110,6 +116,10 @@ const App: React.FC = () => {
     setCurrentScreen(GameScreenState.Configuration);
   };
 
+  const handleNavigateToStatistics = () => {
+    setCurrentScreen(GameScreenState.Statistics);
+  };
+
   const handleConfigurationSave = (newDuration: number, newDifficulty: Difficulty) => {
     setGameDuration(newDuration);
     setDifficulty(newDifficulty);
@@ -149,6 +159,8 @@ const App: React.FC = () => {
       setWords(shuffledWords);
       setCurrentWordIndex(0);
       setScore(0);
+      setTotalWordsShown(0);
+      setSkippedWords(0);
       setGameId(prevId => prevId + 1); 
       setCurrentScreen(GameScreenState.Playing);
     } catch (err) {
@@ -168,7 +180,8 @@ const App: React.FC = () => {
 
   const advanceWord = useCallback(() => {
     const nextIndex = currentWordIndex + 1;
-    setCurrentWordIndex(nextIndex); 
+    setCurrentWordIndex(nextIndex);
+    setTotalWordsShown(prev => prev + 1);
 
     if (words.length > 0 && words.length - nextIndex < WORDS_FETCH_THRESHOLD && !isFetchingMoreWords) {
         loadMoreWords();
@@ -181,17 +194,35 @@ const App: React.FC = () => {
   }, [advanceWord]);
 
   const handleSkip = useCallback(() => {
+    setSkippedWords(prev => prev + 1);
     advanceWord();
   }, [advanceWord]);
 
-  const handleTimeUp = useCallback(() => {
+  const handleTimeUp = useCallback(async () => {
+    // Save game session
+    try {
+      const accuracy = totalWordsShown > 0 ? (score / totalWordsShown) * 100 : 0;
+      await saveGameSession({
+        score,
+        total_words: totalWordsShown,
+        categories: selectedCategories.map(c => c.id),
+        difficulty: difficulty.id,
+        duration: gameDuration,
+        accuracy: Math.round(accuracy * 100) / 100
+      });
+    } catch (error) {
+      console.warn('Failed to save game session:', error);
+    }
+    
     setCurrentScreen(GameScreenState.Score);
-  }, []);
+  }, [score, totalWordsShown, selectedCategories, difficulty, gameDuration]);
 
   const handlePlayAgain = useCallback(() => {
     setWords([]);
     setCurrentWordIndex(0);
     setScore(0);
+    setTotalWordsShown(0);
+    setSkippedWords(0);
     setError(prevError => (prevError && (prevError.includes("VITE_GEMINI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
     setCurrentScreen(GameScreenState.CategorySelection);
   }, []);
@@ -206,6 +237,7 @@ const App: React.FC = () => {
             onSelectCategory={handleCategoriesSelect}
             onStartGame={handleStartGame}
             onNavigateToConfiguration={handleNavigateToConfiguration}
+            onNavigateToStatistics={handleNavigateToStatistics}
             error={error}
             apiKeyExists={apiKeyExists}
             supabaseConfigured={supabaseConfigured}
@@ -251,7 +283,18 @@ const App: React.FC = () => {
           />
         );
       case GameScreenState.Score:
-        return <ScoreScreen score={score} onPlayAgain={handlePlayAgain} />;
+        const accuracy = totalWordsShown > 0 ? (score / totalWordsShown) * 100 : 0;
+        return (
+          <ScoreScreen 
+            score={score} 
+            totalWords={totalWordsShown}
+            skippedWords={skippedWords}
+            accuracy={accuracy}
+            onPlayAgain={handlePlayAgain} 
+          />
+        );
+      case GameScreenState.Statistics:
+        return <StatisticsScreen onBack={() => setCurrentScreen(GameScreenState.CategorySelection)} />;
       default:
         return <p className="text-xl text-red-400">Estado desconhecido do jogo. Por favor, recarregue.</p>;
     }
