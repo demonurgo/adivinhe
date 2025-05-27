@@ -119,7 +119,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                     : `bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-slate-100 focus:ring-slate-600`}
                 `}
               >
-                {category.icon && <span className={`mb-1 sm:mb-2 text-3xl sm:text-4xl ${isSelected ? category.textColor || 'text-white' : 'text-slate-400'}`}>{category.icon}</span>}
+                {category.icon && <span className={`mb-1 sm:mb-2 text-3xl sm:text-4xl category-emoji ${isSelected ? category.textColor || 'text-white' : 'text-slate-400'}`}>{category.icon}</span>}
                 <span className={`font-medium text-xs sm:text-sm text-center ${isSelected ? category.textColor || 'text-white' : 'text-slate-200'}`}>{category.name}</span>
               </button>
             );
