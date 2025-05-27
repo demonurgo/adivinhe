@@ -1,6 +1,7 @@
 import React from 'react';
 
 export enum GameScreenState {
+  Welcome,
   CategorySelection,
   Configuration, // New state for game settings
   LoadingWords,

@@ -8,6 +8,7 @@ import ScoreScreen from './components/ScoreScreen';
 import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
 import PWAInstallPrompt from './components/PWAInstallPromptSimple';
+import WelcomeScreen from './components/WelcomeScreen';
 import { fetchWordsForCategories } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
@@ -27,7 +28,7 @@ const App: React.FC = () => {
   const { isUpdateAvailable, updateApp } = usePWA();
   const isOnline = useOnlineStatus();
   
-  const [currentScreen, setCurrentScreen] = useState<GameScreenState>(GameScreenState.CategorySelection);
+  const [currentScreen, setCurrentScreen] = useState<GameScreenState>(GameScreenState.Welcome);
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [words, setWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
@@ -255,8 +256,40 @@ const App: React.FC = () => {
     setCurrentScreen(GameScreenState.CategorySelection);
   }, []);
 
+  const handleNavigateToCategories = () => {
+    setCurrentScreen(GameScreenState.CategorySelection);
+  };
+
+  const handlePasswordModal = () => {
+    // Save the previous screen to return to after database population
+    const previousScreen = currentScreen;
+    
+    // Navigate to category selection where the password modal is handled
+    setCurrentScreen(GameScreenState.CategorySelection);
+    
+    // Use a timeout to ensure the screen has changed before trying to access DOM
+    setTimeout(() => {
+      // Find and click the "Gerar Palavras" button programmatically
+      const generateWordsBtn = document.querySelector('[title="Gerar palavras para o banco de dados"]');
+      if (generateWordsBtn instanceof HTMLElement) {
+        generateWordsBtn.click();
+      }
+    }, 100);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
+      case GameScreenState.Welcome:
+        return (
+          <WelcomeScreen
+            onStartGame={handleNavigateToCategories}
+            onNavigateToConfiguration={handleNavigateToConfiguration}
+            onNavigateToStatistics={handleNavigateToStatistics}
+            onGenerateWords={handlePasswordModal}
+            apiKeyExists={apiKeyExists}
+            supabaseConfigured={supabaseConfigured}
+          />
+        );
       case GameScreenState.CategorySelection:
         return (
           <CategorySelectionScreen
@@ -353,10 +386,7 @@ const App: React.FC = () => {
       {renderScreen()}
       
       {/* Prompt de instalação PWA */}
-      <PWAInstallPrompt 
-        onInstall={() => console.log('App instalado!')}
-        onDismiss={() => console.log('Instalação dispensada')}
-      />
+      <PWAInstallPrompt />
     </div>
   );
 };

@@ -26,6 +26,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const [timeLeft, setTimeLeft] = useState(duration);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [showFallbackButtons, setShowFallbackButtons] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const wordCardRef = useRef<HTMLDivElement>(null);
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -35,6 +36,11 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const gameStartTimeRef = useRef<number>(Date.now());
   const gameDurationRef = useRef<number>(duration);
   const isGameActiveRef = useRef<boolean>(true);
+
+  // Animation on mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Robust timer implementation that doesn't pause during animations or actions
   useEffect(() => {
@@ -230,7 +236,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       <div className="relative w-full">
         <div 
           ref={wordCardRef}
-          className={`relative w-full bg-white/90 p-6 sm:p-8 rounded-2xl shadow-lg text-center min-h-[150px] sm:min-h-[200px] flex items-center justify-center cursor-grab active:cursor-grabbing landscape:min-h-[120px] landscape:p-4 ${cardAnimationClass}`}
+          className={`relative w-full bg-gradient-to-br from-white/95 to-white/90 p-6 sm:p-8 rounded-2xl shadow-lg text-center min-h-[150px] sm:min-h-[200px] flex items-center justify-center cursor-grab active:cursor-grabbing landscape:min-h-[120px] landscape:p-4 ${cardAnimationClass} border border-slate-200/50 backdrop-blur-sm`}
           style={{
             ...(isDragging && dragOffset !== 0 ? {
               transform: `translateX(${dragOffset}px) rotate(${(dragOffset / 8) * 0.3}deg)`, // Reduced rotation for smoother feel
@@ -258,6 +264,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
             />
           )}
           
+          {/* Animated background shapes */}
+          <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-purple-300/20 to-pink-300/20 rounded-full blur-xl -z-10"></div>
+          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-tr from-blue-300/20 to-teal-300/20 rounded-full blur-xl -z-10"></div>
+          
           {/* Drag feedback icon */}
           {getDragIcon()}
           
@@ -269,39 +279,54 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {/* Fallback buttons that appear after 5 seconds */}
         {showFallbackButtons && !swipeDirection && (
           <div className="absolute -bottom-16 left-0 right-0 flex justify-between px-4 animate-fade-in landscape:-bottom-12">
-            <Button
-              onClick={() => handleSwipeAction('skip')}
-              variant="skip"
-              size="md"
-              className="shadow-lg"
-            >
-              ← Pular
-            </Button>
-            <Button
-              onClick={() => handleSwipeAction('correct')}
-              variant="correct"
-              size="md"
-              className="shadow-lg"
-            >
-              Correto →
-            </Button>
+            <div className="relative group">
+              <Button
+                onClick={() => handleSwipeAction('skip')}
+                variant="skip"
+                size="md"
+                className="shadow-lg relative overflow-hidden transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-glow-sm active:scale-95 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <span className="transform group-hover:-translate-x-1 transition-transform duration-300">←</span>
+                  <span>Pular</span>
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-red-600/50 to-red-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
+              </Button>
+              <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-red-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+            </div>
+            
+            <div className="relative group">
+              <Button
+                onClick={() => handleSwipeAction('correct')}
+                variant="correct"
+                size="md"
+                className="shadow-lg relative overflow-hidden transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-glow-sm active:scale-95 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <span>Correto</span>
+                  <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-green-600/50 to-emerald-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
+              </Button>
+              <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-green-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+            </div>
           </div>
         )}
       </div>
     );
   } else if (isFetchingMoreWords) {
     wordAreaContent = (
-      <div className="flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px]">
+      <div className="flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px] bg-gradient-to-br from-white/80 to-white/70 rounded-2xl shadow-lg border border-slate-200/50 backdrop-blur-sm">
         <LoadingSpinner size="md" />
-        <p className="text-xl sm:text-2xl font-semibold text-blue-500 mt-4 landscape:text-lg landscape:mt-2">
+        <p className="text-xl sm:text-2xl font-semibold text-gradient bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 mt-4 landscape:text-lg landscape:mt-2">
           Buscando mais desafios...
         </p>
       </div>
     );
   } else {
      wordAreaContent = (
-      <div className="flex items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px]">
-        <p className="text-xl sm:text-2xl font-semibold text-slate-600 landscape:text-lg">
+      <div className="flex items-center justify-center min-h-[150px] sm:min-h-[200px] text-center p-4 landscape:min-h-[120px] bg-gradient-to-br from-white/80 to-white/70 rounded-2xl shadow-lg border border-slate-200/50 backdrop-blur-sm">
+        <p className="text-xl sm:text-2xl font-semibold text-gradient bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 landscape:text-lg">
           Aguardando o tempo acabar... ⏳
         </p>
       </div>
@@ -309,34 +334,42 @@ const GameScreen: React.FC<GameScreenProps> = ({
   }
   
   return (
-    <div className="w-full max-w-3xl mx-auto p-5 sm:p-8 bg-sky-100/70 backdrop-blur-2xl rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col justify-between min-h-[85vh] sm:min-h-[580px] md:min-h-[620px] landscape:max-w-none landscape:h-[90vh] landscape:flex-row landscape:max-h-[90vh] landscape:w-[95vw]">
-      <div className="w-full landscape:w-auto landscape:flex-shrink-0">
+    <div className={`w-full max-w-3xl mx-auto p-5 sm:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col justify-between min-h-[85vh] sm:min-h-[580px] md:min-h-[620px] landscape:max-w-none landscape:h-[90vh] landscape:flex-row landscape:max-h-[90vh] landscape:w-[95vw] transition-all duration-500 transform ${mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+      {/* Decorative shapes */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-300/20 to-pink-300/20 rounded-full blur-3xl -z-10 transform translate-x-1/4 -translate-y-1/4"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-300/20 to-teal-300/20 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4"></div>
+      
+      <div className={`w-full landscape:w-auto landscape:flex-shrink-0 transition-all duration-500 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <TimerDisplay timeLeft={timeLeft} duration={duration} />
       </div>
 
-      <div className="my-auto flex flex-col items-center justify-center flex-grow relative landscape:flex-1 landscape:mx-8">
+      <div className={`my-auto flex flex-col items-center justify-center flex-grow relative landscape:flex-1 landscape:mx-8 transition-all duration-500 delay-200 ${mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
         {wordAreaContent}
         
         {hasWords && wordToDisplay && !swipeDirection && !isDragging && !showFallbackButtons && (
           <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 text-slate-600 text-xs sm:text-sm select-none opacity-70 landscape:bottom-4">
-            <span>&larr; Pular</span>
-            <span>Correto &rarr;</span>
+            <span className="flex items-center gap-1 text-red-500/70">
+              <span className="transform transition-transform duration-300">←</span> Pular
+            </span>
+            <span className="flex items-center gap-1 text-green-500/70">
+              Correto <span className="transform transition-transform duration-300">→</span>
+            </span>
           </div>
         )}
         
         {/* Instructions */}
         {hasWords && wordToDisplay && !swipeDirection && !isDragging && !showFallbackButtons && (
           <div className="absolute bottom-8 left-0 right-0 text-center landscape:bottom-12">
-            <p className="text-slate-600 text-xs opacity-60">
+            <p className="text-slate-600 text-xs opacity-60 px-4 py-2 bg-white/30 backdrop-blur-sm rounded-full inline-block">
               🖱️ Arraste com mouse • 👆 Swipe • ⌨️ Use setas ← →
             </p>
           </div>
         )}
       </div>
       
-      <div className="h-10 sm:h-12 mt-4 landscape:w-auto landscape:flex-shrink-0 landscape:mt-0"> 
+      <div className={`h-10 sm:h-12 mt-4 landscape:w-auto landscape:flex-shrink-0 landscape:mt-0 transition-all duration-500 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}> 
         {timeLeft > 0 && !hasWords && !isFetchingMoreWords && (
-             <p className="text-center text-sm text-slate-600">Sem mais palavras no momento.</p>
+             <p className="text-center text-sm text-slate-600 px-4 py-2 bg-white/30 backdrop-blur-sm rounded-full inline-block">Sem mais palavras no momento.</p>
         )}
       </div>
     </div>

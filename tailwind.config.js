@@ -28,6 +28,12 @@ export default {
         // Animações de loading
         'spin-slow': 'spin 2s linear infinite',
         'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        
+        // Animação para o botão da welcome screen
+        'pulse-slow': 'pulseSlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        
+        // Animação de flutuação para elementos decorativos
+        'float': 'float 15s ease-in-out infinite',
       },
       
       keyframes: {
@@ -93,6 +99,34 @@ export default {
           '90%': {
             transform: 'translate3d(0, -2px, 0)'
           }
+        },
+        
+        // Animação de pulso lento para o botão welcome
+        pulseSlow: {
+          '0%, 100%': { 
+            transform: 'scale(1)',
+            boxShadow: '0 0 0 0 rgba(236, 72, 153, 0.4)'
+          },
+          '50%': { 
+            transform: 'scale(1.03)', 
+            boxShadow: '0 0 0 15px rgba(236, 72, 153, 0)'
+          }
+        },
+        
+        // Animação de flutuação para os ícones decorativos
+        float: {
+          '0%, 100%': { 
+            transform: 'translateY(0) rotate(0deg)',
+          },
+          '25%': { 
+            transform: 'translateY(-20px) rotate(5deg)',
+          },
+          '50%': {
+            transform: 'translateY(0) rotate(0deg)',
+          },
+          '75%': {
+            transform: 'translateY(20px) rotate(-5deg)',
+          }
         }
       },
       
@@ -131,6 +165,8 @@ export default {
         'game-card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         'game-card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         'button-active': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+        'glow': '0 0 15px 5px rgba(236, 72, 153, 0.5), 0 0 30px 10px rgba(236, 72, 153, 0.3)',
+        'glow-sm': '0 0 10px 3px rgba(236, 72, 153, 0.4), 0 0 20px 6px rgba(236, 72, 153, 0.2)',
       },
       
       // Configurações de blur otimizadas
@@ -186,6 +222,14 @@ export default {
           '&::-webkit-scrollbar': {
             'display': 'none'
           }
+        },
+        
+        // Utility for shadow glow effects
+        '.shadow-glow': {
+          'box-shadow': theme('boxShadow.glow'),
+        },
+        '.shadow-glow-sm': {
+          'box-shadow': theme('boxShadow.glow-sm'),
         },
       }
       
