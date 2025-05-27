@@ -1,3 +1,101 @@
+/* Configurações específicas para orientação landscape */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-card {
+    /* Ajustar padding e tamanhos para landscape */
+    padding: 1rem;
+    min-height: 120px;
+  }
+  
+  /* Layout horizontal para landscape */
+  .landscape-layout {
+    flex-direction: row;
+    height: 90vh;
+    max-height: 90vh;
+    width: 95vw;
+    max-width: none;
+  }
+  
+  .landscape-timer {
+    width: auto;
+    flex-shrink: 0;
+  }
+  
+  .landscape-content {
+    flex: 1;
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+  
+  .landscape-footer {
+    width: auto;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+  
+  /* Ajustar texto e elementos para landscape */
+  .landscape-timer-text {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .landscape-progress-bar {
+    height: 0.5rem;
+  }
+  
+  .landscape-instructions {
+    bottom: 3rem;
+  }
+  
+  .landscape-controls {
+    bottom: 1rem;
+  }
+}
+
+/* Otimizações para landscape em mobile */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 500px) {
+  html, body {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    /* Preservar o background gradiente */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    color: #f1f5f9 !important;
+  }
+  
+  body {
+    /* Forçar landscape sem barras */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+    /* Manter background */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    background-attachment: fixed !important;
+    color: #f1f5f9 !important;
+  }
+  
+  #root {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    overflow: hidden;
+    /* Garantir fundo transparente para mostrar o gradiente do body */
+    background: transparent !important;
+  }
+  
+  /* Reduzir espaçamentos para aproveitar melhor o espaço vertical */
+  .game-button {
+    @apply py-1 px-3 text-sm;
+  }
+  
+  /* Otimizar card de palavra para landscape */
+  .game-card {
+    min-height: 100px;
+    padding: 1rem;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,6 +110,12 @@
   html {
     /* Scroll suave */
     scroll-behavior: smooth;
+    /* Fixar viewport no mobile */
+    height: 100%;
+    overflow: hidden;
+    /* Garantir que o background seja aplicado */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    background-attachment: fixed;
   }
   
   body {
@@ -20,6 +124,35 @@
     /* Otimizar rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Fixar altura completa e prevenir scroll */
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Prevenir pull-to-refresh e outras ações de swipe */
+    -webkit-overflow-scrolling: touch;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    /* IMPORTANTE: Garantir que o background gradiente seja mantido */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #f1f5f9;
+  }
+  
+  #root {
+    /* Garantir que o root também ocupe toda a tela */
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
+    /* Fundo transparente para mostrar o gradiente do body */
+    background: transparent;
   }
 }
 
@@ -76,6 +209,28 @@
   
   .prevent-zoom {
     touch-action: manipulation;
+  }
+  
+  .mobile-viewport-fix {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100); /* Fallback com custom property */
+    height: 100dvh; /* Dynamic viewport height para navegadores modernos */
+    width: 100vw;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .no-overscroll {
+    overscroll-behavior: none;
+    -webkit-overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    -webkit-overscroll-behavior-y: none;
   }
   
   /* Classes de feedback visual */
@@ -145,6 +300,46 @@
   /* Tornar botões mais acessíveis em touch */
   .game-button {
     @apply min-h-[44px] min-w-[44px];
+  }
+  
+  html, body {
+    /* Garantir viewport fixo completo no mobile */
+    height: 100%;
+    height: 100vh; /* Fallback para navegadores antigos */
+    height: calc(var(--vh, 1vh) * 100); /* Custom property para mobile */
+    height: 100dvh; /* Dynamic viewport height para mobile moderno */
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    touch-action: manipulation;
+    /* Manter o background gradiente */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    background-attachment: fixed;
+    color: #f1f5f9 !important;
+  }
+  
+  body {
+    /* Adicionar configurações específicas para iOS Safari */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Prevenir zoom no double tap */
+    touch-action: manipulation;
+    /* Garantir background gradiente */
+    background: linear-gradient(to bottom right, #020617, #312e81, #020617) !important;
+    color: #f1f5f9 !important;
+  }
+  
+  #root {
+    height: 100%;
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    height: 100dvh;
+    overflow: hidden;
+    touch-action: manipulation;
+    /* Garantir fundo transparente para mostrar o gradiente do body */
+    background: transparent !important;
   }
 }
 

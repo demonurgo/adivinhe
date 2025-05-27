@@ -148,7 +148,11 @@ export default {
   },
   plugins: [
     // Plugin para adicionar utilitários customizados
-    function({ addUtilities, theme }) {
+    function({ addUtilities, addVariant, theme }) {
+      // Adicionar variant para landscape
+      addVariant('landscape', '@media (orientation: landscape)');
+      addVariant('landscape-mobile', '@media (orientation: landscape) and (max-width: 1024px) and (max-height: 500px)');
+      
       const newUtilities = {
         // Utilitários para performance de animações
         '.gpu-acceleration': {
