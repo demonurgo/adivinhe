@@ -28,17 +28,58 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const wordCardRef = useRef<HTMLDivElement>(null);
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Timer refs for robust timing
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const gameStartTimeRef = useRef<number>(Date.now());
+  const gameDurationRef = useRef<number>(duration);
+  const isGameActiveRef = useRef<boolean>(true);
 
+  // Robust timer implementation that doesn't pause during animations
   useEffect(() => {
-    if (timeLeft <= 0) {
-      onTimeUp();
-      return;
+    // Initialize game start time and duration
+    gameStartTimeRef.current = Date.now();
+    gameDurationRef.current = duration;
+    isGameActiveRef.current = true;
+    setTimeLeft(duration);
+
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
     }
-    const timerId = setInterval(() => {
-      setTimeLeft(prevTime => prevTime - 1);
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, [timeLeft, onTimeUp]);
+
+    // Create a robust timer that runs independently of state changes
+    timerRef.current = setInterval(() => {
+      if (!isGameActiveRef.current) {
+        return;
+      }
+
+      const now = Date.now();
+      const elapsed = Math.floor((now - gameStartTimeRef.current) / 1000);
+      const remaining = Math.max(0, gameDurationRef.current - elapsed);
+      
+      setTimeLeft(remaining);
+      
+      // Check if time is up
+      if (remaining <= 0) {
+        isGameActiveRef.current = false;
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        onTimeUp();
+      }
+    }, 100); // Update every 100ms for smooth display, but display in seconds
+
+    // Cleanup function
+    return () => {
+      isGameActiveRef.current = false;
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [duration, onTimeUp]); // Only depend on duration and onTimeUp, not timeLeft
 
   // Show fallback buttons after 5 seconds if no interaction
   useEffect(() => {
@@ -59,7 +100,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   }, [hasWords, wordToDisplay, timeLeft]);
 
   const handleSwipeAction = useCallback((action: 'correct' | 'skip') => {
-    if (timeLeft <= 0 || !hasWords || !wordToDisplay) return;
+    if (timeLeft <= 0 || !hasWords || !wordToDisplay || !isGameActiveRef.current) return;
 
     setSwipeDirection(action === 'correct' ? 'right' : 'left');
     setShowFallbackButtons(false); // Hide buttons when action is taken
@@ -100,7 +141,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (timeLeft <= 0 || !hasWords || !wordToDisplay) return;
+      if (timeLeft <= 0 || !hasWords || !wordToDisplay || !isGameActiveRef.current) return;
 
       if (event.key === 'ArrowRight') {
         handleSwipeAction('correct');

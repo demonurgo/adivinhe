@@ -7,8 +7,10 @@ interface TimerDisplayProps {
 }
 
 const TimerDisplay: React.FC<TimerDisplayProps> = ({ timeLeft, duration }) => {
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  // Round to ensure we display whole seconds even though timer runs at 100ms
+  const displayTime = Math.ceil(timeLeft);
+  const minutes = Math.floor(displayTime / 60);
+  const seconds = displayTime % 60;
   const percentage = duration > 0 ? Math.max(0, (timeLeft / duration) * 100) : 0;
 
   let barColor = 'bg-green-500'; // Emerald-like green
@@ -25,10 +27,10 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ timeLeft, duration }) => {
       </div>
       <div className="w-full bg-slate-700/50 rounded-full h-2.5 sm:h-3 overflow-hidden shadow-inner border border-slate-600/50">
         <div
-          className={`h-full rounded-full ${barColor} transition-all duration-300 ease-linear shadow-md`}
+          className={`h-full rounded-full ${barColor} transition-all duration-100 ease-linear shadow-md`}
           style={{ width: `${percentage}%` }}
           role="progressbar"
-          aria-valuenow={timeLeft}
+          aria-valuenow={displayTime}
           aria-valuemin={0}
           aria-valuemax={duration}
           aria-label="Tempo restante"

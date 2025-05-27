@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { getSupabaseClient } from './supabaseClient';
 
 export interface GameSession {
   id?: string;
@@ -42,25 +42,32 @@ export async function saveGameSession(session: Omit<GameSession, 'id' | 'created
   };
 
   // Try to save to Supabase first
-  try {
-    const { data, error } = await supabase
-      .from('game_sessions')
-      .insert([gameSession])
-      .select()
-      .single();
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('game_sessions')
+        .insert([gameSession])
+        .select()
+        .single();
 
-    if (error) {
-      console.warn('Failed to save to Supabase:', error);
-      // Fall back to local storage
+      if (error) {
+        console.warn('Failed to save to Supabase:', error);
+        // Fall back to local storage
+        saveToLocalStorage(gameSession);
+        return gameSession;
+      }
+
+      // Also save to local storage as backup
+      saveToLocalStorage(data);
+      return data;
+    } catch (error) {
+      console.warn('Supabase error, saving to local storage:', error);
       saveToLocalStorage(gameSession);
       return gameSession;
     }
-
-    // Also save to local storage as backup
-    saveToLocalStorage(data);
-    return data;
-  } catch (error) {
-    console.warn('Supabase not available, saving to local storage:', error);
+  } else {
+    console.warn('Supabase not available, saving to local storage');
     saveToLocalStorage(gameSession);
     return gameSession;
   }
@@ -73,18 +80,21 @@ export async function getGameStatistics(): Promise<GameStatistics> {
   let allGames: GameSession[] = [];
 
   // Try to get from Supabase first
-  try {
-    const { data: supabaseGames, error } = await supabase
-      .from('game_sessions')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(500);
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data: supabaseGames, error } = await supabase
+        .from('game_sessions')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500);
 
-    if (!error && supabaseGames) {
-      allGames = supabaseGames;
+      if (!error && supabaseGames) {
+        allGames = supabaseGames;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch from Supabase:', error);
     }
-  } catch (error) {
-    console.warn('Failed to fetch from Supabase:', error);
   }
 
   // Get local games and merge (avoid duplicates)
@@ -205,11 +215,14 @@ function calculateStatistics(games: GameSession[]): GameStatistics {
  * Clear all game history (useful for testing or reset)
  */
 export async function clearGameHistory(): Promise<void> {
-  try {
-    // Clear from Supabase
-    await supabase.from('game_sessions').delete().neq('id', '');
-  } catch (error) {
-    console.warn('Failed to clear Supabase history:', error);
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      // Clear from Supabase
+      await supabase.from('game_sessions').delete().neq('id', '');
+    } catch (error) {
+      console.warn('Failed to clear Supabase history:', error);
+    }
   }
 
   // Clear local storage
