@@ -62,17 +62,5 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ],
-  "splash_pages": null,
-  "prefer_related_applications": false,
-  "related_applications": [],
-  "shortcuts": [
-    {
-      "name": "Novo Jogo",
-      "short_name": "Jogar",
-      "description": "Iniciar um novo jogo",
-      "url": "/?action=new-game",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    }
   ]
 } 
