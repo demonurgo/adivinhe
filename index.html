@@ -5,25 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Adivinhe Já! - Charadas Dinâmicas</title>
     
-    <!-- Limpar cache para ícones -->
-    <script>
-      // Versão do cache - incrementar quando houver mudanças nos ícones
-      const CACHE_VERSION = '1.0.1';
-      
-      // Adiciona a versão do cache como parâmetro de consulta para forçar recarregamento
-      function addCacheBuster() {
-        const icons = document.querySelectorAll('link[rel*="icon"], link[rel="apple-touch-icon"], link[rel="apple-touch-startup-image"]');
-        icons.forEach(icon => {
-          const url = new URL(icon.href, window.location.href);
-          url.searchParams.set('v', CACHE_VERSION);
-          icon.href = url.toString();
-        });
-      }
-      
-      // Executa quando o DOM estiver carregado
-      document.addEventListener('DOMContentLoaded', addCacheBuster);
-    </script>
-    
     <!-- PWA Meta Tags -->
     <meta name="description" content="Jogo interativo de adivinhação de palavras por categorias com IA integrada" />
     <meta name="keywords" content="jogo, charadas, adivinhação, palavras, categorias, IA, entretenimento" />
@@ -44,32 +25,13 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Standard Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
-    <link rel="icon" type="image/png" href="/icon.png" />
+    <!-- Favicon - Formato tradicional -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
     
-    <!-- iOS Icons - Ordem e nomes específicos são importantes -->
+    <!-- iOS Icons - Simplificado para os essenciais -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
-    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
-    
-    <!-- iOS Splash Screens -->
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-640x1136.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-750x1334.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/icons/apple-splash-1242x2208.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/icons/apple-splash-1125x2436.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-828x1792.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/icons/apple-splash-1242x2688.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-1536x2048.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-1668x2224.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-1668x2388.png" />
-    <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="/icons/apple-splash-2048x2732.png" />
-    
-    <!-- Safari Pinned Tab Icon -->
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#3b82f6" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png" />
     
     <!-- Microsoft -->
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
@@ -199,42 +161,16 @@
         }
       });
       
-      // Registra o Service Worker com atualização forçada
+      // Registra o Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Adiciona um parâmetro de versão para forçar a atualização
-          const swUrl = '/sw.js?v=1.0.1';
-          
-          navigator.serviceWorker.register(swUrl)
+          navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
               console.log('SW registrado com sucesso:', registration);
-              
-              // Verifica se há uma atualização do service worker
-              registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                console.log('Nova versão do Service Worker encontrada!');
-                
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log('Nova versão do Service Worker instalada!');
-                    // Atualiza a página para usar o novo service worker
-                    if (confirm('Nova versão disponível! Atualizar agora?')) {
-                      window.location.reload();
-                    }
-                  }
-                });
-              });
             })
             .catch((registrationError) => {
               console.log('Falha no registro do SW:', registrationError);
             });
-            
-          // Verifica atualizações periodicamente
-          setInterval(() => {
-            if (navigator.serviceWorker.controller) {
-              navigator.serviceWorker.controller.postMessage({ type: 'CHECK_UPDATE' });
-            }
-          }, 60 * 60 * 1000); // Verifica a cada hora
         });
       }
       
