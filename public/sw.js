@@ -1,10 +1,13 @@
 // Service Worker for Adivinhe Já! PWA
-const CACHE_NAME = 'adivinhe-ja-v2';
+const CACHE_VERSION = '1.0.1';
+const CACHE_NAME = 'adivinhe-ja-v3-' + CACHE_VERSION;
 const urlsToCache = [
   '/',
   '/index.html',
   '/icon.png',
   '/apple-touch-icon.png',
+  '/apple-touch-icon-precomposed.png',
+  '/safari-pinned-tab.svg',
   '/manifest.json',
   '/browserconfig.xml',
   '/index.css',
@@ -13,12 +16,15 @@ const urlsToCache = [
   '/fonts/*',
   '/images/*',
   '/sounds/*',
+  '/icons/icon-16x16.png',
+  '/icons/icon-32x32.png',
   '/icons/icon-72x72.png',
   '/icons/icon-96x96.png',
   '/icons/icon-128x128.png',
   '/icons/icon-144x144.png',
   '/icons/icon-152x152.png',
-  '/icons/icon-167x167.png',
+  '/icons/apple-touch-icon-152x152.png',
+  '/icons/apple-touch-icon-167x167.png',
   '/icons/icon-192x192.png',
   '/icons/icon-384x384.png',
   '/icons/icon-512x512.png',
@@ -34,8 +40,10 @@ const urlsToCache = [
   '/icons/apple-splash-2048x2732.png'
 ];
 
-// Install event - cache assets
+// Força a atualização do Service Worker
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Força a ativação imediata
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -47,16 +55,19 @@ self.addEventListener('install', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (cacheName !== CACHE_NAME && cacheName.startsWith('adivinhe-ja-')) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      console.log('Service Worker activated and controlling the page');
+      return self.clients.claim(); // Toma controle de todas as páginas abertas
     })
   );
 });

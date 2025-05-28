@@ -28,9 +28,14 @@ if (!fs.existsSync(sourceIcon)) {
   process.exit(1);
 }
 
-// Tamanhos específicos para iOS
+// Tamanhos específicos para iOS e nomes específicos que o Safari espera
 const iosIcons = [
-  { size: 167, name: 'icon-167x167.png' }, // iPad Pro
+  { size: 16, name: 'icon-16x16.png' },
+  { size: 32, name: 'icon-32x32.png' },
+  { size: 152, name: 'apple-touch-icon-152x152.png' }, // iPad
+  { size: 167, name: 'apple-touch-icon-167x167.png' }, // iPad Pro
+  { size: 180, name: 'apple-touch-icon.png' }, // iPhone
+  { size: 180, name: 'apple-touch-icon-precomposed.png' } // Compatibilidade com versões antigas do iOS
 ];
 
 // Splash screens para iOS (tamanhos específicos)
@@ -57,18 +62,30 @@ function ensureDirectoryExists(directory) {
 // Diretório de saída
 const outputDir = path.join(__dirname, '../public/icons');
 ensureDirectoryExists(outputDir);
+const publicDir = path.join(__dirname, '../public');
 
 // Gerar ícones iOS
 async function generateIosIcons() {
   console.log('Gerando ícones para iOS...');
   
   for (const icon of iosIcons) {
-    const outputPath = path.join(outputDir, icon.name);
+    // Decide se o ícone vai para a pasta public ou para a pasta icons
+    const outputPath = icon.name.startsWith('apple-touch-icon') && !icon.name.includes('x') 
+      ? path.join(publicDir, icon.name) 
+      : path.join(outputDir, icon.name);
+    
     await sharp(sourceIcon)
       .resize(icon.size, icon.size)
       .toFile(outputPath);
     console.log(`Criado: ${icon.name}`);
   }
+  
+  // Criar um SVG para o Safari Pinned Tab
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <path fill="#3b82f6" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+  </svg>`;
+  fs.writeFileSync(path.join(publicDir, 'safari-pinned-tab.svg'), svgContent);
+  console.log('Criado: safari-pinned-tab.svg');
 }
 
 // Gerar splash screens iOS
