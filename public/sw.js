@@ -1,18 +1,37 @@
 // Service Worker for Adivinhe Já! PWA
-const CACHE_NAME = 'adivinhe-ja-v1';
+const CACHE_NAME = 'adivinhe-ja-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/icon.png',
   '/apple-touch-icon.png',
   '/manifest.json',
+  '/browserconfig.xml',
   '/index.css',
   '/js/main-*.js',
   '/css/main-*.css',
   '/fonts/*',
   '/images/*',
   '/sounds/*',
-  '/icons/*'
+  '/icons/icon-72x72.png',
+  '/icons/icon-96x96.png',
+  '/icons/icon-128x128.png',
+  '/icons/icon-144x144.png',
+  '/icons/icon-152x152.png',
+  '/icons/icon-167x167.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png',
+  '/icons/apple-splash-640x1136.png',
+  '/icons/apple-splash-750x1334.png',
+  '/icons/apple-splash-1242x2208.png',
+  '/icons/apple-splash-1125x2436.png',
+  '/icons/apple-splash-828x1792.png',
+  '/icons/apple-splash-1242x2688.png',
+  '/icons/apple-splash-1536x2048.png',
+  '/icons/apple-splash-1668x2224.png',
+  '/icons/apple-splash-1668x2388.png',
+  '/icons/apple-splash-2048x2732.png'
 ];
 
 // Install event - cache assets
