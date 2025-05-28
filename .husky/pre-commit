@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Verificar se é um commit importante
+echo "Verificando commit..."
+
+# Lista de arquivos modificados
+CHANGED_FILES=$(git diff --cached --name-only)
+
+# Verificar se algum arquivo importante foi modificado
+IMPORTANT_CHANGES=false
+
+for file in $CHANGED_FILES; do
+  # Definir os padrões para mudanças importantes
+  # Adicione aqui os padrões que você considera importantes para seu projeto
+  if [[ $file == *.tsx ]] || [[ $file == *.ts ]] || [[ $file == *.jsx ]] || [[ $file == *.js ]]; then
+    # Verificar se não é um arquivo dentro de node_modules
+    if [[ $file != node_modules/* ]]; then
+      # Verificar o conteúdo das mudanças para determinar se é importante
+      DIFF_CONTENT=$(git diff --cached -U0 "$file")
+      
+      # Procurar por padrões que indicam mudanças importantes
+      # Aqui você pode definir seus próprios padrões
+      if echo "$DIFF_CONTENT" | grep -E '(function|class|interface|type|const|let|var|export|import|component)' > /dev/null; then
+        IMPORTANT_CHANGES=true
+        echo "Mudança importante detectada em: $file"
+      fi
+    fi
+  fi
+done
+
+# Se houver mudanças importantes, atualizar a versão automaticamente
+if [ "$IMPORTANT_CHANGES" = true ]; then
+  echo "Foram detectadas mudanças importantes."
+  echo "Atualizando versão automaticamente..."
+  
+  # Executar o script de incremento de versão
+  node scripts/update-version.js
+  
+  # Adicionar o arquivo de versão ao commit
+  git add version.json
+  
+  echo "Versão atualizada e adicionada ao commit."
+fi
+
+# Prosseguir com o commit
+exit 0

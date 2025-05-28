@@ -28,3 +28,12 @@ export interface TimeOption {
   name: string;
   value: number; // duration in seconds
 }
+
+// Interface para o arquivo version.json
+export interface VersionData {
+  version: string;
+  build: number;
+  lastUpdate: string;
+  lastCommit?: string;
+  isDirty?: boolean;
+}

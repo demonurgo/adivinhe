@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import { CogIcon, ChartBarIcon } from '../constants';
+// Importar a versão do aplicativo e o tipo
+import versionData from '../version.json';
+import { VersionData } from '../types';
+
+// Converter o versionData para o tipo correto
+const appVersion = versionData as VersionData;
 
 interface WelcomeScreenProps {
   onStartGame: () => void;
@@ -30,6 +36,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
   // Decorative emojis for the background
   const decorativeIcons = ["🎮", "🎯", "🎪", "🎨", "🎭", "🎪", "🧩", "🎲", "🎯", "🎪"];
+
+  // Formatar a string de versão
+  const versionString = `v${appVersion.version}${appVersion.isDirty ? '*' : ''}`;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
@@ -186,8 +195,17 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           )}
         </div>
         
-        {/* Game version */}
-        <div className="absolute bottom-2 right-3 text-xs text-slate-400">v1.0</div>
+        {/* Game version - agora usando os dados do arquivo version.json */}
+        <div className="absolute bottom-2 right-3 text-xs text-slate-400 group">
+          <span>{versionString}</span>
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-slate-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none">
+            Build {appVersion.build} - {appVersion.lastUpdate}
+            {appVersion.lastCommit && (
+              <span className="block text-slate-300 text-xs">Commit: {appVersion.lastCommit}</span>
+            )}
+            <div className="absolute top-full right-2 transform border-4 border-transparent border-t-slate-700"></div>
+          </div>
+        </div>
       </div>
     </div>
   );
