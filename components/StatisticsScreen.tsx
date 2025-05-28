@@ -94,7 +94,7 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">📊 Estatísticas</h1>
+          <h1 style={{color: '#3b82f6'}} className="text-3xl font-bold">📊 Estatísticas</h1>
           <Button onClick={onBack} variant="secondary">
             ← Voltar
           </Button>
@@ -103,20 +103,22 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
         {/* Tabs */}
         <div className="flex border-b border-slate-600 mb-6">
           <button
+            style={{color: '#3b82f6'}}
             className={`px-6 py-3 text-lg font-semibold transition-colors ${
               activeTab === 'overview'
-                ? 'border-b-2 border-blue-400 text-blue-300'
-                : 'text-slate-300 hover:text-slate-100'
+                ? 'border-b-2 border-blue-500 opacity-100'
+                : 'opacity-70 hover:opacity-100'
             }`}
             onClick={() => setActiveTab('overview')}
           >
             Visão Geral
           </button>
           <button
+            style={{color: '#3b82f6'}}
             className={`px-6 py-3 text-lg font-semibold transition-colors ${
               activeTab === 'history'
-                ? 'border-b-2 border-blue-400 text-blue-300'
-                : 'text-slate-300 hover:text-slate-100'
+                ? 'border-b-2 border-blue-500 opacity-100'
+                : 'opacity-70 hover:opacity-100'
             }`}
             onClick={() => setActiveTab('history')}
           >
@@ -131,19 +133,19 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-blue-400">{statistics.total_games}</div>
-                <div className="text-slate-300">Jogos Totais</div>
+                <div className="text-slate-100">Jogos Totais</div>
               </div>
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-green-400">{statistics.best_score}</div>
-                <div className="text-slate-300">Melhor Pontuação</div>
+                <div className="text-slate-100">Melhor Pontuação</div>
               </div>
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-yellow-400">{statistics.average_score}</div>
-                <div className="text-slate-300">Média de Pontos</div>
+                <div className="text-slate-100">Média de Pontos</div>
               </div>
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-purple-400">{statistics.overall_accuracy}%</div>
-                <div className="text-slate-300">Precisão Geral</div>
+                <div className="text-slate-100">Precisão Geral</div>
               </div>
             </div>
 
@@ -151,37 +153,37 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Difficulty Distribution */}
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">Jogos por Dificuldade</h3>
+                <h3 style={{color: '#3b82f6'}} className="text-xl font-semibold mb-4">Jogos por Dificuldade</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-green-300">Fácil</span>
-                    <span className="font-semibold">{statistics.games_by_difficulty.facil}</span>
+                    <span className="font-semibold text-white">{statistics.games_by_difficulty.facil}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-yellow-300">Médio</span>
-                    <span className="font-semibold">{statistics.games_by_difficulty.medio}</span>
+                    <span className="font-semibold text-white">{statistics.games_by_difficulty.medio}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-red-300">Difícil</span>
-                    <span className="font-semibold">{statistics.games_by_difficulty.dificil}</span>
+                    <span className="font-semibold text-white">{statistics.games_by_difficulty.dificil}</span>
                   </div>
                 </div>
               </div>
 
               {/* Other Stats */}
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">Outras Estatísticas</h3>
+                <h3 style={{color: '#3b82f6'}} className="text-xl font-semibold mb-4">Outras Estatísticas</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-300">Total de Palavras</span>
-                    <span className="font-semibold">{statistics.total_words_played}</span>
+                    <span className="text-white">Total de Palavras</span>
+                    <span className="font-semibold text-white">{statistics.total_words_played}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-300">Pontuação Total</span>
-                    <span className="font-semibold">{statistics.total_score}</span>
+                    <span className="text-white">Pontuação Total</span>
+                    <span className="font-semibold text-white">{statistics.total_score}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-300">Categoria Favorita</span>
+                    <span className="text-white">Categoria Favorita</span>
                     <span className="font-semibold text-blue-300">
                       {getCategoryName(statistics.favorite_category)}
                     </span>
@@ -193,11 +195,11 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
         ) : (
           /* History Tab */
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold">Últimos Jogos</h3>
+            <h3 style={{color: '#3b82f6'}} className="text-xl font-semibold">Últimos Jogos</h3>
             {statistics.recent_games.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <p className="text-lg">Nenhum jogo encontrado</p>
-                <p>Jogue algumas partidas para ver seu histórico aqui!</p>
+              <div className="text-center py-12 bg-slate-800/50 rounded-lg">
+                <p className="text-lg text-white">Nenhum jogo encontrado</p>
+                <p className="text-slate-200">Jogue algumas partidas para ver seu histórico aqui!</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-hide">
@@ -215,12 +217,12 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
                           {game.difficulty.charAt(0).toUpperCase() + game.difficulty.slice(1)}
                         </span>
                       </div>
-                      <div className="text-sm text-slate-300">
+                      <div className="text-sm text-white">
                         <div>Categorias: {game.categories.map(getCategoryName).join(', ')}</div>
                         <div>Precisão: {game.accuracy}% • Duração: {Math.floor(game.duration / 60)}min</div>
                       </div>
                     </div>
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-slate-200">
                       {formatDate(game.created_at)}
                     </div>
                   </div>
