@@ -15,12 +15,6 @@
       "purpose": "any"
     },
     {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
       "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
@@ -86,17 +80,5 @@
       "url": "/?action=new-game",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
-  ],
-  "screenshots": [
-    {
-      "src": "/icons/apple-splash-1242x2688.png",
-      "sizes": "1242x2688",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Adivinhe Já! - Tela de jogo"
-    }
-  ],
-  "categories": ["games", "entertainment", "education"],
-  "lang": "pt-BR",
-  "dir": "ltr"
+  ]
 } 
