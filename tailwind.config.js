@@ -34,6 +34,9 @@ export default {
         
         // Animação de flutuação para elementos decorativos
         'float': 'float 15s ease-in-out infinite',
+        
+        // Animação de brilho para botões
+        'shine': 'shine 2s infinite',
       },
       
       keyframes: {
@@ -127,6 +130,16 @@ export default {
           '75%': {
             transform: 'translateY(20px) rotate(-5deg)',
           }
+        },
+        
+        // Animação de brilho para botões
+        shine: {
+          '0%': { 
+            left: '-100%',
+          },
+          '50%, 100%': { 
+            left: '100%',
+          }
         }
       },
       
@@ -179,6 +192,11 @@ export default {
       scale: {
         '98': '.98',
         '102': '1.02',
+      },
+      
+      // Configurações de skew para efeitos visuais
+      skew: {
+        '30': '30deg',
       }
     },
   },

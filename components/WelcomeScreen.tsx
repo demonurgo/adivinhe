@@ -53,7 +53,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       
       {/* Main content */}
       <div 
-        className={`w-full max-w-2xl mx-auto p-8 sm:p-10 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col items-center transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
+        className={`w-full max-w-2xl mx-auto p-7 sm:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col items-center transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
       >
         {/* Decorative shape */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-300/30 to-pink-300/30 rounded-full blur-3xl -z-10 transform translate-x-1/4 -translate-y-1/4"></div>
@@ -61,38 +61,47 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         
         {/* Logo container with animation */}
         <div className={`relative transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
             Adivinhe Já!
           </h1>
-          <div className="h-2 w-32 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 my-3 opacity-80"></div>
-          <p className="text-slate-600 text-center text-sm sm:text-base mb-10 max-w-sm mx-auto">
+          <div className="h-2 w-28 sm:w-32 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 my-2 sm:my-3 opacity-80"></div>
+          <p className="text-sm sm:text-base mb-8 sm:mb-10 max-w-sm mx-auto text-slate-600 text-center">
             Desafie-se a descrever palavras e teste seu vocabulário neste jogo divertido!
           </p>
         </div>
         
         {/* Play button with enhanced animations */}
-        <div className={`w-full mb-12 flex justify-center transition-all duration-1000 delay-500 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className={`w-full mb-10 sm:mb-12 flex justify-center transition-all duration-1000 delay-500 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
           <Button
             onClick={onStartGame}
             variant="primary"
             size="xl"
-            className="px-12 py-6 text-xl sm:text-2xl font-bold transition-all duration-500 transform hover:scale-105 hover:shadow-glow hover:rotate-1 animate-pulse-slow relative group overflow-hidden"
+            className="px-10 sm:px-12 py-5 sm:py-6 text-xl sm:text-2xl font-bold transition-all duration-500 transform hover:scale-105 hover:shadow-glow hover:rotate-1 animate-pulse-slow relative group overflow-hidden rounded-xl border border-pink-500/30"
           >
             <span className="relative z-10 flex items-center justify-center gap-3">
-              <span className="group-hover:scale-110 transition-transform duration-300">Jogar</span>
-              <span className="relative w-6 h-6 group-hover:translate-x-1 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span className="group-hover:scale-110 transition-transform duration-300 tracking-wider text-white drop-shadow-md">JOGAR</span>
+              <span className="relative w-7 h-7 group-hover:translate-x-1 transition-transform duration-300 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="drop-shadow-md">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
             </span>
             <span className="absolute inset-0 bg-gradient-to-r from-pink-600/80 via-purple-600/80 to-blue-600/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md"></span>
+            
+            {/* Shine effect */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+              <div className="absolute top-0 left-[-100%] h-full w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-30 group-hover:animate-shine"></div>
+            </div>
+            
+            {/* Animated particles */}
+            <div className="absolute right-8 top-1/3 transform -translate-y-1/2 w-3 h-3 bg-pink-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+            <div className="absolute left-8 bottom-1/3 transform -translate-y-1/2 w-3 h-3 bg-purple-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
           </Button>
         </div>
 
         {/* Footer navigation with enhanced animations */}
         <div className={`w-full mt-auto flex justify-between items-center transition-all duration-1000 delay-700 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="flex gap-4 relative">
+          <div className="flex gap-5 relative">
             {/* Statistics Button with enhanced animations */}
             <div className="relative group">
               <Button 
@@ -155,19 +164,24 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               <Button 
                 onClick={onGenerateWords}
                 variant="secondary" 
-                size="sm"
-                className="transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95 group relative overflow-hidden px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg"
+                size="md"
+                className="transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95 group relative overflow-hidden px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg shadow-lg border border-teal-600/30"
               >
-                <span className="flex items-center gap-2 relative z-10">
-                  <span className="transform rotate-0 group-hover:rotate-180 transition-transform duration-700">🔄</span>
-                  <span className="font-medium">Gerar Palavras</span>
+                <span className="flex items-center gap-2 sm:gap-3 relative z-10">
+                  <span className="transform rotate-0 group-hover:rotate-180 transition-transform duration-700 text-xl sm:text-2xl">🔄</span>
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-teal-600/50 to-emerald-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
               </Button>
               
               {/* Animated particles */}
-              <div className="absolute -right-1 -top-1 w-3 h-3 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-              <div className="absolute -left-1 -bottom-1 w-2 h-2 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              <div className="absolute -right-1 -top-1 w-2 sm:w-3 h-2 sm:h-3 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              <div className="absolute -left-1 -bottom-1 w-2 sm:w-2 h-2 sm:h-2 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              
+              {/* Tooltip */}
+              <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-teal-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2">
+                Gerar novas palavras para o jogo
+                <div className="absolute top-full right-4 transform border-4 border-transparent border-t-teal-600"></div>
+              </div>
             </div>
           )}
         </div>

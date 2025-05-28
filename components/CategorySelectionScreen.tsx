@@ -81,30 +81,39 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
 
   return (
     <>
-      <div className={`w-full max-w-3xl mx-auto p-6 sm:p-8 md:p-10 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 transition-all duration-500 transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
+      <div className={`w-full max-w-3xl mx-auto p-5 sm:p-6 md:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 transition-all duration-500 transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
             Adivinhe Já!
           </h1>
-          <div className="flex gap-3">
+          <div className="flex gap-4 sm:gap-5">
             {canPopulateDatabase && (
               <div className="relative group hidden sm:block">
                 <Button 
                   onClick={handleOpenPasswordModal} 
                   variant="secondary" 
-                  size="sm"
-                  className="text-xs relative overflow-hidden transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white hover:shadow-md"
+                  size="md"
+                  className="relative overflow-hidden transition-all duration-300 transform hover:scale-110 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white hover:shadow-lg px-4 py-3 rounded-lg shadow-md border border-teal-600/30"
                   title="Gerar palavras para o banco de dados"
                 >
-                  <span className="relative z-10 flex items-center gap-1">
-                    <span className="transform group-hover:rotate-180 transition-transform duration-700">🔄</span>
-                    Gerar Palavras
+                  <span className="relative z-10 flex items-center gap-2">
+                    <span className="transform group-hover:rotate-180 transition-transform duration-700 text-2xl">🔄</span>
                   </span>
                   <span className="absolute inset-0 bg-gradient-to-r from-teal-600/50 to-emerald-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
+                  
+                  {/* Inner glow effect */}
+                  <span className="absolute inset-0 rounded-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </Button>
                 
                 {/* Animated particles */}
                 <div className="absolute -right-1 -top-1 w-2 h-2 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+                <div className="absolute -left-1 -bottom-1 w-2 h-2 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+                
+                {/* Tooltip */}
+                <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-teal-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2">
+                  Gerar novas palavras para o jogo
+                  <div className="absolute top-full right-4 transform border-4 border-transparent border-t-teal-600"></div>
+                </div>
               </div>
             )}
             
@@ -165,27 +174,27 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
           </div>
         </div>
         
-        <p className="text-sm sm:text-base mb-6 text-slate-700">Escolha uma ou mais categorias:</p>
+        <p className="text-xs sm:text-sm mb-3 text-slate-700">Escolha uma ou mais categorias:</p>
         
         {(!apiKeyExists || !supabaseConfigured) && (
-           <div className="mb-6 p-4 bg-yellow-800/80 border border-yellow-600 text-yellow-100 text-sm rounded-lg shadow-md">
+           <div className="mb-3 p-2 sm:p-3 bg-yellow-800/80 border border-yellow-600 text-yellow-100 text-xs rounded-lg shadow-md">
               <strong>Atenção:</strong>
-              {!apiKeyExists && <p>- A chave da API do Gemini não foi configurada (<code>VITE_GEMINI_API_KEY</code>). A geração de novas palavras pode não funcionar.</p>}
-              {!supabaseConfigured && <p>- A configuração do Supabase não foi encontrada ou está incorreta. O armazenamento e busca de palavras no banco de dados não funcionarão.</p>}
-              {(apiKeyExists && !supabaseConfigured) && <p>O jogo usará apenas a API Gemini para palavras (Supabase não configurado corretamente).</p>}
-              {(!apiKeyExists && supabaseConfigured) && <p>O jogo usará apenas o banco de dados Supabase para palavras (API Gemini não configurada). Novas palavras não serão geradas dinamicamente.</p>}
-              {(!apiKeyExists && !supabaseConfigured) && <p>O jogo não poderá buscar palavras (API Gemini e Supabase não configurados corretamente).</p>}
+              {!apiKeyExists && <p className="line-clamp-2">- API Gemini não configurada</p>}
+              {!supabaseConfigured && <p className="line-clamp-2">- Supabase não configurado</p>}
+              {(apiKeyExists && !supabaseConfigured) && <p className="line-clamp-2">Usando apenas API Gemini</p>}
+              {(!apiKeyExists && supabaseConfigured) && <p className="line-clamp-2">Usando apenas Supabase</p>}
+              {(!apiKeyExists && !supabaseConfigured) && <p className="line-clamp-2">Configuração incompleta</p>}
           </div>
         )}
 
         {generalError && (
-          <p className="text-red-300 bg-red-900/70 p-4 rounded-lg mb-6 text-sm shadow-md">{generalError}</p>
+          <p className="text-red-300 bg-red-900/70 p-2 sm:p-3 rounded-lg mb-3 text-xs shadow-md line-clamp-2">{generalError}</p>
         )}
          {configError && (!apiKeyExists || !supabaseConfigured) && ( 
-           <p className="text-yellow-300 bg-yellow-900/70 p-4 rounded-lg mb-6 text-sm shadow-md">{configError}</p>
+           <p className="text-yellow-300 bg-yellow-900/70 p-2 sm:p-3 rounded-lg mb-3 text-xs shadow-md line-clamp-2">{configError}</p>
          )}
 
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-8 transition-all duration-500 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 transition-all duration-500 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           {categories.map((category: Category, index: number) => {
             const isSelected = !!selectedCategories.find((c: Category) => c.id === category.id);
             const delay = 150 + (index * 50);
@@ -194,10 +203,11 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
               <button
                 key={category.id}
                 onClick={() => toggleCategory(category)}
-                aria-pressed={isSelected ? "true" : "false"}
-                className={`p-3 sm:p-4 rounded-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg flex flex-col items-center justify-center aspect-square focus:outline-none focus:ring-4 focus:ring-opacity-50 group relative overflow-hidden
+                role="button"
+                data-pressed={isSelected}
+                className={`p-2 sm:p-3 rounded-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-md flex flex-col items-center justify-center aspect-square focus:outline-none focus:ring-2 focus:ring-opacity-50 group relative overflow-hidden
                   ${isSelected 
-                    ? `${category.color || 'bg-pink-600'} ${category.textColor || 'text-white'} ring-4 ring-offset-2 ring-pink-400/80 ring-offset-sky-100 scale-105 shadow-xl` 
+                    ? `${category.color || 'bg-pink-600'} ${category.textColor || 'text-white'} ring-2 ring-offset-1 ring-pink-400/80 ring-offset-sky-100 scale-105 shadow-lg` 
                     : `bg-slate-200 hover:bg-slate-300 text-slate-700 hover:text-slate-900 focus:ring-slate-400`}
                 `}
                 style={{
@@ -209,8 +219,8 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                 {/* Animated background on hover */}
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-gradient-to-br ${isSelected ? 'from-white to-white/0' : 'from-pink-300/50 via-purple-300/30 to-blue-300/40'}`}></div>
                 
-                {category.icon && <span className={`mb-1 sm:mb-2 text-3xl sm:text-4xl category-emoji ${isSelected ? category.textColor || 'text-white' : 'text-slate-500'} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>{category.icon}</span>}
-                <span className={`font-medium text-xs sm:text-sm text-center ${isSelected ? category.textColor || 'text-white' : 'text-slate-600'} transition-all duration-300`}>{category.name}</span>
+                {category.icon && <span className={`text-xl sm:text-2xl md:text-3xl category-emoji ${isSelected ? category.textColor || 'text-white' : 'text-slate-500'} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>{category.icon}</span>}
+                <span className={`font-medium text-xs sm:text-xs text-center leading-tight mt-1 ${isSelected ? category.textColor || 'text-white' : 'text-slate-600'} transition-all duration-300`}>{category.name}</span>
                 
                 {/* Subtle pulse effect for selected categories */}
                 {isSelected && (
@@ -221,20 +231,20 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
           })}
         </div>
         
-        <div className={`space-y-4 px-2 transition-all duration-500 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`space-y-3 px-2 transition-all duration-500 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="relative group">
             <Button
               onClick={onStartGame}
               disabled={!canPlay}
               variant="primary"
-              size="xl"
+              size="lg"
               fullWidth
-              className="disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-slate-500 relative overflow-hidden group transition-all duration-500 transform hover:scale-102 hover:shadow-glow hover:rotate-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600"
+              className="disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-slate-500 relative overflow-hidden group transition-all duration-500 transform hover:scale-102 hover:shadow-glow hover:rotate-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 py-3 sm:py-4 rounded-xl border border-pink-500/30"
             >
-              <span className="relative z-10 flex items-center justify-center gap-3 group-hover:gap-4 transition-all duration-300 text-lg sm:text-xl font-bold">
-                <span className="transform group-hover:scale-105 transition-transform duration-300">Jogar Agora!</span>
-                <span className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-3 transition-all duration-300 text-base sm:text-xl font-bold">
+                <span className="transform group-hover:scale-110 transition-transform duration-300 tracking-wider text-white drop-shadow-md">JOGAR</span>
+                <span className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="drop-shadow-md">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
@@ -244,10 +254,16 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
               {/* Animated particles */}
               {canPlay && (
                 <>
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-pink-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-                  <div className="absolute right-8 top-1/3 transform -translate-y-1/2 w-2 h-2 bg-purple-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-pink-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+                  <div className="absolute right-8 top-1/3 transform -translate-y-1/2 w-3 h-3 bg-purple-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+                  <div className="absolute left-8 bottom-1/3 transform -translate-y-1/2 w-2 h-2 bg-orange-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-300 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
                 </>
               )}
+              
+              {/* Shine effect */}
+              <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                <div className="absolute top-0 left-[-100%] h-full w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-30 group-hover:animate-shine"></div>
+              </div>
             </Button>
           </div>
           
@@ -256,20 +272,27 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
               <Button
                 onClick={handleOpenPasswordModal}
                 variant="secondary"
-                size="lg"
+                size="md"
                 fullWidth
-                className="relative overflow-hidden transition-all duration-300 transform hover:scale-102 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white group"
+                className="relative overflow-hidden transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white group shadow-lg border border-teal-600/30 py-3 rounded-xl"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  <span className="transform rotate-0 group-hover:rotate-180 transition-transform duration-700">🔄</span>
-                  <span>Gerar Mais Palavras para o Banco</span>
+                  <span className="transform rotate-0 group-hover:rotate-180 transition-transform duration-700 text-2xl">🔄</span>
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-teal-600/50 to-emerald-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
+                
+                {/* Shine effect */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                  <div className="absolute top-0 left-[-100%] h-full w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-30 group-hover:animate-shine"></div>
+                </div>
+                
+                {/* Inner glow effect */}
+                <span className="absolute inset-0 rounded-xl border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               </Button>
               
               {/* Animated particles */}
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
             </div>
           )}
         </div>
