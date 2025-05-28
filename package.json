@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build && node scripts/vercel-build.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-splash": "node scripts/generate-splash-screens.js"
   },
   "dependencies": {
     "@google/genai": "^1.0.1",
