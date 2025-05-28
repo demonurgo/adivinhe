@@ -2,71 +2,28 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adivinhe Já! - Charadas Dinâmicas</title>
-    
-    <!-- Favicon - Formato tradicional (colocado no início para ter prioridade) -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    
-    <!-- PWA Meta Tags -->
     <meta name="description" content="Jogo interativo de adivinhação de palavras por categorias com IA integrada" />
-    <meta name="keywords" content="jogo, charadas, adivinhação, palavras, categorias, IA, entretenimento" />
     <meta name="author" content="Adivinhe Já!" />
-    
-    <!-- iOS PWA Tags - Formato Simples que Funciona -->
+
+    <meta property="og:title" content="Adivinhe Já! - Charadas Dinâmicas" />
+    <meta property="og:description" content="Jogo interativo de adivinhação de palavras por categorias com IA integrada" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#3b82f6" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="AdivinheJá">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    
-    <!-- Theme Colors -->
-    <meta name="theme-color" content="#3b82f6" />
-    <meta name="msapplication-TileColor" content="#3b82f6" />
-    <meta name="msapplication-navbutton-color" content="#3b82f6" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Mantém apenas o apple-touch-icon necessário (já definido acima) -->
-    
-    <!-- Microsoft -->
-    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://ldujhtwxnbwqbchhchcf.supabase.co" />
-    <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
-    
-    <!-- DNS Prefetch -->
-    <link rel="dns-prefetch" href="https://esm.sh" />
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Adivinhe Já!",
-      "description": "Jogo interativo de adivinhação de palavras por categorias com IA integrada",
-      "applicationCategory": "GameApplication",
-      "operatingSystem": "Any",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "BRL"
-      },
-      "author": {
-        "@type": "Organization",
-        "name": "Adivinhe Já!"
-      }
-    }
-    </script>
+
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;700&family=Lexend:wght@300;400;500;600;700&display=swap');
       body {
@@ -118,7 +75,8 @@
         animation: fade-in 0.3s ease-out forwards;
       }
     </style>
-  <script type="importmap">
+
+    <script type="importmap">
 {
   "imports": {
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
@@ -129,37 +87,14 @@
   }
 }
 </script>
-</head>
+  </head>
+
   <body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100">
-    <!-- Loading screen para PWA -->
-    <div id="pwa-loading" class="fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center z-50">
-      <div class="text-center">
-        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-          🎯
-        </div>
-        <h1 class="text-2xl font-bold text-white mb-2">Adivinhe Já!</h1>
-        <div class="flex justify-center">
-          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-        </div>
-      </div>
-    </div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-    
-    <!-- PWA Registration Script -->
+
+    <!-- Service Worker Registration -->
     <script>
-      // Remove loading screen quando a página carregar
-      window.addEventListener('load', () => {
-        const loadingElement = document.getElementById('pwa-loading');
-        if (loadingElement) {
-          loadingElement.style.opacity = '0';
-          setTimeout(() => {
-            loadingElement.remove();
-          }, 300);
-        }
-      });
-      
-      // Registra o Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
@@ -171,71 +106,6 @@
             });
         });
       }
-      
-      // Previne o zoom em inputs em iOS
-      document.addEventListener('touchstart', function(event) {
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-          event.target.style.fontSize = '16px';
-        }
-      });
-      
-      // Prevenir pull-to-refresh APENAS quando em tela de jogo
-      let lastTouchY = 0;
-      let preventPullToRefresh = false;
-      
-      document.addEventListener('touchstart', function(e) {
-        // Apenas prevenir se estiver na tela de jogo
-        if (!document.body.classList.contains('game-screen-active')) {
-          return;
-        }
-        
-        if (e.touches.length !== 1) return;
-        lastTouchY = e.touches[0].clientY;
-        preventPullToRefresh = window.pageYOffset === 0;
-      }, { passive: false });
-      
-      document.addEventListener('touchmove', function(e) {
-        // Apenas prevenir se estiver na tela de jogo
-        if (!document.body.classList.contains('game-screen-active')) {
-          return;
-        }
-        
-        const touchY = e.touches[0].clientY;
-        const touchYDelta = touchY - lastTouchY;
-        lastTouchY = touchY;
-        
-        if (preventPullToRefresh) {
-          if (touchYDelta > 0) {
-            e.preventDefault();
-            return;
-          }
-        }
-        
-        // Prevenir scroll vertical/horizontal indesejado apenas durante o jogo
-        if (Math.abs(touchYDelta) > 5) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-      
-      // Prevenir scroll com wheel apenas durante o jogo
-      document.addEventListener('wheel', function(e) {
-        // Apenas prevenir se estiver na tela de jogo
-        if (!document.body.classList.contains('game-screen-active')) {
-          return;
-        }
-        
-        e.preventDefault();
-      }, { passive: false });
-      
-      // Configurar height dinâmica para viewport móvel
-      function setViewportHeight() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', vh + 'px');
-      }
-      
-      setViewportHeight();
-      window.addEventListener('resize', setViewportHeight);
-      window.addEventListener('orientationchange', setViewportHeight);
     </script>
   </body>
 </html>
