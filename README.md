@@ -19,15 +19,18 @@ Um jogo moderno de charadas/adivinhação construído com **React + TypeScript +
 ### **Controles Disponíveis:**
 
 1. **🖱️ Mouse (Desktop)**:
+
    - Clique e arraste o card para a esquerda = Pular
    - Clique e arraste o card para a direita = Correto
    - Feedback visual durante o arrastar
 
 2. **👆 Touch (Mobile)**:
+
    - Swipe para a esquerda = Pular
    - Swipe para a direita = Correto
 
 3. **⌨️ Teclado**:
+
    - Seta ← (esquerda) = Pular
    - Seta → (direita) = Correto
 
@@ -36,12 +39,14 @@ Um jogo moderno de charadas/adivinhação construído com **React + TypeScript +
    - Garantem que o jogo sempre seja jogável
 
 ### **Feedback Visual:**
+
 - 🔴 **Vermelho**: Ao arrastar para pular
 - 🟢 **Verde**: Ao arrastar para correto
 - ✖️ **X**: Ícone de pular
 - ✅ **Check**: Ícone de correto
 
 ### **Como Jogar:**
+
 1. **Seleção**: Escolha uma ou mais categorias
 2. **Configuração**: Defina tempo e dificuldade (opcional)
 3. **Jogo**: Use qualquer método de controle preferido
@@ -50,6 +55,7 @@ Um jogo moderno de charadas/adivinhação construído com **React + TypeScript +
 ## 🚀 Configuração
 
 ### 1. Pré-requisitos
+
 - Node.js 18+
 - Conta no Google AI Studio (para Gemini API)
 - Conta no Supabase
@@ -59,8 +65,8 @@ Um jogo moderno de charadas/adivinhação construído com **React + TypeScript +
 As variáveis já estão configuradas no `.env.local`:
 
 ```env
-GEMINI_API_KEY=AIzaSyBsm_l74FSbaTzj-TFyFvV0CiiiSNxHUR8
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+GEMINI_API_KEY=
+SUPABASE_ANON_KEY=
 ```
 
 ### 3. Estrutura do Banco Supabase
@@ -116,9 +122,10 @@ O botão **"Gerar Mais Palavras"** está disponível quando ambas as APIs estão
 - Mostra progresso em tempo real
 
 ### Exemplo de Saída:
+
 ```
 ✅ Palavras novas inseridas: 1.247
-⚠️ Duplicadas ignoradas: 253  
+⚠️ Duplicadas ignoradas: 253
 📊 Total processado: 1.500
 ```
 
@@ -153,28 +160,33 @@ O botão **"Gerar Mais Palavras"** está disponível quando ambas as APIs estão
 ## 🎯 Funcionalidades Avançadas
 
 ### Sistema de Controles Múltiplos
+
 - **Mouse Drag**: Arraste intuitivo com feedback visual
 - **Touch Swipe**: Gestos naturais em dispositivos móveis
 - **Teclado**: Controles rápidos com setas
 - **Botões Fallback**: Garantia de jogabilidade sempre
 
 ### Sistema Anti-Repetição
+
 - Palavras usadas nas últimas 24h têm prioridade reduzida em 50%
 - Palavras usadas na última semana têm prioridade reduzida em 20%
 - Contador de usos global influencia na seleção
 
 ### Feedback Visual Avançado
+
 - Cores dinâmicas durante o drag (verde/vermelho)
 - Ícones de feedback (✅/✖️)
 - Animações suaves de transição
 - Rotação sutil durante o arrastar
 
 ### Otimizações de Performance
+
 - Índices otimizados para consultas rápidas
 - Busca inteligente que prioriza variedade
 - Cache de palavras em memória durante o jogo
 
 ### Prevenção de Duplicatas
+
 - Verificação automática antes de inserir
 - Relatório detalhado de duplicatas ignoradas
 - Sistema de upsert para atualizações seguras
@@ -191,17 +203,20 @@ O botão **"Gerar Mais Palavras"** está disponível quando ambas as APIs estão
 ## 🐛 Resolução de Problemas
 
 ### **Swipe/Drag não funciona?**
+
 - ✅ **Mouse**: Clique e arraste funcionando
 - ✅ **Touch**: Swipe funcionando
 - ✅ **Teclado**: Setas ← → funcionando
 - ✅ **Botões**: Aparecem após 5s automaticamente
 
 ### **Card fica "preso" no meio?**
+
 - Agora corrigido com reset automático
 - Botões de fallback aparecem se necessário
 - Múltiplas opções de controle
 
 ### **Sem palavras?**
+
 - Use o botão "Gerar Mais Palavras"
 - Verifique se as APIs estão configuradas
 - Sistema de fallback para Gemini + Supabase
