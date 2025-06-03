@@ -154,6 +154,7 @@ export const populateDatabaseWithWords = async (
   if (!supabase) {
     throw new Error("Cliente Supabase não disponível.");
   }
+  
 
   let totalSuccess = 0;
   let totalErrors = 0;
