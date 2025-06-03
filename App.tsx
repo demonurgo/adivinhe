@@ -9,6 +9,7 @@ import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
 import PWAInstallPrompt from './components/PWAInstallPromptSimple';
 import WelcomeScreen from './components/WelcomeScreen';
+import { FlickeringGrid } from './components/FlickeringGrid';
 import { fetchWordsForCategories } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
@@ -362,31 +363,46 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll scrollbar-hide">
-      {/* Status de conectividade */}
-      {!isOnline && (
-        <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">
-          📵 Modo offline - Algumas funcionalidades podem estar limitadas
-        </div>
-      )}
+    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll scrollbar-hide relative">
+      {/* Flickering Grid Background */}
+      <div className="fixed inset-0 w-full h-full z-0">
+        <FlickeringGrid 
+          className="absolute inset-0 w-full h-full flickering-grid"
+          squareSize={currentScreen === GameScreenState.Playing ? 8 : 6}
+          gridGap={currentScreen === GameScreenState.Playing ? 10 : 8}
+          flickerChance={currentScreen === GameScreenState.Playing ? 0.6 : 0.4}
+          color="rgb(14, 116, 144)"
+          maxOpacity={currentScreen === GameScreenState.Playing ? 0.3 : 0.4}
+        />
+      </div>
       
-      {/* Notificação de atualização disponível */}
-      {isUpdateAvailable && (
-        <div className="fixed top-0 left-0 right-0 bg-blue-600 text-white text-center py-2 px-4 text-sm z-40">
-          🆕 Nova versão disponível! 
-          <button 
-            onClick={updateApp}
-            className="ml-2 underline hover:no-underline"
-          >
-            Atualizar agora
-          </button>
-        </div>
-      )}
-      
-      {renderScreen()}
-      
-      {/* Prompt de instalação PWA */}
-      <PWAInstallPrompt />
+      {/* Main content with higher z-index */}
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+        {/* Status de conectividade */}
+        {!isOnline && (
+          <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">
+            📵 Modo offline - Algumas funcionalidades podem estar limitadas
+          </div>
+        )}
+        
+        {/* Notificação de atualização disponível */}
+        {isUpdateAvailable && (
+          <div className="fixed top-0 left-0 right-0 bg-blue-600 text-white text-center py-2 px-4 text-sm z-40">
+            🆕 Nova versão disponível! 
+            <button 
+              onClick={updateApp}
+              className="ml-2 underline hover:no-underline"
+            >
+              Atualizar agora
+            </button>
+          </div>
+        )}
+        
+        {renderScreen()}
+        
+        {/* Prompt de instalação PWA */}
+        <PWAInstallPrompt />
+      </div>
     </div>
   );
 };

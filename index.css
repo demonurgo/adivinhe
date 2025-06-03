@@ -338,6 +338,23 @@
     border-color: #ef4444;
   }
   
+  /* FlickeringGrid optimizations */
+  .flickering-grid {
+    will-change: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
+  }
+  
+  /* Ensure FlickeringGrid doesn't interfere with touch interactions */
+  .flickering-grid canvas {
+    pointer-events: none;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
   /* Animações otimizadas */
   .animate-card-swipe-out-left {
     animation: swipeOutLeft 0.15s ease-in forwards;
@@ -464,6 +481,11 @@
     animation: none;
     opacity: 0;
     transform: translateX(-100vw);
+  }
+  
+  /* Disable FlickeringGrid animations */
+  .flickering-grid {
+    display: none;
   }
 }
 
