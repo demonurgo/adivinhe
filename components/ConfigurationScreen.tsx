@@ -115,14 +115,12 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
       
       {/* Main container */}
       <div 
-        className={`w-full max-w-4xl mx-auto p-8 sm:p-10 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-700/50 text-slate-100 transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
+        className={`w-full max-w-4xl mx-auto p-6 sm:p-8 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-700/50 text-slate-100 transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
       >
-        {/* Decorative background shapes */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-600/20 to-teal-600/20 rounded-full blur-3xl -z-10 transform -translate-x-1/3 translate-y-1/3"></div>
+
         
         {/* Header with Generate Words Button */}
-        <div className={`text-center mb-12 transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className={`text-center mb-8 transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1 flex justify-center">
@@ -134,7 +132,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                       console.log('Configuration Generate Words Button Clicked!'); // Debug log
                       handleOpenPasswordModal();
                     }}
-                    className="relative group cursor-pointer overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-[2px] rounded-xl shadow-2xl hover:shadow-purple-500/30 transition-all duration-700 hover:scale-110 hover:-rotate-1 w-[120px] h-[50px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
+                    className="relative group cursor-pointer overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-[2px] rounded-xl shadow-2xl hover:shadow-purple-500/30 transition-all duration-700 hover:scale-110 hover:-rotate-1 w-[130px] h-[55px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
                     type="button"
                     title="Gerar palavras com IA"
                   >
@@ -156,47 +154,19 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                       <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-purple-400/25 to-transparent group-hover:left-full transition-all duration-900 ease-out transform skew-x-12 pointer-events-none"></div>
                       
                       {/* Content */}
-                      <div className="relative z-10 flex items-center justify-center gap-2 px-2 pointer-events-none">
-                        {/* Neural network icon */}
-                        <div className="relative flex-shrink-0">
-                          <div className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                              <circle cx="7" cy="7" r="2" opacity="0.8"/>
-                              <circle cx="17" cy="7" r="2" opacity="0.8"/>
-                              <circle cx="12" cy="12" r="2.5" opacity="1"/>
-                              <circle cx="7" cy="17" r="2" opacity="0.8"/>
-                              <circle cx="17" cy="17" r="2" opacity="0.8"/>
-                              <path d="M9 7L10.5 10.5M15 7L13.5 10.5M10.5 13.5L9 17M13.5 13.5L15 17M9.5 9L10.5 10.5M14.5 9L13.5 10.5" stroke="currentColor" strokeWidth="1" opacity="0.6" fill="none"/>
-                            </svg>
-                          </div>
-                          <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-violet-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
-                        </div>
-                        
-                        {/* MorphingText - Fixed container */}
-                        <div className="flex-1 text-center relative min-w-0 max-w-[60px] pointer-events-none">
+                      <div className="relative z-10 flex items-center justify-center w-full h-full pointer-events-none">
+                        {/* MorphingText - Centralizado */}
+                        <div className="text-center relative w-full px-2 pointer-events-none">
                           <MorphingText 
-                            className="text-[9px] font-bold text-purple-300 group-hover:text-purple-200 transition-colors duration-500 h-3 w-full leading-none pointer-events-none"
+                            className="text-[3px] sm:text-[4px] md:text-[5px] font-bold text-purple-300 group-hover:text-purple-200 transition-colors duration-500 pointer-events-none whitespace-nowrap"
                             texts={[
-                              "AI FORGE",
-                              "NEURAL NET",
-                              "BRAIN GEN", 
-                              "DEEP LEARN",
-                              "WORD LAB"
+                              "AI",
+                              "NET",
+                              "GEN", 
+                              "DEEP",
+                              "WORD"
                             ]}
                           />
-                        </div>
-                        
-                        {/* Quantum processing icon */}
-                        <div className="relative flex-shrink-0">
-                          <div className="w-3 h-3 text-indigo-400 group-hover:text-indigo-300 transition-all duration-500 group-hover:scale-110 group-hover:rotate-90">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                              <circle cx="12" cy="12" r="3" opacity="0.4"/>
-                              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
-                              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3"/>
-                              <path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="0.5" opacity="0.5"/>
-                            </svg>
-                          </div>
-                          <div className="absolute -bottom-0.5 -left-0.5 w-0.5 h-0.5 bg-indigo-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
                         </div>
                       </div>
                       
@@ -228,15 +198,15 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         </div>
 
         {/* Time Duration Section */}
-        <div className={`mb-12 transition-all duration-1000 delay-500 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="flex items-center justify-center gap-3 mb-6">
+        <div className={`mb-8 transition-all duration-1000 delay-500 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <div className="flex items-center justify-center gap-3 mb-4">
             <div className="text-3xl">⏱️</div>
             <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
               Duração do Jogo
             </h2>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-8">
             {timeOptions.map((option, index) => {
               const isSelected = selectedDuration === option.value;
               const isHovered = hoveredTimeOption === option.id;
@@ -245,7 +215,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                 <div key={option.id} className="relative group">
                   <div
                     className={`relative cursor-pointer overflow-hidden transition-all duration-500 transform ${
-                      isSelected ? 'scale-110' : 'scale-100 group-hover:scale-105'
+                      isSelected ? 'scale-105' : 'scale-100 group-hover:scale-102'
                     }`}
                     onClick={() => setSelectedDuration(option.value)}
                     onMouseEnter={() => setHoveredTimeOption(option.id)}
@@ -255,30 +225,30 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                     {/* Card background */}
                     <div className={`relative bg-gradient-to-br ${
                       isSelected 
-                        ? 'from-blue-600 via-indigo-600 to-purple-600 shadow-2xl shadow-blue-500/30' 
+                        ? 'from-blue-600 via-indigo-600 to-purple-600 shadow-lg shadow-blue-500/20' 
                         : 'from-slate-800 via-slate-700 to-slate-800 group-hover:from-slate-700 group-hover:via-slate-600 group-hover:to-slate-700'
-                    } p-6 rounded-2xl border-2 ${
+                    } p-3 rounded-lg border ${
                       isSelected ? 'border-blue-400/60' : 'border-slate-600/50 group-hover:border-slate-500/70'
-                    } shadow-lg transition-all duration-500`}>
+                    } shadow-md transition-all duration-500`}>
                       
                       {/* Animated background effect */}
                       {isSelected && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl animate-pulse"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-lg animate-pulse"></div>
                       )}
                       
                       {/* Content */}
                       <div className="relative z-10 text-center">
-                        <div className={`text-3xl mb-3 transition-all duration-300 ${
-                          isSelected ? 'scale-125 animate-pulse' : 'group-hover:scale-110'
+                        <div className={`text-lg mb-1 transition-all duration-300 ${
+                          isSelected ? 'scale-110 animate-pulse' : 'group-hover:scale-105'
                         }`}>
                           {getTimeIcon(option.value)}
                         </div>
-                        <div className={`text-xl font-bold mb-1 transition-colors duration-300 ${
+                        <div className={`text-sm font-bold mb-0.5 transition-colors duration-300 ${
                           isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'
                         }`}>
                           {option.name}
                         </div>
-                        <div className={`text-sm transition-colors duration-300 ${
+                        <div className={`text-xs transition-colors duration-300 ${
                           isSelected ? 'text-blue-200' : 'text-slate-400 group-hover:text-slate-300'
                         }`}>
                           {option.value}s
@@ -287,15 +257,15 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                       
                       {/* Selection indicator */}
                       {isSelected && (
-                        <div className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-bounce">
+                        <div className="absolute top-1 right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center animate-bounce">
                           <span className="text-xs">✓</span>
                         </div>
                       )}
                     </div>
                     
                     {/* Hover glow effect */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700 ${
-                      isSelected ? 'opacity-30 scale-125' : ''
+                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-15 scale-100 group-hover:scale-105 blur-md transition-all duration-700 ${
+                      isSelected ? 'opacity-20 scale-105' : ''
                     }`}></div>
                   </div>
                 </div>
@@ -305,15 +275,15 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         </div>
 
         {/* Difficulty Section */}
-        <div className={`mb-12 transition-all duration-1000 delay-700 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="flex items-center justify-center gap-3 mb-6">
+        <div className={`mb-8 transition-all duration-1000 delay-700 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <div className="flex items-center justify-center gap-3 mb-4">
             <div className="text-3xl">🎯</div>
             <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400">
               Nível de Dificuldade
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10">
             {difficulties.map((level, index) => {
               const isSelected = selectedDifficulty.id === level.id;
               const diffData = getDifficultyData(level.id);
@@ -322,7 +292,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                 <div key={level.id} className="relative group">
                   <div
                     className={`relative cursor-pointer overflow-hidden transition-all duration-500 transform ${
-                      isSelected ? 'scale-110' : 'scale-100 group-hover:scale-105'
+                      isSelected ? 'scale-105' : 'scale-100 group-hover:scale-102'
                     }`}
                     onClick={() => setSelectedDifficulty(level)}
                     onMouseEnter={() => setHoveredDifficulty(level.id)}
@@ -332,30 +302,30 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                     {/* Card background */}
                     <div className={`relative bg-gradient-to-br ${
                       isSelected 
-                        ? `${diffData.color} shadow-2xl ${diffData.glow}` 
+                        ? `${diffData.color} shadow-lg ${diffData.glow}` 
                         : 'from-slate-800 via-slate-700 to-slate-800 group-hover:from-slate-700 group-hover:via-slate-600 group-hover:to-slate-700'
-                    } p-6 sm:p-8 rounded-2xl border-2 ${
+                    } p-3 sm:p-4 rounded-lg border ${
                       isSelected ? diffData.border : 'border-slate-600/50 group-hover:border-slate-500/70'
-                    } shadow-lg transition-all duration-500`}>
+                    } shadow-md transition-all duration-500`}>
                       
                       {/* Animated background effect */}
                       {isSelected && (
-                        <div className={`absolute inset-0 bg-gradient-to-r ${diffData.color} opacity-20 rounded-2xl animate-pulse`}></div>
+                        <div className={`absolute inset-0 bg-gradient-to-r ${diffData.color} opacity-20 rounded-lg animate-pulse`}></div>
                       )}
                       
                       {/* Content */}
                       <div className="relative z-10 text-center">
-                        <div className={`text-4xl mb-4 transition-all duration-300 ${
-                          isSelected ? 'scale-125 animate-pulse' : 'group-hover:scale-110'
+                        <div className={`text-2xl mb-2 transition-all duration-300 ${
+                          isSelected ? 'scale-110 animate-pulse' : 'group-hover:scale-105'
                         }`}>
                           {diffData.icon}
                         </div>
-                        <div className={`text-xl sm:text-2xl font-bold mb-2 transition-colors duration-300 ${
+                        <div className={`text-sm sm:text-base font-bold mb-0.5 transition-colors duration-300 ${
                           isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'
                         }`}>
                           {level.name}
                         </div>
-                        <div className={`text-sm transition-colors duration-300 ${
+                        <div className={`text-xs transition-colors duration-300 ${
                           isSelected ? 'text-white/80' : 'text-slate-400 group-hover:text-slate-300'
                         }`}>
                           Nível {level.name.toLowerCase()}
@@ -364,15 +334,15 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                       
                       {/* Selection indicator */}
                       {isSelected && (
-                        <div className="absolute top-3 right-3 w-6 h-6 bg-white/20 rounded-full flex items-center justify-center animate-bounce backdrop-blur-sm">
+                        <div className="absolute top-1 right-1 w-4 h-4 bg-white/20 rounded-full flex items-center justify-center animate-bounce backdrop-blur-sm">
                           <span className="text-white text-xs font-bold">✓</span>
                         </div>
                       )}
                     </div>
                     
                     {/* Hover glow effect */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${diffData.color} opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700 ${
-                      isSelected ? 'opacity-30 scale-125' : ''
+                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${diffData.color} opacity-0 group-hover:opacity-15 scale-100 group-hover:scale-105 blur-md transition-all duration-700 ${
+                      isSelected ? 'opacity-20 scale-105' : ''
                     }`}></div>
                   </div>
                 </div>
@@ -416,9 +386,9 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                     
                     {/* SparklesText */}
                     <SparklesText 
-                      className="text-2xl sm:text-3xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
+                      className="text-lg sm:text-xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
                       colors={{ first: '#FEF3C7', second: '#FDE68A' }}
-                      sparklesCount={10}
+                      sparklesCount={8}
                     >
                       SALVAR E VOLTAR
                     </SparklesText>

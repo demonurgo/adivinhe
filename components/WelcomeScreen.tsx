@@ -284,7 +284,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 console.log('Generate Words Button Clicked!'); // Debug log
                 handleOpenPasswordModal();
               }}
-              className="relative group cursor-pointer bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl hover:shadow-emerald-500/30 transition-all duration-700 hover:scale-110 hover:rotate-1 w-[140px] h-[60px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
+              className="relative group cursor-pointer bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl hover:shadow-emerald-500/30 transition-all duration-700 hover:scale-110 hover:rotate-1 w-[130px] h-[55px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
               type="button"
               title="Gerar palavras com IA"
             >
@@ -302,42 +302,19 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent group-hover:left-full transition-all duration-1000 ease-out transform skew-x-12 pointer-events-none"></div>
                 
                 {/* Content */}
-                <div className="relative z-10 flex items-center justify-center gap-2 px-3 pointer-events-none">
-                  {/* AI/Generate icon */}
-                  <div className="relative flex-shrink-0">
-                    <div className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-180">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9l-5.91 3.74L12 22l-4.09-9.26L2 9l6.91-.74L12 2z"/>
-                        <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6"/>
-                      </svg>
-                    </div>
-                    <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
-                  </div>
-                  
-                  {/* MorphingText - Fixed container */}
-                  <div className="flex-1 text-center relative min-w-0 max-w-[70px] pointer-events-none">
+                <div className="relative z-10 flex items-center justify-center w-full h-full pointer-events-none">
+                  {/* MorphingText - Centralizado */}
+                  <div className="text-center relative w-full px-2 pointer-events-none">
                     <MorphingText 
-                      className="text-[10px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 h-4 w-full leading-none pointer-events-none"
+                      className="text-[3px] sm:text-[4px] md:text-[5px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 pointer-events-none whitespace-nowrap"
                       texts={[
-                        "GERAR IA",
-                        "CRIAR VOCAB", 
-                        "AI WORDS",
-                        "NOVA BASE",
-                        "EXPAND DB"
+                        "GEN",
+                        "AI", 
+                        "NEW",
+                        "DB",
+                        "WORD"
                       ]}
                     />
-                  </div>
-                  
-                  {/* Data/Database icon */}
-                  <div className="relative flex-shrink-0">
-                    <div className="w-3 h-3 text-teal-400 group-hover:text-teal-300 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3C7.03 3 3 4.79 3 7v10c0 2.21 4.03 4 9 4s9-1.79 9-4V7c0-2.21-4.03-4-9-4z"/>
-                        <ellipse cx="12" cy="7" rx="9" ry="4" fill="currentColor" opacity="0.7"/>
-                        <path d="M3 12c0 2.21 4.03 4 9 4s9-1.79 9-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
-                      </svg>
-                    </div>
-                    <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
                   </div>
                 </div>
                 
