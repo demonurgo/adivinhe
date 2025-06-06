@@ -4,7 +4,10 @@ import { CogIcon, ChartBarIcon } from '../constants';
 // Importar a versão do aplicativo e o tipo
 import versionData from '../version.json';
 import { VersionData } from '../types';
-
+import { HyperText } from './magicui/hyper-text';
+import { SparklesText } from './magicui/sparkles-text';
+import { MorphingText } from './magicui/morphing-text';
+import DatabasePopulator from './DatabasePopulator';
 // Converter o versionData para o tipo correto
 const appVersion = versionData as VersionData;
 
@@ -28,11 +31,40 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const canPopulateDatabase = apiKeyExists && supabaseConfigured;
   const [mounted, setMounted] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [showDatabasePopulator, setShowDatabasePopulator] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   
   // Animate elements on mount
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleOpenPasswordModal = () => {
+    setPasswordInput('');
+    setPasswordError(null);
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordModalClose = () => {
+    setShowPasswordModal(false);
+    setPasswordInput('');
+    setPasswordError(null);
+  };
+
+  const handlePasswordSubmit = () => {
+    // TODO: Use a more secure way to store and check the password
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin'; // Fallback for safety, ensure VITE_ADMIN_PASSWORD is set
+    if (passwordInput === adminPassword) {
+      setShowPasswordModal(false);
+      setShowDatabasePopulator(true);
+      setPasswordError(null);
+    } else {
+      setPasswordError('Senha incorreta. Tente novamente.');
+    }
+    setPasswordInput('');
+  };
 
   // Decorative emojis for the background
   const decorativeIcons = ["🎮", "🎯", "🎪", "🎨", "🎭", "🎪", "🧩", "🎲", "🎯", "🎪"];
@@ -70,9 +102,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         
         {/* Logo container with animation */}
         <div className={`relative transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
-            Adivinhe Já!
-          </h1>
+          <HyperText  className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 tracking-wide drop-shadow-lg"
+            duration={1000}
+            delay={500}
+            startOnView={true}
+            animateOnHover={true}
+            as="h1"
+            >
+            Adivinhe Já!  
+          </HyperText>
           <div className="h-2 w-28 sm:w-32 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 my-2 sm:my-3 opacity-80"></div>
           <p className="text-sm sm:text-base mb-8 sm:mb-10 max-w-sm mx-auto text-slate-600 text-center">
             Desafie-se a descrever palavras e teste seu vocabulário neste jogo divertido!
@@ -81,31 +119,68 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         
         {/* Play button with enhanced animations */}
         <div className={`w-full mb-10 sm:mb-12 flex justify-center transition-all duration-1000 delay-500 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <Button
-            onClick={onStartGame}
-            variant="primary"
-            size="xl"
-            className="px-10 sm:px-12 py-5 sm:py-6 text-xl sm:text-2xl font-bold transition-all duration-500 transform hover:scale-105 hover:shadow-glow hover:rotate-1 animate-pulse-slow relative group overflow-hidden rounded-xl border border-pink-500/30"
-          >
-            <span className="relative z-10 flex items-center justify-center gap-3">
-              <span className="group-hover:scale-110 transition-transform duration-300 tracking-wider text-white drop-shadow-md">JOGAR</span>
-              <span className="relative w-7 h-7 group-hover:translate-x-1 transition-transform duration-300 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="drop-shadow-md">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </span>
-            <span className="absolute inset-0 bg-gradient-to-r from-pink-600/80 via-purple-600/80 to-blue-600/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md"></span>
-            
-            {/* Shine effect */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-              <div className="absolute top-0 left-[-100%] h-full w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-30 group-hover:animate-shine"></div>
+          <div className="relative group cursor-pointer" onClick={onStartGame}>
+            {/* Main button container */}
+            <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-[3px] rounded-3xl shadow-2xl group-hover:shadow-purple-500/25 transition-all duration-500 group-hover:scale-105">
+              <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 rounded-3xl px-12 sm:px-16 py-6 sm:py-8 overflow-hidden">
+                {/* Animated background layers */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-700/50 via-pink-700/50 to-orange-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-45 from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
+                
+                {/* Floating particles */}
+                <div className="absolute top-4 left-8 w-2 h-2 bg-yellow-300 rounded-full opacity-60 group-hover:animate-bounce group-hover:opacity-100 transition-all duration-500 delay-100"></div>
+                <div className="absolute top-6 right-12 w-1.5 h-1.5 bg-cyan-300 rounded-full opacity-50 group-hover:animate-ping group-hover:opacity-90 transition-all duration-500 delay-200"></div>
+                <div className="absolute bottom-4 left-12 w-2.5 h-2.5 bg-pink-300 rounded-full opacity-40 group-hover:animate-pulse group-hover:opacity-80 transition-all duration-500 delay-300"></div>
+                <div className="absolute bottom-6 right-8 w-1 h-1 bg-white rounded-full opacity-70 group-hover:animate-ping group-hover:opacity-100 transition-all duration-500 delay-150"></div>
+                
+                {/* Shine effect */}
+                <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out"></div>
+                
+                {/* Main content */}
+                <div className="relative z-10 flex items-center justify-center gap-4 group-hover:gap-6 transition-all duration-300">
+                  {/* Game controller icon */}
+                  <div className="relative">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 text-white/90 group-hover:text-white transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+                        <path d="M8 8h8v8H8V8zm2 6h4v-4h-4v4z"/>
+                        <circle cx="12" cy="12" r="2"/>
+                      </svg>
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
+                  </div>
+                  
+                  {/* SparklesText */}
+                  <SparklesText 
+                    className="text-2xl sm:text-4xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
+                    colors={{ first: '#FEF3C7', second: '#FDE68A' }}
+                    sparklesCount={12}
+                  >
+                    JOGAR
+                  </SparklesText>
+                  
+                  {/* Arrow icon */}
+                  <div className="relative">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 text-white/90 group-hover:text-white transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                      </svg>
+                    </div>
+                    <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-150 opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+                  </div>
+                </div>
+                
+                {/* Border glow effect */}
+                <div className="absolute inset-0 rounded-3xl border-2 border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
             </div>
             
-            {/* Animated particles */}
-            <div className="absolute right-8 top-1/3 transform -translate-y-1/2 w-3 h-3 bg-pink-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-            <div className="absolute left-8 bottom-1/3 transform -translate-y-1/2 w-3 h-3 bg-purple-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-          </Button>
+            {/* Outer glow ring */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700"></div>
+            
+            {/* Click ripple effect */}
+            <div className="absolute inset-0 rounded-3xl bg-white/10 scale-0 group-active:scale-95 transition-transform duration-150"></div>
+          </div>
         </div>
 
         {/* Footer navigation with enhanced animations */}
@@ -170,26 +245,87 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           
           {canPopulateDatabase && (
             <div className="relative group">
-              <Button 
-                onClick={onGenerateWords}
-                variant="secondary" 
-                size="md"
-                className="transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95 group relative overflow-hidden px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg shadow-lg border border-teal-600/30"
+              {/* Redesigned Generate Words Button - Fixed Sizing */}
+              <div 
+                onClick={handleOpenPasswordModal}
+                className="relative cursor-pointer overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl group-hover:shadow-emerald-500/30 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1 w-[140px] h-[60px]"
               >
-                <span className="flex items-center gap-2 sm:gap-3 relative z-10">
-                  <span className="transform rotate-0 group-hover:rotate-180 transition-transform duration-700 text-xl sm:text-2xl">🔄</span>
-                </span>
-                <span className="absolute inset-0 bg-gradient-to-r from-teal-600/50 to-emerald-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></span>
-              </Button>
+                <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden w-full h-full flex items-center justify-center">
+                  {/* Animated circuit pattern background */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-2 left-2 w-1 h-4 bg-emerald-400 rounded-full opacity-60 group-hover:animate-pulse"></div>
+                    <div className="absolute top-1 right-3 w-1 h-1 bg-cyan-400 rounded-full group-hover:animate-ping"></div>
+                    <div className="absolute bottom-2 left-4 w-1 h-1 bg-teal-400 rounded-full group-hover:animate-bounce"></div>
+                    <div className="absolute bottom-1 right-2 w-1 h-3 bg-emerald-400 rounded-full opacity-70 group-hover:animate-pulse"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-white rounded-full group-hover:animate-ping"></div>
+                  </div>
+                  
+                  {/* Sweep animation */}
+                  <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent group-hover:left-full transition-all duration-1000 ease-out transform skew-x-12"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10 flex items-center justify-center gap-2 px-3">
+                    {/* AI/Generate icon */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-180">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2l3.09 6.26L22 9l-5.91 3.74L12 22l-4.09-9.26L2 9l6.91-.74L12 2z"/>
+                          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6"/>
+                        </svg>
+                      </div>
+                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
+                    </div>
+                    
+                    {/* MorphingText - Fixed container */}
+                    <div className="flex-1 text-center relative min-w-0 max-w-[70px]">
+                      <MorphingText 
+                        className="text-[10px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 h-4 w-full leading-none"
+                        texts={[
+                          "GERAR IA",
+                          "CRIAR VOCAB", 
+                          "AI WORDS",
+                          "NOVA BASE",
+                          "EXPAND DB"
+                        ]}
+                      />
+                    </div>
+                    
+                    {/* Data/Database icon */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-3 h-3 text-teal-400 group-hover:text-teal-300 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 3C7.03 3 3 4.79 3 7v10c0 2.21 4.03 4 9 4s9-1.79 9-4V7c0-2.21-4.03-4-9-4z"/>
+                          <ellipse cx="12" cy="7" rx="9" ry="4" fill="currentColor" opacity="0.7"/>
+                          <path d="M3 12c0 2.21 4.03 4 9 4s9-1.79 9-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
+                        </svg>
+                      </div>
+                      <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Glowing border */}
+                  <div className="absolute inset-0 rounded-2xl border border-emerald-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Pulsing core */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-emerald-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse"></div>
+                </div>
+              </div>
               
-              {/* Animated particles */}
-              <div className="absolute -right-1 -top-1 w-2 sm:w-3 h-2 sm:h-3 bg-teal-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-100 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
-              <div className="absolute -left-1 -bottom-1 w-2 sm:w-2 h-2 sm:h-2 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-300 delay-200 transform scale-0 group-hover:scale-100 group-hover:animate-ping-slow"></div>
+              {/* Outer glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700"></div>
               
-              {/* Tooltip */}
-              <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-teal-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2">
-                Gerar novas palavras para o jogo
-                <div className="absolute top-full right-4 transform border-4 border-transparent border-t-teal-600"></div>
+              {/* Floating data particles */}
+              <div className="absolute -top-1 left-2 w-1 h-1 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-float-up transition-all duration-500 delay-100"></div>
+              <div className="absolute -bottom-1 right-3 w-1 h-1 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-float-up transition-all duration-500 delay-200"></div>
+              <div className="absolute top-0 -right-1 w-0.5 h-0.5 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-float-up transition-all duration-500 delay-150"></div>
+              
+              {/* Enhanced tooltip */}
+              <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-emerald-400/20">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
+                  <span>Expandir base de dados com IA</span>
+                </div>
+                <div className="absolute top-full right-4 transform border-4 border-transparent border-t-emerald-600"></div>
               </div>
             </div>
           )}
@@ -207,8 +343,53 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {showDatabasePopulator && (
+        <DatabasePopulator onClose={() => setShowDatabasePopulator(false)} />
+      )}
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl shadow-2xl border border-slate-700 w-full max-w-sm transform transition-all duration-300 animate-scale-in">
+            <h2 className="text-xl font-semibold text-slate-100 mb-4">Acesso Restrito</h2>
+            <p className="text-sm text-slate-300 mb-1">Por favor, insira a senha para gerar palavras:</p>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+              className="w-full p-2.5 rounded-md bg-slate-700 border border-slate-600 text-slate-100 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300"
+              placeholder="Senha"
+            />
+            {passwordError && (
+              <p className="text-red-400 text-xs mt-2 animate-fade-in">{passwordError}</p>
+            )}
+            <div className="mt-6 flex justify-end gap-3">
+              <Button 
+                onClick={handlePasswordModalClose} 
+                variant="ghost" 
+                className="text-slate-300 hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handlePasswordSubmit} 
+                variant="primary"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-glow-sm"
+              >
+                <span className="flex items-center gap-1">
+                  Confirmar 
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default WelcomeScreen; 
+export default WelcomeScreen;

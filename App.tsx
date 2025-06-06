@@ -326,6 +326,8 @@ const App: React.FC = () => {
             onSave={handleConfigurationSave}
             timeOptions={TIME_OPTIONS}
             difficulties={DIFFICULTIES}
+            apiKeyExists={apiKeyExists}
+            supabaseConfigured={supabaseConfigured}
           />
         );
       case GameScreenState.LoadingWords:
