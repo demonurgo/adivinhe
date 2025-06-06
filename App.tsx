@@ -10,10 +10,11 @@ import LoadingSpinner from './components/LoadingSpinner';
 import PWAInstallPrompt from './components/PWAInstallPromptSimple';
 import WelcomeScreen from './components/WelcomeScreen';
 import { FlickeringGrid } from './components/FlickeringGrid';
-import { fetchWordsForCategories } from './services/wordService'; 
+import { fetchWordsForCategoriesOptimized } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
 import { usePWA, useOnlineStatus } from './hooks/usePWASimple';
+import useLocalCache from './hooks/useLocalCache';
 
 // Log environment variables for debugging
 console.log("VITE_GEMINI_API_KEY configured:", !!import.meta.env.VITE_GEMINI_API_KEY);
@@ -28,6 +29,9 @@ const App: React.FC = () => {
   // PWA Hooks
   const { isUpdateAvailable, updateApp } = usePWA();
   const isOnline = useOnlineStatus();
+  
+  // Cache Local Hook
+  const { status: cacheStatus, preloadCategories, isReady: cacheReady } = useLocalCache();
   
   const [currentScreen, setCurrentScreen] = useState<GameScreenState>(GameScreenState.Welcome);
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
@@ -116,7 +120,7 @@ const App: React.FC = () => {
     setIsFetchingMoreWords(true);
     try {
       const categoryIds = selectedCategories.map(c => c.id);
-      const newFetchedWords = await fetchWordsForCategories(categoryIds, difficulty.id, MORE_WORDS_COUNT);
+      const newFetchedWords = await fetchWordsForCategoriesOptimized(categoryIds, difficulty.id, MORE_WORDS_COUNT);
       
       setWords(prevWords => {
         const uniqueNewWords = newFetchedWords.filter(nw => !prevWords.includes(nw));
@@ -137,9 +141,18 @@ const App: React.FC = () => {
 
   const handleCategoriesSelect = (categories: Category[]) => {
     setSelectedCategories(categories);
-     if (error && error.includes("selecione pelo menos uma categoria")) {
-        setError(null); 
-     }
+    
+    // Precarrega palavras das categorias selecionadas em background
+    if (categories.length > 0 && cacheReady) {
+      const categoryIds = categories.map(c => c.id);
+      preloadCategories(categoryIds).catch(err => 
+        console.warn('Background preload failed:', err)
+      );
+    }
+    
+    if (error && error.includes("selecione pelo menos uma categoria")) {
+      setError(null); 
+    }
   };
 
   const handleNavigateToConfiguration = () => {
@@ -175,7 +188,7 @@ const App: React.FC = () => {
     try {
       const categoryIds = selectedCategories.map(c => c.id);
       console.log(`Fetching initial words for categories: ${categoryIds.join(', ')} with difficulty: ${difficulty.id}`);
-      const fetchedWords = await fetchWordsForCategories(categoryIds, difficulty.id, INITIAL_WORDS_COUNT);
+      const fetchedWords = await fetchWordsForCategoriesOptimized(categoryIds, difficulty.id, INITIAL_WORDS_COUNT);
       
       if (fetchedWords.length === 0) {
          if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) { 
@@ -316,15 +329,57 @@ const App: React.FC = () => {
           />
         );
       case GameScreenState.LoadingWords:
+        // Find the time option display name
+        const timeOption = TIME_OPTIONS.find(t => t.value === gameDuration);
+        const timeDisplay = timeOption ? timeOption.name : `${gameDuration}s`;
+        
         return (
           <div className="flex flex-col items-center justify-center min-h-screen text-slate-100 p-4">
-            <LoadingSpinner />
-            <p className="mt-6 text-2xl font-semibold">Buscando palavras {difficulty.name.toLowerCase()}...</p>
+            <LoadingSpinner size="lg" />
+            
+            {/* Main loading text */}
+            <div className="mt-8 text-center">
+              <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-lg">
+                Buscando palavras
+              </h2>
+            </div>
+            
+            {/* Game configuration display */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
+              {/* Difficulty display */}
+              <div className="flex flex-col items-center bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl p-6 shadow-xl">
+                <div className="text-sm font-medium text-slate-300 mb-2 uppercase tracking-wide">
+                  Dificuldade
+                </div>
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 drop-shadow-sm">
+                  {difficulty.name}
+                </div>
+              </div>
+              
+              {/* Time display */}
+              <div className="flex flex-col items-center bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl p-6 shadow-xl">
+                <div className="text-sm font-medium text-slate-300 mb-2 uppercase tracking-wide">
+                  Tempo da Partida
+                </div>
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400 drop-shadow-sm">
+                  {timeDisplay}
+                </div>
+              </div>
+            </div>
+            
+            {/* Status do cache */}
+            {cacheStatus.isInitialized && (
+              <div className="mt-6 text-sm text-slate-300 bg-slate-800/60 backdrop-blur-sm border border-slate-600/40 p-4 rounded-xl shadow-lg">
+                📦 Cache: {cacheStatus.totalCachedWords} palavras armazenadas localmente
+                {cacheStatus.isPreloading && " • Pré-carregando..."}
+              </div>
+            )}
+            
             {error && (error.includes("VITE_GEMINI_API_KEY") || error.includes("Supabase")) &&
-              <p className="mt-4 text-yellow-300 bg-yellow-900/70 p-3 rounded-lg text-sm shadow-md">{error}</p>
+              <p className="mt-4 text-yellow-300 bg-yellow-900/80 backdrop-blur-sm border border-yellow-600/40 p-4 rounded-xl text-sm shadow-lg">{error}</p>
             }
              {error && (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase")) &&
-              <p className="mt-4 text-red-300 bg-red-900/70 p-3 rounded-lg text-sm shadow-md">{error}</p>
+              <p className="mt-4 text-red-300 bg-red-900/80 backdrop-blur-sm border border-red-600/40 p-4 rounded-xl text-sm shadow-lg">{error}</p>
             }
           </div>
         );

@@ -1,5 +1,6 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { getSupabaseClient, WordRow, isSupabaseConfigured as isSupabaseReady } from './supabaseClient';
+import LocalCacheService from './LocalCacheService';
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY; 
 
@@ -112,6 +113,43 @@ Não inclua nenhum outro texto, explicação ou formatação markdown fora do ar
   }
 };
 
+// Nova função otimizada com cache local
+export const fetchWordsForCategoriesOptimized = async (
+  categoryIds: string[], 
+  difficulty: string, 
+  count: number
+): Promise<string[]> => {
+  const cacheService = LocalCacheService.getInstance();
+  
+  try {
+    // Tenta buscar do cache local primeiro
+    const cachedWords = await cacheService.getWords(categoryIds, difficulty, count);
+    
+    if (cachedWords.length >= count) {
+      console.log(`🚀 Cache hit! Returned ${cachedWords.length} words instantly`);
+      
+      // Marca palavras como utilizadas (em background)
+      cachedWords.forEach(word => {
+        cacheService.markWordAsUsed(word.id).catch(err => 
+          console.warn('Failed to mark word as used:', err)
+        );
+      });
+      
+      return cachedWords.map(w => w.texto);
+    }
+    
+    // Se cache não tem o suficiente, fallback para método original
+    console.log(`⚠️  Cache insufficient (${cachedWords.length}/${count}), falling back to original method`);
+    return await fetchWordsForCategories(categoryIds, difficulty, count);
+    
+  } catch (error) {
+    console.error('Error in optimized fetch:', error);
+    // Fallback para método original em caso de erro
+    return await fetchWordsForCategories(categoryIds, difficulty, count);
+  }
+};
+
+// Função original mantida para compatibilidade
 export const fetchWordsForCategories = async (
   categoryIds: string[], 
   difficulty: string, 
@@ -266,4 +304,31 @@ export const fetchWordsForCategories = async (
 
   console.log(`Final word list count: ${finalWords.length}`);
   return finalWords;
+};
+
+// Funções auxiliares para otimização
+export const initializeCache = async (): Promise<boolean> => {
+  const cacheService = LocalCacheService.getInstance();
+  return await cacheService.initialize();
+};
+
+export const preloadWordsForGame = async (
+  categories: string[], 
+  difficulties: string[] = ['facil', 'medio', 'dificil']
+): Promise<void> => {
+  const cacheService = LocalCacheService.getInstance();
+  await cacheService.preloadWords(categories, difficulties);
+};
+
+export const getCacheStatistics = () => {
+  const cacheService = LocalCacheService.getInstance();
+  return {
+    stats: cacheService.getCacheStats(),
+    totalWords: cacheService.getTotalCachedWords()
+  };
+};
+
+export const clearExpiredCache = async (): Promise<void> => {
+  const cacheService = LocalCacheService.getInstance();
+  await cacheService.clearExpiredCache();
 };
