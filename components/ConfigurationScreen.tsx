@@ -125,17 +125,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         <div className={`text-center mb-12 transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex-1"></div>
-              <div className="flex-1">
-                <SparklesText 
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 drop-shadow-lg"
-                  colors={{ first: '#38bdf8', second: '#a855f7' }}
-                  sparklesCount={15}
-                >
-                  Configurações
-                </SparklesText>
-              </div>
-              <div className="flex-1 flex justify-end">
+              <div className="flex-1 flex justify-center">
                 {canPopulateDatabase && (
                   <button
                     onClick={(e) => {

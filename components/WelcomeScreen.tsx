@@ -67,35 +67,68 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   };
 
   // Decorative emojis for the background
-  const decorativeIcons = ["🎮", "🎯", "🎪", "🎨", "🎭", "🎪", "🧩", "🎲", "🎯", "🎪"];
+  // Decorative emojis for the background - Expanded collection
+  const decorativeIcons = [
+    "🎮", "🎯", "🎪", "🎨", "🎭", "🧩", "🎲", "🎵", "🎬", "🎤",
+    "📚", "📖", "✨", "🌟", "💫", "🎊", "🎉", "🏆", "🎖️", "🏅",
+    "🎈", "🎁", "🎀", "🌈", "⭐", "💎", "🔮", "🎺", "🎻", "🎸",
+    "🎹", "🥁", "🎼", "🎶", "🎙️", "🎧", "📝", "✏️", "🖊️", "📐",
+    "📏", "🖍️", "🖌️", "🖼️", "📋", "🎪", "🎯", "🎮", "🎨", "🎭"
+  ];
+
+  // Generate more decorative elements for better visual coverage
+  const generateDecorations = () => {
+    const elements = [];
+    const numElements = 40; // Increased from 10 to 40 for more visual density
+    
+    for (let i = 0; i < numElements; i++) {
+      const icon = decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
+      elements.push({
+        id: i,
+        icon,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        delay: Math.random() * 10,
+        duration: 15 + Math.random() * 25,
+        size: Math.random() * 0.6 + 0.7 // Random size between 0.7 and 1.3
+      });
+    }
+    return elements;
+  };
+
+  const [decorations] = useState(() => generateDecorations());
 
   // Formatar a string de versão
   const versionString = `v${appVersion.version}${appVersion.isDirty ? '*' : ''}`;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Animated background particles */}
+    <div className="min-h-screen w-full relative overflow-hidden">
+      {/* Enhanced animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {decorativeIcons.map((icon, index) => (
+        {decorations.map((decoration) => (
           <div 
-            key={index}
-            className="absolute text-2xl sm:text-3xl opacity-10 animate-float"
+            key={decoration.id}
+            className="absolute text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl opacity-8 animate-float"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${index * 0.5}s`,
-              animationDuration: `${10 + Math.random() * 20}s`
+              top: `${decoration.top}%`,
+              left: `${decoration.left}%`,
+              animationDelay: `${decoration.delay}s`,
+              animationDuration: `${decoration.duration}s`,
+              transform: `scale(${decoration.size})`,
+              filter: 'blur(0.3px)',
+              zIndex: 0
             }}
           >
-            {icon}
+            {decoration.icon}
           </div>
         ))}
       </div>
       
-      {/* Main content */}
-      <div 
-        className={`w-full max-w-2xl mx-auto p-7 sm:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col items-center transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
-      >
+      {/* Main content container */}
+      <div className="min-h-screen flex items-center justify-center p-6 relative z-10">
+        <div 
+          className={`w-full max-w-2xl mx-auto p-7 sm:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 flex flex-col items-center transition-all duration-700 transform ${mounted ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
+        >
         {/* Decorative shape */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-300/30 to-pink-300/30 rounded-full blur-3xl -z-10 transform translate-x-1/4 -translate-y-1/4"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-300/30 to-teal-300/30 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4"></div>
@@ -337,6 +370,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             )}
             <div className="absolute top-full right-2 transform border-4 border-transparent border-t-slate-700"></div>
           </div>
+        </div>
         </div>
       </div>
 
