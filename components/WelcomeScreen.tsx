@@ -244,90 +244,86 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </div>
           
           {canPopulateDatabase && (
-            <div className="relative group">
-              {/* Redesigned Generate Words Button - Fixed Sizing */}
-              <div 
-                onClick={handleOpenPasswordModal}
-                className="relative cursor-pointer overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl group-hover:shadow-emerald-500/30 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1 w-[140px] h-[60px]"
-              >
-                <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden w-full h-full flex items-center justify-center">
-                  {/* Animated circuit pattern background */}
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute top-2 left-2 w-1 h-4 bg-emerald-400 rounded-full opacity-60 group-hover:animate-pulse"></div>
-                    <div className="absolute top-1 right-3 w-1 h-1 bg-cyan-400 rounded-full group-hover:animate-ping"></div>
-                    <div className="absolute bottom-2 left-4 w-1 h-1 bg-teal-400 rounded-full group-hover:animate-bounce"></div>
-                    <div className="absolute bottom-1 right-2 w-1 h-3 bg-emerald-400 rounded-full opacity-70 group-hover:animate-pulse"></div>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-white rounded-full group-hover:animate-ping"></div>
-                  </div>
-                  
-                  {/* Sweep animation */}
-                  <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent group-hover:left-full transition-all duration-1000 ease-out transform skew-x-12"></div>
-                  
-                  {/* Content */}
-                  <div className="relative z-10 flex items-center justify-center gap-2 px-3">
-                    {/* AI/Generate icon */}
-                    <div className="relative flex-shrink-0">
-                      <div className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-180">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2l3.09 6.26L22 9l-5.91 3.74L12 22l-4.09-9.26L2 9l6.91-.74L12 2z"/>
-                          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6"/>
-                        </svg>
-                      </div>
-                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
-                    </div>
-                    
-                    {/* MorphingText - Fixed container */}
-                    <div className="flex-1 text-center relative min-w-0 max-w-[70px]">
-                      <MorphingText 
-                        className="text-[10px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 h-4 w-full leading-none"
-                        texts={[
-                          "GERAR IA",
-                          "CRIAR VOCAB", 
-                          "AI WORDS",
-                          "NOVA BASE",
-                          "EXPAND DB"
-                        ]}
-                      />
-                    </div>
-                    
-                    {/* Data/Database icon */}
-                    <div className="relative flex-shrink-0">
-                      <div className="w-3 h-3 text-teal-400 group-hover:text-teal-300 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 3C7.03 3 3 4.79 3 7v10c0 2.21 4.03 4 9 4s9-1.79 9-4V7c0-2.21-4.03-4-9-4z"/>
-                          <ellipse cx="12" cy="7" rx="9" ry="4" fill="currentColor" opacity="0.7"/>
-                          <path d="M3 12c0 2.21 4.03 4 9 4s9-1.79 9-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
-                        </svg>
-                      </div>
-                      <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Glowing border */}
-                  <div className="absolute inset-0 rounded-2xl border border-emerald-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Pulsing core */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-emerald-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse"></div>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Generate Words Button Clicked!'); // Debug log
+                handleOpenPasswordModal();
+              }}
+              className="relative group cursor-pointer bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl hover:shadow-emerald-500/30 transition-all duration-700 hover:scale-110 hover:rotate-1 w-[140px] h-[60px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
+              type="button"
+              title="Gerar palavras com IA"
+            >
+              <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden w-full h-full flex items-center justify-center">
+                {/* Animated circuit pattern background */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none">
+                  <div className="absolute top-2 left-2 w-1 h-4 bg-emerald-400 rounded-full opacity-60 group-hover:animate-pulse"></div>
+                  <div className="absolute top-1 right-3 w-1 h-1 bg-cyan-400 rounded-full group-hover:animate-ping"></div>
+                  <div className="absolute bottom-2 left-4 w-1 h-1 bg-teal-400 rounded-full group-hover:animate-bounce"></div>
+                  <div className="absolute bottom-1 right-2 w-1 h-3 bg-emerald-400 rounded-full opacity-70 group-hover:animate-pulse"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-white rounded-full group-hover:animate-ping"></div>
                 </div>
+                
+                {/* Sweep animation */}
+                <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent group-hover:left-full transition-all duration-1000 ease-out transform skew-x-12 pointer-events-none"></div>
+                
+                {/* Content */}
+                <div className="relative z-10 flex items-center justify-center gap-2 px-3 pointer-events-none">
+                  {/* AI/Generate icon */}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-180">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9l-5.91 3.74L12 22l-4.09-9.26L2 9l6.91-.74L12 2z"/>
+                        <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6"/>
+                      </svg>
+                    </div>
+                    <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
+                  </div>
+                  
+                  {/* MorphingText - Fixed container */}
+                  <div className="flex-1 text-center relative min-w-0 max-w-[70px] pointer-events-none">
+                    <MorphingText 
+                      className="text-[10px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 h-4 w-full leading-none pointer-events-none"
+                      texts={[
+                        "GERAR IA",
+                        "CRIAR VOCAB", 
+                        "AI WORDS",
+                        "NOVA BASE",
+                        "EXPAND DB"
+                      ]}
+                    />
+                  </div>
+                  
+                  {/* Data/Database icon */}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-3 h-3 text-teal-400 group-hover:text-teal-300 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3C7.03 3 3 4.79 3 7v10c0 2.21 4.03 4 9 4s9-1.79 9-4V7c0-2.21-4.03-4-9-4z"/>
+                        <ellipse cx="12" cy="7" rx="9" ry="4" fill="currentColor" opacity="0.7"/>
+                        <path d="M3 12c0 2.21 4.03 4 9 4s9-1.79 9-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
+                      </svg>
+                    </div>
+                    <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
+                  </div>
+                </div>
+                
+                {/* Glowing border */}
+                <div className="absolute inset-0 rounded-2xl border border-emerald-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                
+                {/* Pulsing core */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-emerald-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse pointer-events-none"></div>
               </div>
               
-              {/* Outer glow effect */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700"></div>
-              
-              {/* Floating data particles */}
-              <div className="absolute -top-1 left-2 w-1 h-1 bg-emerald-300 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-float-up transition-all duration-500 delay-100"></div>
-              <div className="absolute -bottom-1 right-3 w-1 h-1 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-float-up transition-all duration-500 delay-200"></div>
-              <div className="absolute top-0 -right-1 w-0.5 h-0.5 bg-teal-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-float-up transition-all duration-500 delay-150"></div>
-              
               {/* Enhanced tooltip */}
-              <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-emerald-400/20">
+              <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-emerald-400/20 z-50">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
                   <span>Expandir base de dados com IA</span>
                 </div>
                 <div className="absolute top-full right-4 transform border-4 border-transparent border-t-emerald-600"></div>
               </div>
-            </div>
+            </button>
           )}
         </div>
         

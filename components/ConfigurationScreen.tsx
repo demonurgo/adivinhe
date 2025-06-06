@@ -137,94 +137,98 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               </div>
               <div className="flex-1 flex justify-end">
                 {canPopulateDatabase && (
-                  <div className="relative group">
-                    {/* Generate Words Button for Configuration Screen */}
-                    <div 
-                      onClick={handleOpenPasswordModal}
-                      className="relative cursor-pointer overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-[2px] rounded-xl shadow-2xl group-hover:shadow-purple-500/30 transition-all duration-700 group-hover:scale-110 group-hover:-rotate-1 w-[120px] h-[50px]"
-                    >
-                      <div className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 rounded-xl overflow-hidden backdrop-blur-sm w-full h-full flex items-center justify-center">
-                        {/* Holographic grid pattern */}
-                        <div className="absolute inset-0 opacity-15">
-                          <div className="absolute top-0 left-0 w-full h-full">
-                            <div className="absolute top-1 left-1 w-1 h-1 bg-violet-400 rounded-full group-hover:animate-ping"></div>
-                            <div className="absolute top-2 right-2 w-0.5 h-2 bg-purple-400 rounded-full group-hover:animate-pulse"></div>
-                            <div className="absolute bottom-1 left-3 w-1 h-1 bg-indigo-400 rounded-full group-hover:animate-bounce"></div>
-                            <div className="absolute bottom-2 right-1 w-0.5 h-1 bg-violet-400 rounded-full group-hover:animate-pulse"></div>
-                            {/* Grid lines */}
-                            <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-purple-400/20 to-transparent"></div>
-                            <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-indigo-400/20 to-transparent"></div>
-                          </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Configuration Generate Words Button Clicked!'); // Debug log
+                      handleOpenPasswordModal();
+                    }}
+                    className="relative group cursor-pointer overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-[2px] rounded-xl shadow-2xl hover:shadow-purple-500/30 transition-all duration-700 hover:scale-110 hover:-rotate-1 w-[120px] h-[50px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
+                    type="button"
+                    title="Gerar palavras com IA"
+                  >
+                    <div className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 rounded-xl overflow-hidden backdrop-blur-sm w-full h-full flex items-center justify-center">
+                      {/* Holographic grid pattern */}
+                      <div className="absolute inset-0 opacity-15 pointer-events-none">
+                        <div className="absolute top-0 left-0 w-full h-full">
+                          <div className="absolute top-1 left-1 w-1 h-1 bg-violet-400 rounded-full group-hover:animate-ping"></div>
+                          <div className="absolute top-2 right-2 w-0.5 h-2 bg-purple-400 rounded-full group-hover:animate-pulse"></div>
+                          <div className="absolute bottom-1 left-3 w-1 h-1 bg-indigo-400 rounded-full group-hover:animate-bounce"></div>
+                          <div className="absolute bottom-2 right-1 w-0.5 h-1 bg-violet-400 rounded-full group-hover:animate-pulse"></div>
+                          {/* Grid lines */}
+                          <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-purple-400/20 to-transparent"></div>
+                          <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-indigo-400/20 to-transparent"></div>
                         </div>
-                        
-                        {/* Energy sweep */}
-                        <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-purple-400/25 to-transparent group-hover:left-full transition-all duration-900 ease-out transform skew-x-12"></div>
-                        
-                        {/* Content */}
-                        <div className="relative z-10 flex items-center justify-center gap-2 px-2">
-                          {/* Neural network icon */}
-                          <div className="relative flex-shrink-0">
-                            <div className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
-                              <svg viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="7" cy="7" r="2" opacity="0.8"/>
-                                <circle cx="17" cy="7" r="2" opacity="0.8"/>
-                                <circle cx="12" cy="12" r="2.5" opacity="1"/>
-                                <circle cx="7" cy="17" r="2" opacity="0.8"/>
-                                <circle cx="17" cy="17" r="2" opacity="0.8"/>
-                                <path d="M9 7L10.5 10.5M15 7L13.5 10.5M10.5 13.5L9 17M13.5 13.5L15 17M9.5 9L10.5 10.5M14.5 9L13.5 10.5" stroke="currentColor" strokeWidth="1" opacity="0.6" fill="none"/>
-                              </svg>
-                            </div>
-                            <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-violet-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
-                          </div>
-                          
-                          {/* MorphingText - Fixed container */}
-                          <div className="flex-1 text-center relative min-w-0 max-w-[60px]">
-                            <MorphingText 
-                              className="text-[9px] font-bold text-purple-300 group-hover:text-purple-200 transition-colors duration-500 h-3 w-full leading-none"
-                              texts={[
-                                "AI FORGE",
-                                "NEURAL NET",
-                                "BRAIN GEN", 
-                                "DEEP LEARN",
-                                "WORD LAB"
-                              ]}
-                            />
-                          </div>
-                          
-                          {/* Quantum processing icon */}
-                          <div className="relative flex-shrink-0">
-                            <div className="w-3 h-3 text-indigo-400 group-hover:text-indigo-300 transition-all duration-500 group-hover:scale-110 group-hover:rotate-90">
-                              <svg viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="12" cy="12" r="3" opacity="0.4"/>
-                                <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
-                                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3"/>
-                                <path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="0.5" opacity="0.5"/>
-                              </svg>
-                            </div>
-                            <div className="absolute -bottom-0.5 -left-0.5 w-0.5 h-0.5 bg-indigo-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
-                          </div>
-                        </div>
-                        
-                        {/* Holographic border */}
-                        <div className="absolute inset-0 rounded-xl border border-purple-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        
-                        {/* Central energy core */}
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse"></div>
                       </div>
+                      
+                      {/* Energy sweep */}
+                      <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-purple-400/25 to-transparent group-hover:left-full transition-all duration-900 ease-out transform skew-x-12 pointer-events-none"></div>
+                      
+                      {/* Content */}
+                      <div className="relative z-10 flex items-center justify-center gap-2 px-2 pointer-events-none">
+                        {/* Neural network icon */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <circle cx="7" cy="7" r="2" opacity="0.8"/>
+                              <circle cx="17" cy="7" r="2" opacity="0.8"/>
+                              <circle cx="12" cy="12" r="2.5" opacity="1"/>
+                              <circle cx="7" cy="17" r="2" opacity="0.8"/>
+                              <circle cx="17" cy="17" r="2" opacity="0.8"/>
+                              <path d="M9 7L10.5 10.5M15 7L13.5 10.5M10.5 13.5L9 17M13.5 13.5L15 17M9.5 9L10.5 10.5M14.5 9L13.5 10.5" stroke="currentColor" strokeWidth="1" opacity="0.6" fill="none"/>
+                            </svg>
+                          </div>
+                          <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-violet-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
+                        </div>
+                        
+                        {/* MorphingText - Fixed container */}
+                        <div className="flex-1 text-center relative min-w-0 max-w-[60px] pointer-events-none">
+                          <MorphingText 
+                            className="text-[9px] font-bold text-purple-300 group-hover:text-purple-200 transition-colors duration-500 h-3 w-full leading-none pointer-events-none"
+                            texts={[
+                              "AI FORGE",
+                              "NEURAL NET",
+                              "BRAIN GEN", 
+                              "DEEP LEARN",
+                              "WORD LAB"
+                            ]}
+                          />
+                        </div>
+                        
+                        {/* Quantum processing icon */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-3 h-3 text-indigo-400 group-hover:text-indigo-300 transition-all duration-500 group-hover:scale-110 group-hover:rotate-90">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <circle cx="12" cy="12" r="3" opacity="0.4"/>
+                              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
+                              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3"/>
+                              <path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="0.5" opacity="0.5"/>
+                            </svg>
+                          </div>
+                          <div className="absolute -bottom-0.5 -left-0.5 w-0.5 h-0.5 bg-indigo-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-500 delay-300"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Holographic border */}
+                      <div className="absolute inset-0 rounded-xl border border-purple-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                      
+                      {/* Central energy core */}
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse pointer-events-none"></div>
                     </div>
                     
                     {/* Outer energy field */}
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 opacity-0 group-hover:opacity-20 scale-110 group-hover:scale-125 blur-xl transition-all duration-700"></div>
                     
                     {/* Enhanced tooltip */}
-                    <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-purple-400/20">
+                    <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-purple-400/20 z-50">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 bg-purple-300 rounded-full animate-pulse"></span>
                         <span>Gerar palavras com IA</span>
                       </div>
                       <div className="absolute top-full right-4 transform border-4 border-transparent border-t-purple-600"></div>
                     </div>
-                  </div>
+                  </button>
                 )}
               </div>
             </div>
