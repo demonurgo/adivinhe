@@ -1,18 +1,21 @@
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+import OpenAI from 'openai';
 import { getSupabaseClient, WordRow, isSupabaseConfigured as isSupabaseReady } from './supabaseClient';
 import LocalCacheService from './LocalCacheService';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY; 
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY; 
 
-let ai: GoogleGenAI | null = null;
-let geminiInitialized = false;
+let openai: OpenAI | null = null;
+let openaiInitialized = false;
 
 if (apiKey) {
-   ai = new GoogleGenAI({ apiKey: apiKey });
-   geminiInitialized = true;
-   console.log("Gemini AI client initialized.");
+   openai = new OpenAI({ 
+     apiKey: apiKey,
+     dangerouslyAllowBrowser: true // Necessário para uso no browser
+   });
+   openaiInitialized = true;
+   console.log("OpenAI client initialized.");
 } else {
-  console.warn("API_KEY for Gemini is not defined in environment variables. New word generation will rely on Supabase or fail if Supabase is also unconfigured/empty.");
+  console.warn("API_KEY for OpenAI is not defined in environment variables. New word generation will rely on Supabase or fail if Supabase is also unconfigured/empty.");
 }
 
 const getDifficultyInstructions = (difficulty: string): string => {
@@ -27,14 +30,14 @@ const getDifficultyInstructions = (difficulty: string): string => {
   }
 };
 
-const generateWordsFromGemini = async (
+const generateWordsFromOpenAI = async (
   categoryIds: string[],
   difficulty: string,
   count: number,
   existingWords: string[] = []
 ): Promise<string[]> => {
-  if (!ai || !geminiInitialized) {
-    console.warn("Gemini AI client is not initialized. Cannot generate new words.");
+  if (!openai || !openaiInitialized) {
+    console.warn("OpenAI client is not initialized. Cannot generate new words.");
     return [];
   }
   if (count <= 0) return [];
@@ -62,19 +65,34 @@ Exemplo de formato esperado: ["Item1", "Item2", "Item3"]
 Não inclua nenhum outro texto, explicação ou formatação markdown fora do array JSON. Apenas o array JSON puro.`;
 
   try {
-    console.log(`Requesting ${count} words from Gemini for categories [${categoriesString}], difficulty ${difficulty}.`);
-    const response: GenerateContentResponse = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-04-17",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        temperature: difficulty === 'dificil' ? 0.85 : (difficulty === 'facil' ? 0.65 : 0.75),
-        topP: 0.95,
-        topK: difficulty === 'dificil' ? 60 : (difficulty === 'facil' ? 40 : 50),
-      }
+    console.log(`Requesting ${count} words from OpenAI for categories [${categoriesString}], difficulty ${difficulty}.`);
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Modelo mais econômico e eficiente
+      messages: [
+        {
+          role: "system",
+          content: "Você é um assistente especializado em gerar palavras para jogos de adivinhação. Sempre responda apenas com um array JSON válido de strings, sem formatação markdown ou texto adicional."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: difficulty === 'dificil' ? 0.85 : (difficulty === 'facil' ? 0.65 : 0.75),
+      max_tokens: 2000,
+      response_format: { type: "json_object" }
     });
 
-    let jsonStr = response.text.trim();
+    const responseText = response.choices[0]?.message?.content?.trim();
+    if (!responseText) {
+      console.warn("OpenAI API returned empty response");
+      return [];
+    }
+
+    let jsonStr = responseText;
+    
+    // Remove markdown formatting if present
     const fenceRegex = /^```(?:json)?\s*\n?([\s\S]*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
     if (match && match[1]) {
@@ -83,31 +101,38 @@ Não inclua nenhum outro texto, explicação ou formatação markdown fora do ar
 
     const parsedData = JSON.parse(jsonStr);
 
-    if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'string')) {
-      const newWords = (parsedData as string[])
+    // Handle different response formats
+    let wordsArray: string[] = [];
+    
+    if (Array.isArray(parsedData)) {
+      wordsArray = parsedData;
+    } else if (parsedData.words && Array.isArray(parsedData.words)) {
+      wordsArray = parsedData.words;
+    } else if (parsedData.items && Array.isArray(parsedData.items)) {
+      wordsArray = parsedData.items;
+    } else {
+      // Try to extract array from object values
+      const values = Object.values(parsedData);
+      const arrayValue = values.find(val => Array.isArray(val));
+      if (arrayValue && Array.isArray(arrayValue)) {
+        wordsArray = arrayValue;
+      }
+    }
+
+    if (wordsArray.length > 0 && wordsArray.every(item => typeof item === 'string')) {
+      const newWords = wordsArray
         .map(item => item.replace(/^"/, '').replace(/"$/, '').trim())
         .filter(item => item.trim() !== "" && !existingWords.includes(item)); 
-      console.log(`Gemini generated ${newWords.length} new unique words.`);
+      console.log(`OpenAI generated ${newWords.length} new unique words.`);
       return newWords;
     } else {
-      console.warn("Gemini API response data is not an array of strings or is malformed:", parsedData);
-      if (typeof parsedData === 'object' && parsedData !== null) {
-        const values = Object.values(parsedData);
-        if (Array.isArray(values[0]) && (values[0] as any[]).every(item => typeof item === 'string')) {
-           console.log("Fallback: Extracted array from an object wrapper in Gemini API response.");
-           const newWords = (values[0] as string[])
-            .map(item => item.replace(/^"/, '').replace(/"$/, '').trim())
-            .filter(item => item.trim() !== "" && !existingWords.includes(item));
-           console.log(`Gemini generated ${newWords.length} new unique words (fallback).`);
-           return newWords;
-        }
-      }
+      console.warn("OpenAI API response data is not a valid array of strings:", parsedData);
       return []; 
     }
   } catch (error) {
-    console.error("Error fetching words from Gemini API:", error);
-    if (error instanceof Error && error.message.includes('API key not valid')) {
-        throw new Error("Chave de API do Gemini inválida. Verifique a configuração.");
+    console.error("Error fetching words from OpenAI API:", error);
+    if (error instanceof Error && error.message.includes('API key')) {
+        throw new Error("Chave de API da OpenAI inválida. Verifique a configuração.");
     }
     return []; 
   }
@@ -252,22 +277,22 @@ export const fetchWordsForCategories = async (
 
   let combinedWords = [...new Set(wordsFromSupabase)];
 
-  // Se não temos palavras suficientes, busca do Gemini
-  if (combinedWords.length < count && geminiInitialized && ai) {
-    const neededFromGemini = count - combinedWords.length;
-    console.log(`Need ${neededFromGemini} more words. Querying Gemini.`);
-    const newWordsFromGemini = await generateWordsFromGemini(categoryIds, difficulty, neededFromGemini, combinedWords);
+  // Se não temos palavras suficientes, busca da OpenAI
+  if (combinedWords.length < count && openaiInitialized && openai) {
+    const neededFromOpenAI = count - combinedWords.length;
+    console.log(`Need ${neededFromOpenAI} more words. Querying OpenAI.`);
+    const newWordsFromOpenAI = await generateWordsFromOpenAI(categoryIds, difficulty, neededFromOpenAI, combinedWords);
 
-    if (newWordsFromGemini.length > 0) {
-      const uniqueNewGeminiWords = newWordsFromGemini.filter(w => !combinedWords.includes(w));
-      combinedWords = [...combinedWords, ...uniqueNewGeminiWords]; 
+    if (newWordsFromOpenAI.length > 0) {
+      const uniqueNewOpenAIWords = newWordsFromOpenAI.filter(w => !combinedWords.includes(w));
+      combinedWords = [...combinedWords, ...uniqueNewOpenAIWords]; 
       
       // Salva novas palavras no banco (uma para cada categoria)
-      if (supabase && isSupabaseReady() && uniqueNewGeminiWords.length > 0) {
+      if (supabase && isSupabaseReady() && uniqueNewOpenAIWords.length > 0) {
         const wordsToInsert: WordRow[] = [];
         
         // Para cada palavra, cria uma entrada para cada categoria
-        uniqueNewGeminiWords.forEach(word => {
+        uniqueNewOpenAIWords.forEach(word => {
           categoryIds.forEach(categoryId => {
             wordsToInsert.push({
               texto: word,
@@ -296,10 +321,10 @@ export const fetchWordsForCategories = async (
   combinedWords.sort(() => Math.random() - 0.5);
   const finalWords = [...new Set(combinedWords)].slice(0, count);
 
-  if(finalWords.length === 0 && !geminiInitialized && (!supabase || !isSupabaseReady())){
-     throw new Error("Nenhuma fonte de palavras (Gemini ou Supabase) está configurada ou disponível.");
-  } else if (finalWords.length === 0 && (geminiInitialized || (supabase && isSupabaseReady()))) {
-     console.warn("Could not fetch any words from available sources. The database might be empty for these criteria and/or Gemini failed.");
+  if(finalWords.length === 0 && !openaiInitialized && (!supabase || !isSupabaseReady())){
+     throw new Error("Nenhuma fonte de palavras (OpenAI ou Supabase) está configurada ou disponível.");
+  } else if (finalWords.length === 0 && (openaiInitialized || (supabase && isSupabaseReady()))) {
+     console.warn("Could not fetch any words from available sources. The database might be empty for these criteria and/or OpenAI failed.");
   }
 
   console.log(`Final word list count: ${finalWords.length}`);

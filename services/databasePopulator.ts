@@ -1,15 +1,18 @@
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from 'openai';
 import { getSupabaseClient, WordRow, isSupabaseConfigured } from './supabaseClient';
 import { AVAILABLE_CATEGORIES, DIFFICULTIES } from '../constants';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY; 
-let ai: GoogleGenAI | null = null;
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY; 
+let openai: OpenAI | null = null;
 
 if (apiKey) {
-   ai = new GoogleGenAI({ apiKey: apiKey });
-   console.log("Gemini AI client initialized for database population.");
+   openai = new OpenAI({ 
+     apiKey: apiKey,
+     dangerouslyAllowBrowser: true // Necessário para uso no browser
+   });
+   console.log("OpenAI client initialized for database population.");
 } else {
-  console.warn("API_KEY for Gemini is not defined. Cannot populate database.");
+  console.warn("API_KEY for OpenAI is not defined. Cannot populate database.");
 }
 
 const getDifficultyInstructions = (difficulty: string): string => {
@@ -29,14 +32,16 @@ const generateWordsForCategory = async (
   difficulty: string,
   count: number = 50
 ): Promise<string[]> => {
-  if (!ai) {
-    throw new Error("Gemini AI não está configurado.");
+  if (!openai) {
+    throw new Error("OpenAI não está configurado.");
   }
 
   const difficultyInstructions = getDifficultyInstructions(difficulty);
 
-  const prompt = `
-Você é um assistente de IA especializado em criar conteúdo divertido e culturalmente relevante para jogos de charadas e adivinhação com um apelo amplo e internacional, mantendo a relevância para jogadores no Brasil.
+  const systemPrompt = `Você é um assistente de IA especializado em criar conteúdo divertido e culturalmente relevante para jogos de charadas e adivinhação com um apelo amplo e internacional, mantendo a relevância para jogadores no Brasil.
+Sempre responda apenas com um objeto JSON válido contendo um array de palavras, sem formatação markdown ou texto adicional.`;
+
+  const userPrompt = `
 Seu objetivo é gerar uma lista de ${count} itens *únicos e variados*, estritamente em **PORTUGUÊS DO BRASIL**, que pertençam *exclusivamente* à categoria: '${categoryId}'.
 
 Nível de dificuldade solicitado: ${difficulty}.
@@ -62,13 +67,10 @@ Instruções detalhadas para este nível de dificuldade: ${difficultyInstruction
     * Conteúdo ofensivo, controverso, discriminatório ou inadequado para um jogo divertido e potencialmente familiar.
     * Termos excessivamente específicos de uma única cultura local pouco conhecida internacionalmente (a menos que a categoria seja "Cultura Brasileira - Difícil", por exemplo, e mesmo assim com cautela).
     * Respostas em outros idiomas que não sejam Português do Brasil (exceto nomes próprios consolidados).
-    * Qualquer explicação, comentário, introdução ou formatação markdown. Apenas o array JSON.
 
 **Formato da Saída OBRIGATÓRIO:**
-Forneça a lista estritamente como um array JSON de strings em Português do Brasil.
-Exemplo de formato esperado: ["Item Internacional Exemplo 1", "Outro Item Global Interessante", "Algo Conhecido no Brasil Também"]
-
-**NÃO inclua nenhum outro texto, explicação, comentários ou formatação markdown (como \`\`\`json ... \`\`\`) fora do array JSON. A resposta deve ser APENAS o array JSON puro e válido.**
+Forneça a resposta como um objeto JSON válido com uma propriedade "words" contendo o array de strings em Português do Brasil.
+Exemplo de formato esperado: {"words": ["Item Internacional Exemplo 1", "Outro Item Global Interessante", "Algo Conhecido no Brasil Também"]}
 
 Categoria: ${categoryId}
 Dificuldade: ${difficulty}
@@ -77,29 +79,33 @@ Lembre-se: Português do Brasil, apelo internacional e brasileiro, divertido par
 `;
 
   try {
-    console.log(`Gerando ${count} palavras para categoria [${categoryId}], dificuldade ${difficulty} com prompt (foco internacional).`);
-    // Mantenha o modelo que você decidiu ser melhor para seu custo/benefício, por ex: "gemini-1.5-flash-latest"
-    const response = await ai.models.generateContent({
-      model: "gemini-1.5-pro-latest", // Ou o modelo que você estiver usando
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: difficulty === 'dificil' ? 0.8 : (difficulty === 'facil' ? 0.6 : 0.7), // Ajustei levemente a temp para 'dificil' e 'medio' para talvez dar um pouco mais de variedade internacional
-        topP: 0.95,
-        topK: difficulty === 'dificil' ? 55 : (difficulty === 'facil' ? 35 : 45), // Ajustei levemente TopK
-      }
+    console.log(`Gerando ${count} palavras para categoria [${categoryId}], dificuldade ${difficulty} com OpenAI.`);
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Modelo econômico e eficiente
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: userPrompt
+        }
+      ],
+      temperature: difficulty === 'dificil' ? 0.8 : (difficulty === 'facil' ? 0.6 : 0.7),
+      max_tokens: 3000,
+      response_format: { type: "json_object" }
     });
     
-    // ... (seu código de tratamento da resposta JSON continua aqui)
-    // Certifique-se que o tratamento da resposta está correto
-    let jsonStr = "";
-    if (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content.parts && response.candidates[0].content.parts[0]) {
-        jsonStr = response.candidates[0].content.parts[0].text.trim();
-    } else {
-        console.error("Estrutura da resposta da API Gemini inesperada:", JSON.stringify(response, null, 2));
-        throw new Error("Resposta da API Gemini em formato inesperado.");
+    const responseText = response.choices[0]?.message?.content?.trim();
+    if (!responseText) {
+      throw new Error("OpenAI retornou resposta vazia.");
     }
+
+    let jsonStr = responseText;
     
+    // Remove markdown formatting if present
     const fenceRegex = /^```(?:json)?\s*\n?([\s\S]*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
     if (match && match[1]) {
@@ -108,32 +114,40 @@ Lembre-se: Português do Brasil, apelo internacional e brasileiro, divertido par
 
     const parsedData = JSON.parse(jsonStr);
 
-    if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'string')) {
-      const newWords = (parsedData as string[])
+    // Handle different response formats
+    let wordsArray: string[] = [];
+    
+    if (parsedData.words && Array.isArray(parsedData.words)) {
+      wordsArray = parsedData.words;
+    } else if (Array.isArray(parsedData)) {
+      wordsArray = parsedData;
+    } else if (parsedData.items && Array.isArray(parsedData.items)) {
+      wordsArray = parsedData.items;
+    } else {
+      // Try to extract array from object values
+      const values = Object.values(parsedData);
+      const arrayValue = values.find(val => Array.isArray(val));
+      if (arrayValue && Array.isArray(arrayValue)) {
+        wordsArray = arrayValue;
+      }
+    }
+
+    if (wordsArray.length > 0 && wordsArray.every(item => typeof item === 'string')) {
+      const newWords = wordsArray
         .map(item => item.trim())
         .filter(item => item.trim() !== "");
-      console.log(`Gemini gerou ${newWords.length} palavras para ${categoryId} (${difficulty}).`);
+      console.log(`OpenAI gerou ${newWords.length} palavras para ${categoryId} (${difficulty}).`);
       return newWords;
     } else {
-      console.warn("Resposta da API Gemini não é um array de strings puro após parse:", parsedData);
-      if (typeof parsedData === 'object' && parsedData !== null) {
-        const values = Object.values(parsedData);
-        if (Array.isArray(values[0]) && (values[0] as any[]).every(item => typeof item === 'string')) {
-          console.log("Fallback: Extraindo array de um wrapper de objeto.");
-          const newWords = (values[0] as string[])
-            .map(item => item.trim())
-            .filter(item => item.trim() !== "");
-          return newWords;
-        }
-      }
+      console.warn("Resposta da OpenAI não é um array de strings válido:", parsedData);
       return [];
     }
 
   } catch (error) {
-    console.error(`Erro ao buscar palavras da API Gemini para [${categoryId}] (${difficulty}):`, error);
+    console.error(`Erro ao buscar palavras da OpenAI para [${categoryId}] (${difficulty}):`, error);
     // Adicionar mais detalhes ao erro pode ser útil
-    if (error.response && error.response.data) {
-        console.error("Detalhes do erro da API:", error.response.data);
+    if (error instanceof Error) {
+        console.error("Detalhes do erro:", error.message);
     }
     throw error;
   }
@@ -142,8 +156,8 @@ Lembre-se: Português do Brasil, apelo internacional e brasileiro, divertido par
 export const populateDatabaseWithWords = async (
   onProgress?: (message: string, progress: number) => void
 ): Promise<{ success: number; errors: number; duplicates: number }> => {
-  if (!ai) {
-    throw new Error("Gemini AI não está configurado.");
+  if (!openai) {
+    throw new Error("OpenAI não está configurado.");
   }
 
   if (!isSupabaseConfigured()) {
@@ -240,8 +254,8 @@ export const populateDatabaseWithWords = async (
         totalErrors++;
       }
 
-      // Pequena pausa para não sobrecarregar as APIs (mais tempo para Gemini)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Pequena pausa para não sobrecarregar as APIs
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
   }
 

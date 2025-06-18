@@ -17,7 +17,7 @@ import { usePWA, useOnlineStatus } from './hooks/usePWASimple';
 import useLocalCache from './hooks/useLocalCache';
 
 // Log environment variables for debugging
-console.log("VITE_GEMINI_API_KEY configured:", !!import.meta.env.VITE_GEMINI_API_KEY);
+console.log("VITE_OPENAI_API_KEY configured:", !!import.meta.env.VITE_OPENAI_API_KEY);
 console.log("VITE_SUPABASE_ANON_KEY configured:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
 console.log("Supabase URL:", "https://ldujhtwxnbwqbchhchcf.supabase.co");
 
@@ -75,20 +75,20 @@ const App: React.FC = () => {
   }, [currentScreen]);
 
   useEffect(() => {
-    const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY; 
-    if (geminiApiKey) {
+    const openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY; 
+    if (openaiApiKey) {
       setApiKeyExists(true);
       setError(prevError => {
-        if (prevError && prevError.includes("VITE_GEMINI_API_KEY")) {
-            const parts = prevError.split('. ').filter(part => !part.includes("VITE_GEMINI_API_KEY"));
+        if (prevError && prevError.includes("VITE_OPENAI_API_KEY")) {
+            const parts = prevError.split('. ').filter(part => !part.includes("VITE_OPENAI_API_KEY"));
             return parts.length > 0 ? parts.join('. ') + '.' : null;
         }
         return prevError;
       });
     } else {
-       console.warn("VITE_GEMINI_API_KEY environment variable not found. Gemini API calls for word generation will fail if Supabase has no words.");
+       console.warn("VITE_OPENAI_API_KEY environment variable not found. OpenAI API calls for word generation will fail if Supabase has no words.");
        setError(prevError => {
-        const newError = "Chave de API (VITE_GEMINI_API_KEY) do Gemini não configurada.";
+        const newError = "Chave de API (VITE_OPENAI_API_KEY) da OpenAI não configurada.";
         return prevError && !prevError.includes(newError) ? prevError + " " + newError : newError;
        });
     }
@@ -176,14 +176,14 @@ const App: React.FC = () => {
     }
     if (!apiKeyExists && !supabaseConfigured) {
       const currentConfigError = [];
-      if (!apiKeyExists) currentConfigError.push("Chave de API (VITE_GEMINI_API_KEY) do Gemini não configurada.");
+      if (!apiKeyExists) currentConfigError.push("Chave de API (VITE_OPENAI_API_KEY) da OpenAI não configurada.");
       if (!supabaseConfigured) currentConfigError.push("Configuração do Supabase incompleta.");
       setError(`Não é possível buscar palavras. ${currentConfigError.join(' ')}`);
       return;
     }
 
     setCurrentScreen(GameScreenState.LoadingWords);
-    setError(prevError => (prevError && (prevError.includes("VITE_GEMINI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
+    setError(prevError => (prevError && (prevError.includes("VITE_OPENAI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
 
     try {
       const categoryIds = selectedCategories.map(c => c.id);
@@ -191,7 +191,7 @@ const App: React.FC = () => {
       const fetchedWords = await fetchWordsForCategoriesOptimized(categoryIds, difficulty.id, INITIAL_WORDS_COUNT);
       
       if (fetchedWords.length === 0) {
-         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) { 
+         if (!error || (!error.includes("VITE_OPENAI_API_KEY") && !error.includes("Supabase"))) { 
           setError("Não foi possível buscar palavras. Tente categorias diferentes, ajuste a dificuldade, ou verifique as configurações.");
         }
         setCurrentScreen(GameScreenState.CategorySelection);
@@ -209,11 +209,11 @@ const App: React.FC = () => {
     } catch (err) {
       console.error("Error starting game:",err);
       if (err instanceof Error) {
-         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) {
+         if (!error || (!error.includes("VITE_OPENAI_API_KEY") && !error.includes("Supabase"))) {
             setError(`Erro ao iniciar o jogo: ${err.message}`);
          }
       } else {
-         if (!error || (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase"))) {
+         if (!error || (!error.includes("VITE_OPENAI_API_KEY") && !error.includes("Supabase"))) {
             setError("Ocorreu um erro desconhecido ao buscar palavras.");
          }
       }
@@ -266,7 +266,7 @@ const App: React.FC = () => {
     setScore(0);
     setTotalWordsShown(0);
     setSkippedWords(0);
-    setError(prevError => (prevError && (prevError.includes("VITE_GEMINI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
+    setError(prevError => (prevError && (prevError.includes("VITE_OPENAI_API_KEY") || prevError.includes("Supabase"))) ? prevError : null);
     setCurrentScreen(GameScreenState.CategorySelection);
   }, []);
 
@@ -377,10 +377,10 @@ const App: React.FC = () => {
               </div>
             )}
             
-            {error && (error.includes("VITE_GEMINI_API_KEY") || error.includes("Supabase")) &&
+            {error && (error.includes("VITE_OPENAI_API_KEY") || error.includes("Supabase")) &&
               <p className="mt-4 text-yellow-300 bg-yellow-900/80 backdrop-blur-sm border border-yellow-600/40 p-4 rounded-xl text-sm shadow-lg">{error}</p>
             }
-             {error && (!error.includes("VITE_GEMINI_API_KEY") && !error.includes("Supabase")) &&
+             {error && (!error.includes("VITE_OPENAI_API_KEY") && !error.includes("Supabase")) &&
               <p className="mt-4 text-red-300 bg-red-900/80 backdrop-blur-sm border border-red-600/40 p-4 rounded-xl text-sm shadow-lg">{error}</p>
             }
           </div>

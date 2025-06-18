@@ -113,7 +113,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'supabase-vendor': ['@supabase/supabase-js'],
-          'gemini-vendor': ['@google/genai'],
+          'openai-vendor': ['openai'],
           'game-components': [
             './components/GameScreen.tsx',
             './components/CategorySelectionScreen.tsx',
@@ -157,7 +157,7 @@ export default defineConfig({
       'react',
       'react-dom',
       '@supabase/supabase-js',
-      '@google/genai',
+      'openai',
     ],
   },
   
