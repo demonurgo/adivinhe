@@ -46,7 +46,7 @@ const DatabasePopulator: React.FC<DatabasePopulatorProps> = ({ onClose }) => {
         {!isPopulating && !result && !error && (
           <div className="text-center">
             <p className="text-slate-300 mb-6">
-              Esta ação irá gerar centenas de palavras para todas as categorias e dificuldades usando a IA Gemini.
+              Esta ação irá gerar centenas de palavras para todas as categorias e dificuldades usando a IA OpenAI.
               <br /><br />
               <strong>Detalhes:</strong>
               <br />• 10 categorias × 3 dificuldades × ~50 palavras

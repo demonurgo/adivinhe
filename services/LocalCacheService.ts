@@ -354,11 +354,21 @@ export class LocalCacheService {
     
     try {
       const now = new Date().toISOString();
+      // Primeiro busca o valor atual
+      const { data: currentWord } = await supabase
+        .from('palavras')
+        .select('total_utilizacoes')
+        .eq('id', wordId)
+        .single();
+      
+      // Incrementa o total
+      const newTotal = (currentWord?.total_utilizacoes || 0) + 1;
+      
       await supabase
         .from('palavras')
         .update({
           ultima_utilizacao: now,
-          total_utilizacoes: supabase.rpc('increment_usage', { word_id: wordId }),
+          total_utilizacoes: newTotal,
           updated_at: now
         })
         .eq('id', wordId);

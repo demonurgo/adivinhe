@@ -46,12 +46,20 @@ export function HyperText({
     forwardMotionProps: true,
   });
 
+  // Validação defensiva para children
+  const textContent = typeof children === 'string' ? children : (children || '');
+
   const [displayText, setDisplayText] = useState<string[]>(() =>
-    children.split(""),
+    textContent.split(""),
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const iterationCount = useRef(0);
   const elementRef = useRef<HTMLElement>(null);
+
+  // Atualiza o displayText quando textContent muda
+  useEffect(() => {
+    setDisplayText(textContent.split(""));
+  }, [textContent]);
 
   const handleAnimationTrigger = () => {
     if (animateOnHover && !isAnimating) {
@@ -92,7 +100,7 @@ export function HyperText({
   useEffect(() => {
     if (!isAnimating) return;
 
-    const maxIterations = children.length;
+    const maxIterations = textContent.length;
     const startTime = performance.now();
     let animationFrameId: number;
 
@@ -107,7 +115,7 @@ export function HyperText({
           letter === " "
             ? letter
             : index <= iterationCount.current
-              ? children[index]
+              ? textContent[index]
               : characterSet[getRandomInt(characterSet.length)],
         ),
       );
@@ -122,7 +130,7 @@ export function HyperText({
     animationFrameId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [children, duration, isAnimating, characterSet]);
+  }, [textContent, duration, isAnimating, characterSet]);
 
   return (
     <MotionComponent

@@ -5,8 +5,6 @@ import { CogIcon, ChartBarIcon } from '../constants';
 import versionData from '../version.json';
 import { VersionData } from '../types';
 import { HyperText } from './magicui/hyper-text';
-import { SparklesText } from './magicui/sparkles-text';
-import { MorphingText } from './magicui/morphing-text';
 import DatabasePopulator from './DatabasePopulator';
 // Converter o versionData para o tipo correto
 const appVersion = versionData as VersionData;
@@ -183,14 +181,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-500 delay-200"></div>
                   </div>
                   
-                  {/* SparklesText */}
-                  <SparklesText 
-                    className="text-2xl sm:text-4xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
-                    colors={{ first: '#FEF3C7', second: '#FDE68A' }}
-                    sparklesCount={12}
-                  >
+                  {/* Play Button Text */}
+                  <span className="text-2xl sm:text-4xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
                     JOGAR
-                  </SparklesText>
+                  </span>
                   
                   {/* Arrow icon */}
                   <div className="relative">
@@ -303,18 +297,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 
                 {/* Content */}
                 <div className="relative z-10 flex items-center justify-center w-full h-full pointer-events-none">
-                  {/* MorphingText - Centralizado */}
+                  {/* Generation Button Text - Centralized */}
                   <div className="text-center relative w-full px-2 pointer-events-none">
-                    <MorphingText 
-                      className="text-[3px] sm:text-[4px] md:text-[5px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 pointer-events-none whitespace-nowrap"
-                      texts={[
-                        "GEN",
-                        "AI", 
-                        "NEW",
-                        "DB",
-                        "WORD"
-                      ]}
-                    />
+                    <span className="text-[3px] sm:text-[4px] md:text-[5px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 pointer-events-none whitespace-nowrap">
+                      AI GEN
+                    </span>
                   </div>
                 </div>
                 

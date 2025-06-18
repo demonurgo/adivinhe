@@ -3,7 +3,6 @@ import { Category } from '../types';
 import Button from './Button';
 import { CogIcon, ChartBarIcon } from '../constants';
 import { HyperText } from './magicui/hyper-text';
-import { SparklesText } from './magicui/sparkles-text';
 
 interface CategorySelectionScreenProps {
   categories: Category[];
@@ -47,8 +46,8 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
 
   const canPlay = (apiKeyExists || supabaseConfigured) && selectedCategories.length > 0;
 
-  const generalError = error && !error.toLowerCase().includes("vite_gemini_api_key") && !error.toLowerCase().includes("vite_supabase_anon_key") ? error : null;
-  const configError = error && (error.toLowerCase().includes("vite_gemini_api_key") || error.toLowerCase().includes("vite_supabase_anon_key")) ? error : null;
+  const generalError = error && !error.toLowerCase().includes("vite_openai_api_key") && !error.toLowerCase().includes("vite_supabase_anon_key") ? error : null;
+  const configError = error && (error.toLowerCase().includes("vite_openai_api_key") || error.toLowerCase().includes("vite_supabase_anon_key")) ? error : null;
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
@@ -154,9 +153,9 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
         {(!apiKeyExists || !supabaseConfigured) && (
            <div className="mb-3 p-2 sm:p-3 bg-yellow-800/80 border border-yellow-600 text-yellow-100 text-xs rounded-lg shadow-md">
               <strong>Atenção:</strong>
-              {!apiKeyExists && <p className="line-clamp-2">- API Gemini não configurada</p>}
+              {!apiKeyExists && <p className="line-clamp-2">- API OpenAI não configurada</p>}
               {!supabaseConfigured && <p className="line-clamp-2">- Supabase não configurado</p>}
-              {(apiKeyExists && !supabaseConfigured) && <p className="line-clamp-2">Usando apenas API Gemini</p>}
+              {(apiKeyExists && !supabaseConfigured) && <p className="line-clamp-2">Usando apenas API OpenAI</p>}
               {(!apiKeyExists && supabaseConfigured) && <p className="line-clamp-2">Usando apenas Supabase</p>}
               {(!apiKeyExists && !supabaseConfigured) && <p className="line-clamp-2">Configuração incompleta</p>}
           </div>
@@ -259,16 +258,12 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                     )}
                   </div>
                   
-                  {/* SparklesText */}
+                  {/* Play Button Text */}
                   <div className="flex-1 text-center">
                     {canPlay ? (
-                      <SparklesText 
-                        className="text-lg sm:text-2xl font-bold tracking-wide text-white drop-shadow-lg group-hover:scale-105 transition-transform duration-500"
-                        colors={{ first: '#06B6D4', second: '#8B5CF6' }}
-                        sparklesCount={10}
-                      >
+                      <span className="text-lg sm:text-2xl font-bold tracking-wide text-white drop-shadow-lg group-hover:scale-105 transition-transform duration-500">
                         JOGAR AGORA
-                      </SparklesText>
+                      </span>
                     ) : (
                       <span className="text-lg sm:text-2xl font-bold tracking-wide text-slate-400">
                         SELECIONE CATEGORIAS
