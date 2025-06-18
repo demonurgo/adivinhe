@@ -9,9 +9,7 @@
     "preview": "vite preview",
     "generate-splash": "node scripts/generate-splash-screens.js",
     "update-version": "node scripts/update-version.js",
-    "version:increment": "node scripts/increment-version.js",
-    "prepare": "husky install",
-    "setup-husky": "node scripts/setup-husky.js"
+    "version:increment": "node scripts/increment-version.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
@@ -31,7 +29,6 @@
     "@types/react": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.0",
     "autoprefixer": "^10.4.16",
-    "husky": "^9.0.11",
     "postcss": "^8.4.31",
     "rollup": "^4.43.0",
     "sharp": "^0.34.2",
