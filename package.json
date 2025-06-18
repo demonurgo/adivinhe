@@ -27,7 +27,6 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.43.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.0",
