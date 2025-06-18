@@ -98,18 +98,8 @@ const App: React.FC = () => {
     }
   }, [apiKeyExists, supabaseConfigured, cacheHasWords, error]);
 
-  // Screen-based scroll control and mobile viewport fix - optimized
+  // Mobile viewport height fix - optimized
   useEffect(() => {
-    const body = document.body;
-    const root = document.getElementById('root');
-    const isPlaying = currentScreen === GameScreenState.Playing;
-    
-    const toggleClass = (element: HTMLElement | null, className: string, add: boolean) => {
-      if (element) {
-        element.classList.toggle(className, add);
-      }
-    };
-    
     // Mobile viewport height fix
     const setViewportHeight = () => {
       const vh = window.innerHeight * 0.01;
@@ -127,16 +117,11 @@ const App: React.FC = () => {
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
     
-    toggleClass(body, 'game-screen-active', isPlaying);
-    toggleClass(root, 'game-screen-active', isPlaying);
-    
     return () => {
-      toggleClass(body, 'game-screen-active', false);
-      toggleClass(root, 'game-screen-active', false);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, [currentScreen]);
+  }, []);
 
   // Optimized word loading with cache priority
   const loadMoreWords = useCallback(async () => {
@@ -486,8 +471,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll scrollbar-hide relative">
-      {/* Background removed for better performance */}
+    <div className="w-full h-full flex flex-col items-center justify-center p-4 relative">
       
       {/* Main content */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">

@@ -217,81 +217,78 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="internal-scroll-container w-full flex flex-col">
       
-      {/* Main container - Totalmente transparente, sem sombras ou bordas */}
-      <div className={`flex flex-col min-h-screen w-full max-w-sm mx-auto backdrop-blur-lg transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Main container - Otimizado para viewport fixa */}
+      <div className={`flex flex-col h-full w-full max-w-sm mx-auto backdrop-blur-lg transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         
-        {/* Header - Completamente transparente */}
-        <div className="flex-none backdrop-blur-lg bg-black/5 border-b border-white/10 px-5 py-6">
+        {/* Header - Compacto */}
+        <div className="flex-none backdrop-blur-lg bg-black/5 border-b border-white/10 px-4 py-4">
           <div className="text-center">
-            <h1 className="text-xl font-semibold text-gray-900 mb-1 drop-shadow-md">Configurações</h1>
-            <p className="text-sm text-gray-700 drop-shadow-sm">Personalize sua experiência</p>
+            <h1 className="text-lg font-semibold text-gray-900 mb-1 drop-shadow-md">Configurações</h1>
+            <p className="text-xs text-gray-700 drop-shadow-sm">Personalize sua experiência</p>
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex gap-3 mt-4">
+          {/* Action Buttons - Compacto */}
+          <div className="flex gap-2 mt-3">
             <button
               onClick={() => setShowStatsModal(true)}
-              className="flex-1 backdrop-blur-md bg-blue-200/30 hover:bg-blue-200/50 border border-blue-300/30 rounded-lg p-3 transition-all duration-200"
+              className="flex-1 backdrop-blur-md bg-blue-200/30 hover:bg-blue-200/50 border border-blue-300/30 rounded-lg p-2 transition-all duration-200"
               type="button"
             >
               <div className="text-center">
-                <div className="text-lg mb-1">📊</div>
-                <div className="text-xs font-medium text-blue-900 drop-shadow-sm">
+                <div className="text-sm mb-1">📊</div>
+                <div className="text-[10px] font-medium text-blue-900 drop-shadow-sm">
                   {dbStats.loading ? 'Carregando' : formatNumber(dbStats.totalWords)}
                 </div>
-                <div className="text-[10px] text-blue-800 drop-shadow-sm">palavras</div>
               </div>
             </button>
 
             <button
               onClick={cacheWordsLocally}
               disabled={cacheInfo.caching || !isSupabaseConfigured()}
-              className={`flex-1 rounded-lg p-3 border transition-all duration-200 ${
+              className={`flex-1 rounded-lg p-2 border transition-all duration-200 ${
                 cacheInfo.caching 
                   ? 'backdrop-blur-md bg-gray-200/30 border-gray-300/30 cursor-not-allowed' 
                   : 'backdrop-blur-md bg-green-200/30 hover:bg-green-200/50 border-green-300/30'
               } ${!isSupabaseConfigured() ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="text-center">
-                <div className="text-lg mb-1">
+                <div className="text-sm mb-1">
                   {cacheInfo.caching ? '⏳' : '💾'}
                 </div>
-                <div className="text-xs font-medium text-green-900 drop-shadow-sm">
+                <div className="text-[10px] font-medium text-green-900 drop-shadow-sm">
                   {cacheInfo.totalCachedWords > 0 ? formatNumber(cacheInfo.totalCachedWords) : 'Cache'}
                 </div>
-                <div className="text-[10px] text-green-800 drop-shadow-sm">local</div>
               </div>
             </button>
 
             {canPopulateDatabase && (
               <button
                 onClick={handleOpenPasswordModal}
-                className="flex-1 backdrop-blur-md bg-purple-200/30 hover:bg-purple-200/50 border border-purple-300/30 rounded-lg p-3 transition-all duration-200"
+                className="flex-1 backdrop-blur-md bg-purple-200/30 hover:bg-purple-200/50 border border-purple-300/30 rounded-lg p-2 transition-all duration-200"
                 type="button"
               >
                 <div className="text-center">
-                  <div className="text-lg mb-1">🤖</div>
-                  <div className="text-xs font-medium text-purple-900 drop-shadow-sm">Gerar</div>
-                  <div className="text-[10px] text-purple-800 drop-shadow-sm">IA</div>
+                  <div className="text-sm mb-1">🤖</div>
+                  <div className="text-[10px] font-medium text-purple-900 drop-shadow-sm">Gerar</div>
                 </div>
               </button>
             )}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8">
+        {/* Content - Compacto com scroll interno */}
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-6 allow-scroll">
           
           {/* Time Duration Section */}
           <section>
-            <div className="mb-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-1 drop-shadow-md">Duração do Jogo</h2>
-              <p className="text-sm text-gray-700 drop-shadow-sm">Escolha quanto tempo você quer jogar</p>
+            <div className="mb-3">
+              <h2 className="text-base font-medium text-gray-900 mb-1 drop-shadow-md">Duração do Jogo</h2>
+              <p className="text-xs text-gray-700 drop-shadow-sm">Escolha quanto tempo você quer jogar</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {timeOptions.map((option) => {
                 const isSelected = selectedDuration === option.value;
                 
@@ -299,30 +296,30 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   <button
                     key={option.id}
                     onClick={() => setSelectedDuration(option.value)}
-                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 backdrop-blur-md ${
+                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 backdrop-blur-md ${
                       isSelected 
                         ? 'border-blue-400/60 bg-blue-300/40' 
                         : 'border-gray-400/20 bg-gray-200/10 hover:border-gray-400/40 hover:bg-gray-200/20'
                     }`}
                   >
                     <div className="text-center">
-                      <div className="text-xl mb-2">
+                      <div className="text-lg mb-1">
                         {option.value <= 60 ? '⚡' : option.value <= 90 ? '⏰' : '🕐'}
                       </div>
-                      <div className={`text-sm font-medium mb-1 drop-shadow-sm ${
+                      <div className={`text-xs font-medium mb-1 drop-shadow-sm ${
                         isSelected ? 'text-blue-900' : 'text-gray-900'
                       }`}>
                         {option.name}
                       </div>
-                      <div className={`text-xs drop-shadow-sm ${
+                      <div className={`text-[10px] drop-shadow-sm ${
                         isSelected ? 'text-blue-800' : 'text-gray-700'
                       }`}>
                         {option.value}s
                       </div>
                     </div>
                     {isSelected && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                        <span className="text-xs">✓</span>
+                      <div className="absolute top-1 right-1 w-4 h-4 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                        <span className="text-[10px]">✓</span>
                       </div>
                     )}
                   </button>
@@ -333,12 +330,12 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
 
           {/* Difficulty Section */}
           <section>
-            <div className="mb-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-1 drop-shadow-md">Nível de Dificuldade</h2>
-              <p className="text-sm text-gray-700 drop-shadow-sm">Selecione o desafio ideal para você</p>
+            <div className="mb-3">
+              <h2 className="text-base font-medium text-gray-900 mb-1 drop-shadow-md">Nível de Dificuldade</h2>
+              <p className="text-xs text-gray-700 drop-shadow-sm">Selecione o desafio ideal para você</p>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2">
               {difficulties.map((level) => {
                 const isSelected = selectedDifficulty.id === level.id;
                 const difficultyIcons: { [key: string]: string } = { 
@@ -357,25 +354,25 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   <button
                     key={level.id}
                     onClick={() => setSelectedDifficulty(level)}
-                    className={`relative w-full p-4 rounded-lg border-2 transition-all duration-200 backdrop-blur-md hover:bg-gray-200/20 ${difficultyColors[level.id] || 'border-gray-400/20 bg-gray-200/10'}`}
+                    className={`relative w-full p-3 rounded-lg border-2 transition-all duration-200 backdrop-blur-md hover:bg-gray-200/20 ${difficultyColors[level.id] || 'border-gray-400/20 bg-gray-200/10'}`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="text-2xl">
+                    <div className="flex items-center gap-3">
+                      <div className="text-xl">
                         {difficultyIcons[level.id] || '⭐'}
                       </div>
                       <div className="flex-1 text-left">
-                        <div className="text-base font-medium mb-1 text-gray-900 drop-shadow-sm">
+                        <div className="text-sm font-medium text-gray-900 drop-shadow-sm">
                           {level.name}
                         </div>
-                        <div className={`text-sm drop-shadow-sm ${
+                        <div className={`text-xs drop-shadow-sm ${
                           isSelected ? 'text-gray-800' : 'text-gray-700'
                         }`}>
                           Nível {level.name.toLowerCase()}
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                          <span className="text-sm">✓</span>
+                        <div className="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                          <span className="text-xs">✓</span>
                         </div>
                       )}
                     </div>
@@ -387,10 +384,10 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         </div>
 
         {/* Save Button */}
-        <div className="flex-none backdrop-blur-lg bg-black/5 border-t border-white/10 p-5">
+        <div className="flex-none backdrop-blur-lg bg-black/5 border-t border-white/10 p-4">
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-4 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md"
+            className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-3 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md"
           >
             Salvar e Voltar
           </button>
@@ -400,7 +397,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
       {/* Stats Modal */}
       {showStatsModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="backdrop-blur-xl bg-black/20 rounded-lg w-full max-w-sm max-h-[80vh] overflow-y-auto border border-gray-400/20">
+          <div className="backdrop-blur-xl bg-black/20 rounded-lg w-full max-w-sm max-h-[85vh] border border-gray-400/20 flex flex-col">
             <div className="sticky top-0 backdrop-blur-lg bg-black/10 p-4 border-b border-gray-400/20 rounded-t-lg">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-medium text-gray-900 drop-shadow-md">Estatísticas</h2>
@@ -413,69 +410,69 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               </div>
             </div>
             
-            <div className="p-4">
+            <div className="p-4 overflow-y-auto allow-scroll flex-1">
               {dbStats.loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                  <p className="text-gray-800 drop-shadow-md">Carregando...</p>
+                <div className="text-center py-6">
+                  <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                  <p className="text-gray-800 drop-shadow-md text-sm">Carregando...</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <div className="backdrop-blur-md bg-gray-200/20 p-4 rounded-lg border border-gray-400/20">
-                    <h3 className="text-sm font-medium text-gray-900 mb-2 drop-shadow-sm">Total Geral</h3>
-                    <p className="text-xl font-semibold text-gray-900 drop-shadow-sm">{formatNumber(dbStats.totalWords)} palavras</p>
+                <div className="space-y-3">
+                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
+                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Total Geral</h3>
+                    <p className="text-lg font-semibold text-gray-900 drop-shadow-sm">{formatNumber(dbStats.totalWords)} palavras</p>
                   </div>
                   
-                  <div className="backdrop-blur-md bg-gray-200/20 p-4 rounded-lg border border-gray-400/20">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3 drop-shadow-sm">Por Dificuldade</h3>
-                    <div className="space-y-2">
+                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
+                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Por Dificuldade</h3>
+                    <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-2 drop-shadow-sm">
+                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
                           <span>🌱</span> Fácil
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm">{formatNumber(dbStats.byDifficulty.facil || 0)}</span>
+                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.facil || 0)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-2 drop-shadow-sm">
+                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
                           <span>🔥</span> Médio
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm">{formatNumber(dbStats.byDifficulty.medio || 0)}</span>
+                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.medio || 0)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-2 drop-shadow-sm">
+                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
                           <span>💎</span> Difícil
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm">{formatNumber(dbStats.byDifficulty.dificil || 0)}</span>
+                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.dificil || 0)}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="backdrop-blur-md bg-gray-200/20 p-4 rounded-lg border border-gray-400/20">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3 drop-shadow-sm">Cache Local</h3>
-                    <div className="space-y-2">
+                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
+                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Cache Local</h3>
+                    <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 drop-shadow-sm">Status</span>
-                        <span className={`font-medium drop-shadow-sm ${cacheInfo.isEnabled ? 'text-green-800' : 'text-red-800'}`}>
+                        <span className="text-gray-800 drop-shadow-sm text-xs">Status</span>
+                        <span className={`font-medium drop-shadow-sm text-xs ${cacheInfo.isEnabled ? 'text-green-800' : 'text-red-800'}`}>
                           {cacheInfo.isEnabled ? 'Ativo' : 'Inativo'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 drop-shadow-sm">Palavras em cache</span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm">{formatNumber(cacheInfo.totalCachedWords)}</span>
+                        <span className="text-gray-800 drop-shadow-sm text-xs">Palavras em cache</span>
+                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(cacheInfo.totalCachedWords)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
               
-              <div className="mt-6">
-                <button 
-                  onClick={() => setShowStatsModal(false)} 
-                  className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-3 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md"
-                >
-                  Fechar
-                </button>
-              </div>
+            </div>
+            <div className="p-4 border-t border-gray-400/20">
+              <button 
+                onClick={() => setShowStatsModal(false)} 
+                className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-2 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md text-sm"
+              >
+                Fechar
+              </button>
             </div>
           </div>
         </div>
