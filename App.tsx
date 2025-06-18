@@ -99,7 +99,7 @@ const App: React.FC = () => {
     }
   }, [apiKeyExists, supabaseConfigured, cacheHasWords, error]);
 
-  // Screen-based scroll control - optimized
+  // Screen-based scroll control and mobile viewport fix - optimized
   useEffect(() => {
     const body = document.body;
     const root = document.getElementById('root');
@@ -111,12 +111,31 @@ const App: React.FC = () => {
       }
     };
     
+    // Mobile viewport height fix
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    // Set initial viewport height
+    setViewportHeight();
+    
+    // Update on resize and orientation change
+    const handleResize = () => {
+      setViewportHeight();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
     toggleClass(body, 'game-screen-active', isPlaying);
     toggleClass(root, 'game-screen-active', isPlaying);
     
     return () => {
       toggleClass(body, 'game-screen-active', false);
       toggleClass(root, 'game-screen-active', false);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
     };
   }, [currentScreen]);
 
