@@ -101,26 +101,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Enhanced animated background particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {decorations.map((decoration) => (
-          <div 
-            key={decoration.id}
-            className="absolute text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl opacity-8 animate-float"
-            style={{
-              top: `${decoration.top}%`,
-              left: `${decoration.left}%`,
-              animationDelay: `${decoration.delay}s`,
-              animationDuration: `${decoration.duration}s`,
-              transform: `scale(${decoration.size})`,
-              filter: 'blur(0.3px)',
-              zIndex: 0
-            }}
-          >
-            {decoration.icon}
-          </div>
-        ))}
-      </div>
+      {/* Background particles removed for better performance */}
       
       {/* Main content container */}
       <div className="min-h-screen flex items-center justify-center p-6 relative z-10">

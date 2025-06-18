@@ -53,27 +53,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Enhanced animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({length: 35}, (_, i) => {
-          const decorativeIcons = ["🎮", "🎯", "🎪", "🎨", "🎭", "🧩", "🎲", "🎵", "🎬", "🎤", "📚", "📖", "✨", "🌟", "💫", "🎊", "🎉", "🏆", "🎖️", "🏅", "🎈", "🎁", "🎀", "🌈", "⭐", "💎", "🔮", "🎺", "🎻", "🎸"];
-          const icon = decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
-          return (
-            <div 
-              key={i}
-              className="absolute text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl opacity-8 animate-float"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 10}s`,
-                animationDuration: `${15 + Math.random() * 25}s`,
-                transform: `scale(${Math.random() * 0.6 + 0.7})`,
-                filter: 'blur(0.3px)',
-                zIndex: 0
-              }}
-            >
-              {icon}
-            </div>
-          );
-        })}
+        {/* Background particles removed for better performance */}
       </div>
       
       {/* Main content container */}

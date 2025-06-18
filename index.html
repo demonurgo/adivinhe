@@ -7,7 +7,6 @@
     <meta name="description" content="Jogo interativo de adivinhação de palavras por categorias com IA integrada" />
     <meta name="author" content="Adivinhe Já!" />
 
-    <!-- Favicons -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" href="/icon.png">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
@@ -19,46 +18,54 @@
 
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#3b82f6" />
+    <meta name="theme-color" content="#B2EBF2" /> 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="AdivinheJá">
     
-    <!-- iOS icons -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
 
-    <!-- iOS Splash Screens -->
-    <!-- iPhone X (1125px x 2436px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/icons/splash/apple-launch-1125x2436.png">
-    <!-- iPhone 8, 7, 6s, 6 (750px x 1334px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/icons/splash/apple-launch-750x1334.png">
-    <!-- iPhone 8 Plus, 7 Plus, 6s Plus, 6 Plus (1242px x 2208px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/icons/splash/apple-launch-1242x2208.png">
-    <!-- iPhone 14 Pro, 13 Pro, 12 Pro (1170px x 2532px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/icons/splash/apple-launch-1170x2532.png">
-    <!-- iPhone 14, 13, 12, 11 (828px x 1792px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/icons/splash/apple-launch-828x1792.png">
-    <!-- iPad Pro 12.9" (2048px x 2732px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="/icons/splash/apple-launch-2048x2732.png">
-    <!-- iPad Pro 11", iPad Air (1668px x 2388px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="/icons/splash/apple-launch-1668x2388.png">
-    <!-- iPad Mini, iPad (1536px x 2048px) -->
     <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" href="/icons/splash/apple-launch-1536x2048.png">
 
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;700&family=Lexend:wght@300;400;500;600;700&display=swap');
+      
+      /* Add these rules for html element */
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         font-family: 'Lexend', 'Poppins', 'Inter', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        /* Remove redundant height/width and !important, rely on min-height */
+        margin: 0;
+        padding: 0;
+        min-height: 100vh; /* Fallback for older browsers */
+        min-height: 100dvh; /* Prefer dVH for dynamic viewport */
+        width: 100vw;
+        background: linear-gradient(to bottom right, #E0F7FA, #B2EBF2, #80DEEA); /* No !important needed here */
+        background-attachment: fixed; 
+        background-size: cover; 
+        background-repeat: no-repeat; 
+        background-position: center; 
+        color: #263238;
       }
       /* Custom scrollbar for better aesthetics */
       ::-webkit-scrollbar {
@@ -118,11 +125,10 @@
 </script>
   </head>
 
-  <body style="margin: 0; padding: 0; height: 100vh; min-height: 100vh; min-height: 100dvh; width: 100vw; background: linear-gradient(to bottom right, #E0F7FA, #B2EBF2, #80DEEA) !important; background-attachment: fixed; background-size: cover; background-repeat: no-repeat; background-position: center; color: #263238;">
+  <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 
-    <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

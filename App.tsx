@@ -9,7 +9,6 @@ import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
 import PWAInstallPrompt from './components/PWAInstallPromptSimple';
 import WelcomeScreen from './components/WelcomeScreen';
-import { FlickeringGrid } from './components/FlickeringGrid';
 import { fetchWordsForCategoriesOptimized } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
@@ -488,17 +487,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen min-h-[100vh] min-h-[100dvh] w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto no-overscroll scrollbar-hide relative">
-      {/* Optimized background grid */}
-      <div className="fixed inset-0 w-full h-full z-0">
-        <FlickeringGrid 
-          className="absolute inset-0 w-full h-full flickering-grid"
-          squareSize={currentScreen === GameScreenState.Playing ? 8 : 6}
-          gridGap={currentScreen === GameScreenState.Playing ? 10 : 8}
-          flickerChance={currentScreen === GameScreenState.Playing ? 0.6 : 0.4}
-          color="rgb(14, 116, 144)"
-          maxOpacity={currentScreen === GameScreenState.Playing ? 0.3 : 0.4}
-        />
-      </div>
+      {/* Background removed for better performance */}
       
       {/* Main content */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
