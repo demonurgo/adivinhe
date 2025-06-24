@@ -10,9 +10,6 @@ if (apiKey) {
      apiKey: apiKey,
      dangerouslyAllowBrowser: true // Necessário para uso no browser
    });
-   console.log("OpenAI client initialized for database population.");
-} else {
-  console.warn("API_KEY for OpenAI is not defined. Cannot populate database.");
 }
 
 const getDifficultyInstructions = (difficulty: string): string => {

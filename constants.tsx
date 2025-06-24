@@ -1,8 +1,17 @@
 
 import React from 'react';
-import { Category, Difficulty, TimeOption } from './types';
+import { Category, Difficulty, TimeOption, VersionData } from './types';
 
 export const GAME_DURATION_SECONDS = 60; // Default game duration
+
+// Version information
+export const APP_VERSION: VersionData = {
+  version: "1.5.2",
+  build: 17,
+  lastUpdate: "2025-06-18",
+  lastCommit: "24efad8",
+  isDirty: true
+};
 
 // IconWrapper ensures consistent sizing and stroke for icons.
 const IconWrapper: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (

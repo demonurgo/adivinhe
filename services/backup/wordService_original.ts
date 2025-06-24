@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { getSupabaseClient, WordRow, isSupabaseConfigured as isSupabaseReady } from './supabaseClient';
 import LocalCacheService from './LocalCacheService';
-import RecentWordsManager from './recentWordsManager';
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY; 
 
@@ -14,6 +13,9 @@ if (apiKey) {
      dangerouslyAllowBrowser: true // Necessário para uso no browser
    });
    openaiInitialized = true;
+   console.log("OpenAI client initialized.");
+} else {
+  console.warn("API_KEY for OpenAI is not defined in environment variables. New word generation will rely on Supabase or fail if Supabase is also unconfigured/empty.");
 }
 
 const getDifficultyInstructions = (difficulty: string): string => {
@@ -136,51 +138,33 @@ Não inclua nenhum outro texto, explicação ou formatação markdown fora do ar
   }
 };
 
-// Nova função otimizada com cache local e prevenção de repetição
+// Nova função otimizada com cache local
 export const fetchWordsForCategoriesOptimized = async (
   categoryIds: string[], 
   difficulty: string, 
   count: number
 ): Promise<string[]> => {
   const cacheService = LocalCacheService.getInstance();
-  const recentWordsManager = RecentWordsManager.getInstance();
   
   try {
-    // Busca mais palavras para compensar a filtragem
-    const requestCount = Math.max(count * 3, 50);
-    
     // Tenta buscar do cache local primeiro
-    const cachedWords = await cacheService.getWords(categoryIds, difficulty, requestCount);
+    const cachedWords = await cacheService.getWords(categoryIds, difficulty, count);
     
-    if (cachedWords.length > 0) {
-      // Filtra palavras recentemente usadas
-      const filteredWords = recentWordsManager.filterRecentWords(
-        cachedWords.map(w => ({ texto: w.texto, categoria: w.categoria, dificuldade: w.dificuldade }))
-      );
+    if (cachedWords.length >= count) {
+      console.log(`🚀 Cache hit! Returned ${cachedWords.length} words instantly`);
       
-      if (filteredWords.length >= count) {
-        console.log(`🚀 Cache hit! Returned ${filteredWords.length} fresh words instantly`);
-        
-        // Pega apenas o necessário
-        const selectedWords = filteredWords.slice(0, count);
-        
-        // Marca palavras como utilizadas
-        selectedWords.forEach(word => {
-          const cachedWord = cachedWords.find(cw => cw.texto === word.texto);
-          if (cachedWord) {
-            cacheService.markWordAsUsed(cachedWord.id).catch(err => 
-              console.warn('Failed to mark word as used:', err)
-            );
-            recentWordsManager.markWordAsUsed(word.texto, word.categoria, word.dificuldade);
-          }
-        });
-        
-        return selectedWords.map(w => w.texto);
-      }
+      // Marca palavras como utilizadas (em background)
+      cachedWords.forEach(word => {
+        cacheService.markWordAsUsed(word.id).catch(err => 
+          console.warn('Failed to mark word as used:', err)
+        );
+      });
+      
+      return cachedWords.map(w => w.texto);
     }
     
-    // Se cache não tem palavras suficientes não-repetidas, fallback para método original
-    console.log(`⚠️  Cache insufficient non-repeated words, falling back to original method`);
+    // Se cache não tem o suficiente, fallback para método original
+    console.log(`⚠️  Cache insufficient (${cachedWords.length}/${count}), falling back to original method`);
     return await fetchWordsForCategories(categoryIds, difficulty, count);
     
   } catch (error) {
@@ -190,26 +174,26 @@ export const fetchWordsForCategoriesOptimized = async (
   }
 };
 
-// Função original melhorada com prevenção de repetição
+// Função original mantida para compatibilidade
 export const fetchWordsForCategories = async (
   categoryIds: string[], 
   difficulty: string, 
   count: number
 ): Promise<string[]> => {
   const supabase = getSupabaseClient();
-  const recentWordsManager = RecentWordsManager.getInstance();
   let wordsFromSupabase: string[] = [];
 
   if (supabase && isSupabaseReady()) {
     try {
       console.log(`Attempting to fetch ${count} words from Supabase for categories [${categoryIds.join(', ')}], difficulty ${difficulty}.`);
       
-      // Busca mais palavras para compensar a filtragem de palavras recentes
-      const fetchLimit = Math.max(count * 4, 150); // Aumenta o fetch para ter mais opções
+      // Query com aleatoriedade baseada em última utilização e total de usos
+      // Prioriza palavras menos usadas e que não foram usadas recentemente
+      const fetchLimit = Math.max(count * 3, 100); // Busca mais para ter opções de aleatoriedade
       
       const { data, error } = await supabase
         .from('palavras')
-        .select('id, texto, ultima_utilizacao, total_utilizacoes, categoria')
+        .select('id, texto, ultima_utilizacao, total_utilizacoes')
         .eq('dificuldade', difficulty)
         .in('categoria', categoryIds)
         .order('total_utilizacoes', { ascending: true }) // Menos usadas primeiro
@@ -219,68 +203,52 @@ export const fetchWordsForCategories = async (
       if (error) {
         console.error("Error fetching words from Supabase:", error);
       } else if (data && data.length > 0) {
-        // Filtra palavras recentemente usadas ANTES da aleatoriedade
-        const availableWords = recentWordsManager.filterRecentWords(
-          data.map(row => ({ texto: row.texto, categoria: row.categoria, dificuldade: difficulty, ...row }))
-        );
-        
-        if (availableWords.length === 0) {
-          console.warn(`⚠️  Todas as palavras disponíveis foram usadas recentemente. Limpando histórico para continuar...`);
-          recentWordsManager.cleanupExpiredWords();
-          // Usa todas as palavras disponíveis se o histórico estava muito cheio
-          availableWords.push(...data.map(row => ({ texto: row.texto, categoria: row.categoria, dificuldade: difficulty, ...row })));
-        }
-        
-        console.log(`📋 Palavras disponíveis após filtrar recentes: ${availableWords.length}/${data.length}`);
-        
-        // Aplica lógica de aleatoriedade ponderada apenas nas palavras não-recentes
+        // Aplica lógica de aleatoriedade ponderada
         const now = new Date();
-        const wordsWithScore = availableWords.map((row: any) => {
+        const wordsWithScore = data.map((row: any) => {
           let score = 100; // Score base
           
           // Penaliza palavras muito usadas
-          score -= row.total_utilizacoes * 5; // Reduzido para dar mais chances
+          score -= row.total_utilizacoes * 10;
           
-          // Penaliza palavras usadas recentemente no banco (além da verificação local)
+          // Penaliza palavras usadas recentemente
           if (row.ultima_utilizacao) {
             const lastUsed = new Date(row.ultima_utilizacao);
             const hoursSinceLastUse = (now.getTime() - lastUsed.getTime()) / (1000 * 60 * 60);
             
-            // Penalização mais suave para dar mais variedade
-            if (hoursSinceLastUse < 1) { // Última hora
-              score -= 30;
-            } else if (hoursSinceLastUse < 6) { // Últimas 6 horas  
-              score -= 15;
-            } else if (hoursSinceLastUse < 24) { // Últimas 24 horas
-              score -= 5;
+            // Se foi usada nas últimas 24h, penaliza bastante
+            if (hoursSinceLastUse < 24) {
+              score -= 50;
+            } else if (hoursSinceLastUse < 168) { // 7 dias
+              score -= 20;
             }
           }
           
           return {
             ...row,
-            score: Math.max(score, 1) // Score mínimo 1
+            score: Math.max(score, 0) // Score mínimo 0
           };
         });
 
         // Seleciona palavras com peso baseado no score
         const selectedWords: string[] = [];
-        const wordPool = [...wordsWithScore];
+        const availableWords = [...wordsWithScore];
         
-        for (let i = 0; i < count && wordPool.length > 0; i++) {
+        for (let i = 0; i < count && availableWords.length > 0; i++) {
           // Seleciona aleatoriamente com peso baseado no score
-          const totalScore = wordPool.reduce((sum, word) => sum + word.score, 0);
+          const totalScore = availableWords.reduce((sum, word) => sum + word.score + 1, 0);
           let randomValue = Math.random() * totalScore;
           
           let selectedIndex = 0;
-          for (let j = 0; j < wordPool.length; j++) {
-            randomValue -= wordPool[j].score;
+          for (let j = 0; j < availableWords.length; j++) {
+            randomValue -= (availableWords[j].score + 1);
             if (randomValue <= 0) {
               selectedIndex = j;
               break;
             }
           }
           
-          const selectedWord = wordPool[selectedIndex];
+          const selectedWord = availableWords[selectedIndex];
           selectedWords.push(selectedWord.texto);
           
           // Marca como utilizada no banco
@@ -293,15 +261,12 @@ export const fetchWordsForCategories = async (
             })
             .eq('id', selectedWord.id);
           
-          // Marca como usada no gerenciador local
-          recentWordsManager.markWordAsUsed(selectedWord.texto, selectedWord.categoria, difficulty);
-          
-          // Remove da lista de disponíveis para evitar duplicatas na mesma busca
-          wordPool.splice(selectedIndex, 1);
+          // Remove da lista de disponíveis
+          availableWords.splice(selectedIndex, 1);
         }
         
         wordsFromSupabase = selectedWords;
-        console.log(`✅ Fetched ${wordsFromSupabase.length} non-repeated words from Supabase.`);
+        console.log(`Fetched ${wordsFromSupabase.length} words from Supabase with randomization.`);
       }
     } catch (e) {
       console.error("Failed to fetch from Supabase:", e);
@@ -391,98 +356,4 @@ export const getCacheStatistics = () => {
 export const clearExpiredCache = async (): Promise<void> => {
   const cacheService = LocalCacheService.getInstance();
   await cacheService.clearExpiredCache();
-};
-
-// Funções para gerenciamento de sessões e palavras recentes
-export const startGameSession = (categories: string[], difficulty: string): string => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  return recentWordsManager.startNewSession(categories, difficulty);
-};
-
-export const endGameSession = (): void => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  recentWordsManager.endCurrentSession();
-};
-
-export const getRecentWordsStatistics = () => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  return recentWordsManager.getStatistics();
-};
-
-export const cleanupRecentWords = (): number => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  return recentWordsManager.cleanupExpiredWords();
-};
-
-export const resetRecentWordsHistory = (): void => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  recentWordsManager.resetAll();
-};
-
-// Função para verificar o status de saúde das palavras
-export const checkWordsHealthStatus = (
-  categories: string[], 
-  difficulty: string, 
-  estimatedTotalWords: number = 150
-) => {
-  const recentWordsManager = RecentWordsManager.getInstance();
-  return recentWordsManager.getWordsHealthStatus(categories, difficulty, estimatedTotalWords);
-};
-
-// Função para resetar colunas de uso no banco de dados
-export const resetDatabaseUsageColumns = async (): Promise<{
-  success: boolean;
-  affectedRows: number;
-  message: string;
-}> => {
-  const supabase = getSupabaseClient();
-  
-  if (!supabase || !isSupabaseReady()) {
-    return {
-      success: false,
-      affectedRows: 0,
-      message: "Supabase não está configurado ou disponível."
-    };
-  }
-
-  try {
-    console.log("🗑️  Iniciando reset das colunas de uso no banco de dados...");
-    
-    // Executa o reset de todas as palavras
-    const { data, error } = await supabase
-      .from('palavras')
-      .update({
-        total_utilizacoes: 0,
-        ultima_utilizacao: null,
-        updated_at: new Date().toISOString()
-      })
-      .neq('id', '00000000-0000-0000-0000-000000000000') // Condição que sempre é verdadeira
-      .select('id');
-
-    if (error) {
-      console.error("❌ Erro ao resetar colunas de uso:", error);
-      return {
-        success: false,
-        affectedRows: 0,
-        message: `Erro ao resetar: ${error.message}`
-      };
-    }
-
-    const affectedRows = data ? data.length : 0;
-    console.log(`✅ Reset concluído: ${affectedRows} palavras atualizadas`);
-    
-    return {
-      success: true,
-      affectedRows,
-      message: `Reset concluído com sucesso! ${affectedRows} palavras foram resetadas.`
-    };
-    
-  } catch (error) {
-    console.error("❌ Erro inesperado ao resetar colunas:", error);
-    return {
-      success: false,
-      affectedRows: 0,
-      message: `Erro inesperado: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
-    };
-  }
 };

@@ -61,12 +61,13 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
         <div className={`w-full max-w-3xl mx-auto p-5 sm:p-6 md:p-8 bg-gradient-to-br from-sky-100/90 via-sky-50/80 to-indigo-100/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-sky-300/50 transition-all duration-500 transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <div className="flex justify-between items-center mb-3 sm:mb-4">
           <HyperText 
-            className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent py-0 tracking-wide drop-shadow-lg"
+            className="text-xl sm:text-2xl lg:text-3xl font-bold text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent py-0 tracking-wide drop-shadow-lg"
             duration={1000}
             delay={500}
             startOnView={true}
             animateOnHover={true}
             as="h1"
+            style={{ fontFamily: 'Comfortaa, sans-serif' }}
           >
             Adivinhe Já!
           </HyperText>
@@ -128,7 +129,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
           </div>
         </div>
         
-        <p className="text-xs sm:text-sm mb-3 text-slate-700">Escolha uma ou mais categorias:</p>
+        <p className="text-xs mb-3 text-slate-700">Escolha uma ou mais categorias:</p>
         
         {(!apiKeyExists || !supabaseConfigured) && (
            <div className="mb-3 p-2 sm:p-3 bg-yellow-800/80 border border-yellow-600 text-yellow-100 text-xs rounded-lg shadow-md">
@@ -173,8 +174,8 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                 {/* Animated background on hover */}
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-gradient-to-br ${isSelected ? 'from-white to-white/0' : 'from-pink-300/50 via-purple-300/30 to-blue-300/40'}`}></div>
                 
-                {category.icon && <span className={`text-xl sm:text-2xl md:text-3xl category-emoji ${isSelected ? category.textColor || 'text-white' : 'text-slate-500'} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>{category.icon}</span>}
-                <span className={`font-medium text-xs sm:text-xs text-center leading-tight mt-1 ${isSelected ? category.textColor || 'text-white' : 'text-slate-600'} transition-all duration-300`}>{category.name}</span>
+                {category.icon && <span className={`text-lg sm:text-xl md:text-2xl category-emoji ${isSelected ? category.textColor || 'text-white' : 'text-slate-500'} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>{category.icon}</span>}
+                <span className={`font-medium text-xs text-center leading-tight mt-1 ${isSelected ? category.textColor || 'text-white' : 'text-slate-600'} transition-all duration-300`}>{category.name}</span>
                 
                 {/* Subtle pulse effect for selected categories */}
                 {isSelected && (
@@ -241,11 +242,11 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                   {/* Play Button Text */}
                   <div className="flex-1 text-center">
                     {canPlay ? (
-                      <span className="text-lg sm:text-2xl font-bold tracking-wide text-white drop-shadow-lg group-hover:scale-105 transition-transform duration-500">
+                      <span className="text-base sm:text-xl font-bold tracking-wide text-white drop-shadow-lg group-hover:scale-105 transition-transform duration-500">
                         JOGAR AGORA
                       </span>
                     ) : (
-                      <span className="text-lg sm:text-2xl font-bold tracking-wide text-slate-400">
+                      <span className="text-base sm:text-xl font-bold tracking-wide text-slate-400">
                         SELECIONE CATEGORIAS
                       </span>
                     )}

@@ -61,6 +61,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
   });
   
   const [showStatsModal, setShowStatsModal] = useState(false);
+  const [testResults, setTestResults] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -80,48 +81,120 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
       const supabase = getSupabaseClient();
       if (!supabase) return;
 
+      // Busca o total de palavras
       const { count: totalCount } = await supabase
         .from('palavras')
         .select('*', { count: 'exact', head: true });
 
-      const { data: categoryData } = await supabase
-        .from('palavras')
-        .select('categoria')
-        .then(async (result) => {
-          if (result.data) {
-            const categoryCount: { [key: string]: number } = {};
-            result.data.forEach(row => {
-              categoryCount[row.categoria] = (categoryCount[row.categoria] || 0) + 1;
-            });
-            return { data: categoryCount };
-          }
-          return { data: {} };
+      // Primeiro, tenta usar a função RPC otimizada
+      const { data: rpcResult, error: rpcError } = await supabase
+        .rpc('get_complete_word_stats');
+      
+      if (!rpcError && rpcResult) {
+        console.log('📊 Usando RPC para estatísticas:', rpcResult);
+        setDbStats({
+          totalWords: rpcResult.total_words || 0,
+          byCategory: rpcResult.by_category || {},
+          byDifficulty: rpcResult.by_difficulty || {},
+          loading: false
         });
+        return;
+      }
+      
+      console.log('⚠️  RPC não disponível, usando consulta manual');
+      
+      // Busca todos os dados necessários em uma única consulta
+      const { data: allData, error: fetchError } = await supabase
+        .from('palavras')
+        .select('categoria, dificuldade')
+        .limit(50000); // Aumenta o limite para garantir que busque todos os registros
 
-      const { data: difficultyData } = await supabase
-        .from('palavras')
-        .select('dificuldade')
-        .then(async (result) => {
-          if (result.data) {
-            const difficultyCount: { [key: string]: number } = {};
-            result.data.forEach(row => {
-              difficultyCount[row.dificuldade] = (difficultyCount[row.dificuldade] || 0) + 1;
-            });
-            return { data: difficultyCount };
-          }
-          return { data: {} };
+      if (fetchError) {
+        console.error('Erro ao buscar dados:', fetchError);
+        setDbStats(prev => ({ ...prev, loading: false }));
+        return;
+      }
+
+      // Processa os dados localmente
+      const categoryCount: { [key: string]: number } = {};
+      const difficultyCount: { [key: string]: number } = {};
+
+      if (allData) {
+        allData.forEach(row => {
+          // Contagem por categoria
+          categoryCount[row.categoria] = (categoryCount[row.categoria] || 0) + 1;
+          
+          // Contagem por dificuldade - garantindo que todas as dificuldades sejam contadas
+          difficultyCount[row.dificuldade] = (difficultyCount[row.dificuldade] || 0) + 1;
         });
+      }
+
+      // Debug: log para verificar os dados
+      console.log('📊 Estatísticas do banco:');
+      console.log('- Total de palavras:', totalCount);
+      console.log('- Por dificuldade:', difficultyCount);
+      console.log('- Por categoria:', categoryCount);
 
       setDbStats({
         totalWords: totalCount || 0,
-        byCategory: categoryData || {},
-        byDifficulty: difficultyData || {},
+        byCategory: categoryCount,
+        byDifficulty: difficultyCount,
         loading: false
       });
 
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error);
       setDbStats(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const testDatabaseDirectly = async () => {
+    if (!isSupabaseConfigured()) {
+      setTestResults('Supabase não configurado');
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) return;
+
+      // Primeiro, tenta usar a função RPC otimizada
+      const { data: rpcStats, error: rpcError } = await supabase
+        .rpc('get_complete_word_stats');
+      
+      if (!rpcError && rpcStats) {
+        setTestResults(`RPC Stats: ${JSON.stringify(rpcStats, null, 2)}`);
+        return;
+      }
+      
+      // Se RPC falhar, faz consulta manual direta
+      const { data: manualCount } = await supabase
+        .from('palavras')
+        .select('dificuldade')
+        .limit(50000); // Busca mais registros para garantir que pegue todos
+        
+      if (manualCount) {
+        const counts = { facil: 0, medio: 0, dificil: 0, outros: 0 };
+        const uniqueValues = new Set();
+        
+        manualCount.forEach(row => {
+          uniqueValues.add(row.dificuldade);
+          if (row.dificuldade === 'facil') counts.facil++;
+          else if (row.dificuldade === 'medio') counts.medio++;
+          else if (row.dificuldade === 'dificil') counts.dificil++;
+          else counts.outros++;
+        });
+        
+        setTestResults(
+          `Teste Manual (${manualCount.length} registros): \n` +
+          `Fácil: ${counts.facil}, Médio: ${counts.medio}, Difícil: ${counts.dificil}\n` +
+          `Outros: ${counts.outros}\n` +
+          `Valores únicos: ${Array.from(uniqueValues).join(', ')}`
+        );
+      }
+      
+    } catch (error) {
+      setTestResults(`Erro: ${error instanceof Error ? error.message : 'Unknown'}`);
     }
   };
 
@@ -232,17 +305,31 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           {/* Action Buttons - Compacto */}
           <div className="flex gap-2 mt-3">
             <button
-              onClick={() => setShowStatsModal(true)}
-              className="flex-1 backdrop-blur-md bg-blue-200/30 hover:bg-blue-200/50 border border-blue-300/30 rounded-lg p-2 transition-all duration-200"
-              type="button"
+            onClick={() => setShowStatsModal(true)}
+            className="flex-1 backdrop-blur-md bg-blue-200/30 hover:bg-blue-200/50 border border-blue-300/30 rounded-lg p-2 transition-all duration-200"
+            type="button"
             >
-              <div className="text-center">
-                <div className="text-sm mb-1">📊</div>
-                <div className="text-[10px] font-medium text-blue-900 drop-shadow-sm">
-                  {dbStats.loading ? 'Carregando' : formatNumber(dbStats.totalWords)}
-                </div>
-              </div>
+            <div className="text-center">
+            <div className="text-sm mb-1">📊</div>
+            <div className="text-[10px] font-medium text-blue-900 drop-shadow-sm">
+            {dbStats.loading ? 'Carregando' : formatNumber(dbStats.totalWords)}
+            </div>
+            </div>
             </button>
+              
+              <button
+                onClick={testDatabaseDirectly}
+                className="flex-1 backdrop-blur-md bg-yellow-200/30 hover:bg-yellow-200/50 border border-yellow-300/30 rounded-lg p-2 transition-all duration-200"
+                type="button"
+                title="Teste direto do banco"
+              >
+                <div className="text-center">
+                  <div className="text-sm mb-1">🔍</div>
+                  <div className="text-[10px] font-medium text-yellow-900 drop-shadow-sm">
+                    Teste
+                  </div>
+                </div>
+              </button>
 
             <button
               onClick={cacheWordsLocally}
@@ -421,6 +508,9 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
                     <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Total Geral</h3>
                     <p className="text-lg font-semibold text-gray-900 drop-shadow-sm">{formatNumber(dbStats.totalWords)} palavras</p>
+                    <div className="text-[10px] text-gray-600 mt-1 drop-shadow-sm">
+                      Soma: {formatNumber((dbStats.byDifficulty.facil || 0) + (dbStats.byDifficulty.medio || 0) + (dbStats.byDifficulty.dificil || 0))}
+                    </div>
                   </div>
                   
                   <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
@@ -444,8 +534,25 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                         </span>
                         <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.dificil || 0)}</span>
                       </div>
+                      {/* Debug info - remove depois de testar */}
+                      {Object.keys(dbStats.byDifficulty).length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-gray-400/20">
+                          <div className="text-[10px] text-gray-600 drop-shadow-sm">
+                            Debug: {JSON.stringify(dbStats.byDifficulty)}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
+                  
+                  {testResults && (
+                    <div className="backdrop-blur-md bg-yellow-200/20 p-3 rounded-lg border border-yellow-400/20">
+                      <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Teste Direto</h3>
+                      <div className="text-[10px] text-gray-800 drop-shadow-sm">
+                        {testResults}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
                     <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Cache Local</h3>

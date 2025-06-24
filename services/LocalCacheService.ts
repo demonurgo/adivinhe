@@ -1,5 +1,6 @@
 // services/LocalCacheService.ts
 import { getSupabaseClient, WordRow, isSupabaseConfigured } from './supabaseClient';
+import RecentWordsManager from './recentWordsManager';
 
 interface CachedWord {
   id: string;
@@ -147,7 +148,7 @@ export class LocalCacheService {
     }
   }
   
-  // Método principal: busca palavras local-first
+  // Método principal: busca palavras local-first com filtro de repetição
   async getWords(
     categorias: string[], 
     dificuldade: string, 
@@ -157,6 +158,7 @@ export class LocalCacheService {
       await this.initialize();
     }
     
+    const recentWordsManager = RecentWordsManager.getInstance();
     const todasPalavras: CachedWord[] = [];
     
     // Coleta palavras de todas as categorias solicitadas
@@ -175,8 +177,22 @@ export class LocalCacheService {
       }
     }
     
+    // Filtra palavras recentemente usadas
+    const palavrasNaoRecentes = recentWordsManager.filterRecentWords(
+      todasPalavras.map(p => ({ texto: p.texto, categoria: p.categoria, dificuldade: p.dificuldade }))
+    );
+    
+    // Reconstroi a lista com as palavras filtradas
+    const palavrasFiltradas = todasPalavras.filter(palavra => 
+      palavrasNaoRecentes.some(nr => nr.texto === palavra.texto && nr.categoria === palavra.categoria)
+    );
+    
+    if (palavrasFiltradas.length < quantidade) {
+      console.log(`⚠️  Cache com poucas palavras não-recentes: ${palavrasFiltradas.length}/${quantidade}`);
+    }
+    
     // Aplica aleatoriedade inteligente
-    return this.selectRandomWords(todasPalavras, quantidade);
+    return this.selectRandomWords(palavrasFiltradas, quantidade);
   }
   
   private async hasEnoughWords(categoria: string, dificuldade: string): Promise<boolean> {
@@ -350,19 +366,27 @@ export class LocalCacheService {
   // Marca palavra como utilizada
   async markWordAsUsed(wordId: string): Promise<void> {
     const supabase = getSupabaseClient();
+    const recentWordsManager = RecentWordsManager.getInstance();
+    
     if (!supabase || !isSupabaseConfigured()) return;
     
     try {
       const now = new Date().toISOString();
-      // Primeiro busca o valor atual
+      
+      // Primeiro busca a palavra completa
       const { data: currentWord } = await supabase
         .from('palavras')
-        .select('total_utilizacoes')
+        .select('id, texto, categoria, dificuldade, total_utilizacoes')
         .eq('id', wordId)
         .single();
       
+      if (!currentWord) {
+        console.warn(`Palavra com ID ${wordId} não encontrada`);
+        return;
+      }
+      
       // Incrementa o total
-      const newTotal = (currentWord?.total_utilizacoes || 0) + 1;
+      const newTotal = (currentWord.total_utilizacoes || 0) + 1;
       
       await supabase
         .from('palavras')
@@ -372,6 +396,13 @@ export class LocalCacheService {
           updated_at: now
         })
         .eq('id', wordId);
+      
+      // Marca no gerenciador de palavras recentes
+      recentWordsManager.markWordAsUsed(
+        currentWord.texto, 
+        currentWord.categoria, 
+        currentWord.dificuldade
+      );
       
       // Atualiza cache em memória
       for (const [key, words] of this.memoryCache.entries()) {

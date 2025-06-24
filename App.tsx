@@ -9,25 +9,26 @@ import StatisticsScreen from './components/StatisticsScreen';
 import LoadingSpinner from './components/LoadingSpinner';
 import PWAInstallPrompt from './components/PWAInstallPromptSimple';
 import WelcomeScreen from './components/WelcomeScreen';
-import { fetchWordsForCategoriesOptimized } from './services/wordService'; 
+import WordRepetitionWarning from './components/WordRepetitionWarning';
+import { fetchWordsForCategoriesOptimized, startGameSession, endGameSession, checkWordsHealthStatus } from './services/wordService'; 
 import { isSupabaseConfigured as checkSupabaseConfig } from './services/supabaseClient';
 import { saveGameSession } from './services/gameHistoryService';
 import { usePWA, useOnlineStatus } from './hooks/usePWASimple';
 import useLocalCache from './hooks/useLocalCache';
 
-// Log environment variables for debugging (only once)
-const logEnvironmentOnce = (() => {
-  let logged = false;
-  return () => {
-    if (!logged) {
-      console.log("🔧 Environment Check:");
-      console.log("- VITE_OPENAI_API_KEY:", !!import.meta.env.VITE_OPENAI_API_KEY ? "✅ Configured" : "❌ Missing");
-      console.log("- VITE_SUPABASE_ANON_KEY:", !!import.meta.env.VITE_SUPABASE_ANON_KEY ? "✅ Configured" : "❌ Missing");
-      console.log("- Supabase URL: https://ldujhtwxnbwqbchhchcf.supabase.co");
-      logged = true;
-    }
-  };
-})();
+// Environment check (development only)
+// const logEnvironmentOnce = (() => {
+//   let logged = false;
+//   return () => {
+//     if (!logged && process.env.NODE_ENV === 'development') {
+//       console.log("🔧 Environment Check:");
+//       console.log("- VITE_OPENAI_API_KEY:", !!import.meta.env.VITE_OPENAI_API_KEY ? "✅ Configured" : "❌ Missing");
+//       console.log("- VITE_SUPABASE_ANON_KEY:", !!import.meta.env.VITE_SUPABASE_ANON_KEY ? "✅ Configured" : "❌ Missing");
+//       console.log("- Supabase URL: https://ldujhtwxnbwqbchhchcf.supabase.co");
+//       logged = true;
+//     }
+//   };
+// })();
 
 // Constants for word fetching
 const INITIAL_WORDS_COUNT = 40;
@@ -35,10 +36,10 @@ const MORE_WORDS_COUNT = 25;
 const WORDS_FETCH_THRESHOLD = 10;
 
 const App: React.FC = () => {
-  // Log environment once
-  useEffect(() => {
-    logEnvironmentOnce();
-  }, []);
+  // Environment logging disabled for production
+  // useEffect(() => {
+  //   logEnvironmentOnce();
+  // }, []);
 
   // PWA and connectivity hooks
   const { isUpdateAvailable, updateApp } = usePWA();
@@ -66,6 +67,14 @@ const App: React.FC = () => {
   // Game session tracking
   const [totalWordsShown, setTotalWordsShown] = useState<number>(0);
   const [skippedWords, setSkippedWords] = useState<number>(0);
+
+  // Word repetition warning state
+  const [wordRepetitionWarning, setWordRepetitionWarning] = useState<{
+    isVisible: boolean;
+    riskLevel: 'baixo' | 'moderado' | 'alto' | 'critico';
+    message: string;
+    healthPercentage: number;
+  } | null>(null);
 
   // Game settings
   const [gameDuration, setGameDuration] = useState<number>(GAME_DURATION_SECONDS);
@@ -186,6 +195,31 @@ const App: React.FC = () => {
   const handleNavigateToCategories = useCallback(() => 
     navigateToScreen(GameScreenState.CategorySelection), [navigateToScreen]);
 
+  // Check words health and show warning if needed
+  const checkAndShowRepetitionWarning = useCallback(() => {
+    if (selectedCategories.length === 0 || currentScreen !== GameScreenState.Playing) {
+      return;
+    }
+
+    const categoryIds = selectedCategories.map(c => c.id);
+    const healthStatus = checkWordsHealthStatus(categoryIds, difficulty.id, 150);
+    
+    if (healthStatus.shouldWarnUser && !wordRepetitionWarning?.isVisible) {
+      setWordRepetitionWarning({
+        isVisible: true,
+        riskLevel: healthStatus.riskLevel,
+        message: healthStatus.message,
+        healthPercentage: healthStatus.healthPercentage
+      });
+      console.log(`⚠️  Word repetition warning: ${healthStatus.riskLevel} (${healthStatus.healthPercentage.toFixed(1)}%)`);
+    }
+  }, [selectedCategories, difficulty, currentScreen, wordRepetitionWarning]);
+
+  // Close repetition warning
+  const handleCloseRepetitionWarning = useCallback(() => {
+    setWordRepetitionWarning(prev => prev ? { ...prev, isVisible: false } : null);
+  }, []);
+
   // Configuration save with validation
   const handleConfigurationSave = useCallback((newDuration: number, newDifficulty: Difficulty) => {
     setGameDuration(newDuration);
@@ -213,6 +247,10 @@ const App: React.FC = () => {
     try {
       const categoryIds = selectedCategories.map(c => c.id);
       console.log(`🎮 Starting game: ${categoryIds.join(', ')} | ${difficulty.id} | ${gameDuration}s`);
+      
+      // Inicia uma nova sessão para rastreamento de palavras recentes
+      const sessionId = startGameSession(categoryIds, difficulty.id);
+      console.log(`🔄 Session started: ${sessionId}`);
       
       const fetchedWords = await fetchWordsForCategoriesOptimized(categoryIds, difficulty.id, INITIAL_WORDS_COUNT);
       
@@ -263,12 +301,18 @@ const App: React.FC = () => {
   const handleCorrect = useCallback(() => {
     setScore(prevScore => prevScore + 1);
     advanceWord();
-  }, [advanceWord]);
+    
+    // Verifica status das palavras após cada ação
+    setTimeout(checkAndShowRepetitionWarning, 100);
+  }, [advanceWord, checkAndShowRepetitionWarning]);
 
   const handleSkip = useCallback(() => {
     setSkippedWords(prev => prev + 1);
     advanceWord();
-  }, [advanceWord]);
+    
+    // Verifica status das palavras após cada ação
+    setTimeout(checkAndShowRepetitionWarning, 100);
+  }, [advanceWord, checkAndShowRepetitionWarning]);
 
   // Game end with session saving
   const handleTimeUp = useCallback(async () => {
@@ -287,6 +331,10 @@ const App: React.FC = () => {
       console.warn('⚠️  Failed to save game session:', error);
     }
     
+    // Finaliza a sessão de palavras recentes
+    endGameSession();
+    console.log('🏁 Game session ended');
+    
     setCurrentScreen(GameScreenState.Score);
   }, [score, totalWordsShown, selectedCategories, difficulty, gameDuration]);
 
@@ -298,19 +346,20 @@ const App: React.FC = () => {
     setTotalWordsShown(0);
     setSkippedWords(0);
     setError(null);
+    setWordRepetitionWarning(null); // Limpa avisos de repetição
     setCurrentScreen(GameScreenState.CategorySelection);
     console.log("🔄 Game reset for new session");
   }, []);
 
-  // Password modal handler
-  const handlePasswordModal = useCallback(() => {
-    setCurrentScreen(GameScreenState.CategorySelection);
-    
-    setTimeout(() => {
-      const generateBtn = document.querySelector('[title="Gerar palavras para o banco de dados"]') as HTMLElement;
-      generateBtn?.click();
-    }, 100);
-  }, []);
+  // Handle change category from warning
+  const handleChangeCategoryFromWarning = useCallback(() => {
+    // Fecha o aviso primeiro
+    setWordRepetitionWarning(null);
+    // Finaliza a sessão atual
+    endGameSession();
+    // Reinicia o jogo
+    handlePlayAgain();
+  }, [handlePlayAgain]);
 
   // Memoized derived values for performance
   const gameConfiguration = useMemo(() => {
@@ -330,6 +379,22 @@ const App: React.FC = () => {
     return { accuracy };
   }, [score, totalWordsShown]);
 
+  // Efeito para verificar status das palavras periodicamente durante o jogo
+  useEffect(() => {
+    if (currentScreen === GameScreenState.Playing && selectedCategories.length > 0) {
+      // Verificação inicial
+      const initialCheck = setTimeout(checkAndShowRepetitionWarning, 2000);
+      
+      // Verificação periódica a cada 30 segundos
+      const interval = setInterval(checkAndShowRepetitionWarning, 30000);
+      
+      return () => {
+        clearTimeout(initialCheck);
+        clearInterval(interval);
+      };
+    }
+  }, [currentScreen, selectedCategories, checkAndShowRepetitionWarning]);
+
   // Screen renderer with optimized loading states
   const renderScreen = () => {
     switch (currentScreen) {
@@ -339,7 +404,6 @@ const App: React.FC = () => {
             onStartGame={handleNavigateToCategories}
             onNavigateToConfiguration={handleNavigateToConfiguration}
             onNavigateToStatistics={handleNavigateToStatistics}
-            onGenerateWords={handlePasswordModal}
             apiKeyExists={apiKeyExists}
             supabaseConfigured={supabaseConfigured}
           />
@@ -497,6 +561,18 @@ const App: React.FC = () => {
         )}
         
         {renderScreen()}
+        
+        {/* Word Repetition Warning */}
+        {wordRepetitionWarning && (
+          <WordRepetitionWarning
+            riskLevel={wordRepetitionWarning.riskLevel}
+            message={wordRepetitionWarning.message}
+            healthPercentage={wordRepetitionWarning.healthPercentage}
+            isVisible={wordRepetitionWarning.isVisible}
+            onClose={handleCloseRepetitionWarning}
+            onChangeCategory={handleChangeCategoryFromWarning}
+          />
+        )}
         
         {/* PWA Install prompt */}
         <PWAInstallPrompt />

@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import { CogIcon, ChartBarIcon } from '../constants';
-// Importar a versão do aplicativo e o tipo
-import versionData from '../version.json';
-import { VersionData } from '../types';
+import { CogIcon, ChartBarIcon, APP_VERSION } from '../constants';
 import { HyperText } from './magicui/hyper-text';
-import DatabasePopulator from './DatabasePopulator';
-// Converter o versionData para o tipo correto
-const appVersion = versionData as VersionData;
 
 interface WelcomeScreenProps {
   onStartGame: () => void;
   onNavigateToConfiguration: () => void;
   onNavigateToStatistics: () => void;
-  onGenerateWords: () => void;
   apiKeyExists: boolean;
   supabaseConfigured: boolean;
 }
@@ -22,47 +15,16 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onStartGame,
   onNavigateToConfiguration,
   onNavigateToStatistics,
-  onGenerateWords,
   apiKeyExists,
   supabaseConfigured
 }) => {
-  const canPopulateDatabase = apiKeyExists && supabaseConfigured;
   const [mounted, setMounted] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
-  const [showDatabasePopulator, setShowDatabasePopulator] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
   
   // Animate elements on mount
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const handleOpenPasswordModal = () => {
-    setPasswordInput('');
-    setPasswordError(null);
-    setShowPasswordModal(true);
-  };
-
-  const handlePasswordModalClose = () => {
-    setShowPasswordModal(false);
-    setPasswordInput('');
-    setPasswordError(null);
-  };
-
-  const handlePasswordSubmit = () => {
-    // TODO: Use a more secure way to store and check the password
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin'; // Fallback for safety, ensure VITE_ADMIN_PASSWORD is set
-    if (passwordInput === adminPassword) {
-      setShowPasswordModal(false);
-      setShowDatabasePopulator(true);
-      setPasswordError(null);
-    } else {
-      setPasswordError('Senha incorreta. Tente novamente.');
-    }
-    setPasswordInput('');
-  };
 
   // Decorative emojis for the background
   // Decorative emojis for the background - Expanded collection
@@ -97,7 +59,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [decorations] = useState(() => generateDecorations());
 
   // Formatar a string de versão
-  const versionString = `v${appVersion.version}${appVersion.isDirty ? '*' : ''}`;
+  const versionString = `v${APP_VERSION.version}${APP_VERSION.isDirty ? '*' : ''}`;
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
@@ -114,12 +76,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         
         {/* Logo container with animation */}
         <div className={`relative transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <HyperText  className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 tracking-wide drop-shadow-lg"
+          <HyperText  className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-2 text-gradient bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 tracking-wide drop-shadow-lg"
             duration={1000}
             delay={500}
             startOnView={true}
             animateOnHover={true}
             as="h1"
+            style={{ fontFamily: 'Comfortaa, sans-serif' }}
             >
             Adivinhe Já!  
           </HyperText>
@@ -163,7 +126,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   </div>
                   
                   {/* Play Button Text */}
-                  <span className="text-2xl sm:text-4xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
+                  <span className="text-xl sm:text-3xl font-black tracking-wider text-white drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
                     JOGAR
                   </span>
                   
@@ -251,118 +214,22 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </div>
           </div>
           
-          {canPopulateDatabase && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Generate Words Button Clicked!'); // Debug log
-                handleOpenPasswordModal();
-              }}
-              className="relative group cursor-pointer bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] rounded-2xl shadow-2xl hover:shadow-emerald-500/30 transition-all duration-700 hover:scale-110 hover:rotate-1 w-[130px] h-[55px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
-              type="button"
-              title="Gerar palavras com IA"
-            >
-              <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden w-full h-full flex items-center justify-center">
-                {/* Animated circuit pattern background */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                  <div className="absolute top-2 left-2 w-1 h-4 bg-emerald-400 rounded-full opacity-60 group-hover:animate-pulse"></div>
-                  <div className="absolute top-1 right-3 w-1 h-1 bg-cyan-400 rounded-full group-hover:animate-ping"></div>
-                  <div className="absolute bottom-2 left-4 w-1 h-1 bg-teal-400 rounded-full group-hover:animate-bounce"></div>
-                  <div className="absolute bottom-1 right-2 w-1 h-3 bg-emerald-400 rounded-full opacity-70 group-hover:animate-pulse"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-white rounded-full group-hover:animate-ping"></div>
-                </div>
-                
-                {/* Sweep animation */}
-                <div className="absolute top-0 left-[-100%] h-full w-1/2 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent group-hover:left-full transition-all duration-1000 ease-out transform skew-x-12 pointer-events-none"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 flex items-center justify-center w-full h-full pointer-events-none">
-                  {/* Generation Button Text - Centralized */}
-                  <div className="text-center relative w-full px-2 pointer-events-none">
-                    <span className="text-[3px] sm:text-[4px] md:text-[5px] font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-500 pointer-events-none whitespace-nowrap">
-                      AI GEN
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Glowing border */}
-                <div className="absolute inset-0 rounded-2xl border border-emerald-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                
-                {/* Pulsing core */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-emerald-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse pointer-events-none"></div>
-              </div>
-              
-              {/* Enhanced tooltip */}
-              <div className="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none transform group-hover:translate-y-0 translate-y-2 shadow-lg border border-emerald-400/20 z-50">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
-                  <span>Expandir base de dados com IA</span>
-                </div>
-                <div className="absolute top-full right-4 transform border-4 border-transparent border-t-emerald-600"></div>
-              </div>
-            </button>
-          )}
+
         </div>
         
-        {/* Game version - agora usando os dados do arquivo version.json */}
+        {/* Game version - usando dados das constantes */}
         <div className="absolute bottom-2 right-3 text-xs text-slate-400 group">
           <span>{versionString}</span>
           <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-slate-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none">
-            Build {appVersion.build} - {appVersion.lastUpdate}
-            {appVersion.lastCommit && (
-              <span className="block text-slate-300 text-xs">Commit: {appVersion.lastCommit}</span>
+            Build {APP_VERSION.build} - {APP_VERSION.lastUpdate}
+            {APP_VERSION.lastCommit && (
+              <span className="block text-slate-300 text-xs">Commit: {APP_VERSION.lastCommit}</span>
             )}
             <div className="absolute top-full right-2 transform border-4 border-transparent border-t-slate-700"></div>
           </div>
         </div>
         </div>
       </div>
-
-      {showDatabasePopulator && (
-        <DatabasePopulator onClose={() => setShowDatabasePopulator(false)} />
-      )}
-
-      {showPasswordModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl shadow-2xl border border-slate-700 w-full max-w-sm transform transition-all duration-300 animate-scale-in">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">Acesso Restrito</h2>
-            <p className="text-sm text-slate-300 mb-1">Por favor, insira a senha para gerar palavras:</p>
-            <input
-              type="password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="w-full p-2.5 rounded-md bg-slate-700 border border-slate-600 text-slate-100 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300"
-              placeholder="Senha"
-            />
-            {passwordError && (
-              <p className="text-red-400 text-xs mt-2 animate-fade-in">{passwordError}</p>
-            )}
-            <div className="mt-6 flex justify-end gap-3">
-              <Button 
-                onClick={handlePasswordModalClose} 
-                variant="ghost" 
-                className="text-slate-300 hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                onClick={handlePasswordSubmit} 
-                variant="primary"
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-glow-sm"
-              >
-                <span className="flex items-center gap-1">
-                  Confirmar 
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

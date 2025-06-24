@@ -5,11 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "node scripts/update-version.js && vite build && node scripts/vercel-build.js",
-    "preview": "vite preview",
-    "generate-splash": "node scripts/generate-splash-screens.js",
-    "update-version": "node scripts/update-version.js",
-    "version:increment": "node scripts/increment-version.js"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
