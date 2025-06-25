@@ -535,10 +535,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4 relative">
-      
-      {/* Main content */}
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
         {/* Connectivity status */}
         {!isOnline && (
           <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 px-4 text-sm z-40">
@@ -576,7 +573,6 @@ const App: React.FC = () => {
         
         {/* PWA Install prompt */}
         <PWAInstallPrompt />
-      </div>
     </div>
   );
 };

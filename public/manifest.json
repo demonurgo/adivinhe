@@ -4,8 +4,8 @@
   "description": "Jogo interativo de adivinhação de palavras por categorias com IA integrada",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1e1b4b",
-  "theme_color": "#3b82f6",
+  "background_color": "#81D4FA",
+  "theme_color": "#81D4FA",
   "orientation": "portrait",
   "icons": [
     {

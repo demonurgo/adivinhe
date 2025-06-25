@@ -290,13 +290,13 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
   };
 
   return (
-    <div className="internal-scroll-container w-full flex flex-col">
+    <div className="config-screen-layout">
       
-      {/* Main container - Otimizado para viewport fixa */}
-      <div className={`flex flex-col h-full w-full max-w-sm mx-auto backdrop-blur-lg transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Main container - Layout otimizado para configurações */}
+      <div className={`config-screen-layout w-full max-w-sm mx-auto transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         
-        {/* Header - Compacto */}
-        <div className="flex-none backdrop-blur-lg bg-black/5 border-b border-white/10 px-4 py-4">
+        {/* Header Fixo - Sempre visível no topo */}
+        <div className="config-header-fixed bg-white/10 border-b border-white/20 px-4 py-4">
           <div className="text-center">
             <h1 className="text-lg font-semibold text-gray-900 mb-1 drop-shadow-md">Configurações</h1>
             <p className="text-xs text-gray-700 drop-shadow-sm">Personalize sua experiência</p>
@@ -306,7 +306,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           <div className="flex gap-2 mt-3">
             <button
             onClick={() => setShowStatsModal(true)}
-            className="flex-1 backdrop-blur-md bg-blue-200/30 hover:bg-blue-200/50 border border-blue-300/30 rounded-lg p-2 transition-all duration-200"
+            className="flex-1 bg-blue-200/40 hover:bg-blue-200/60 border border-blue-300/50 rounded-lg p-2 transition-all duration-200"
             type="button"
             >
             <div className="text-center">
@@ -319,7 +319,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               
               <button
                 onClick={testDatabaseDirectly}
-                className="flex-1 backdrop-blur-md bg-yellow-200/30 hover:bg-yellow-200/50 border border-yellow-300/30 rounded-lg p-2 transition-all duration-200"
+                className="flex-1 bg-yellow-200/40 hover:bg-yellow-200/60 border border-yellow-300/50 rounded-lg p-2 transition-all duration-200"
                 type="button"
                 title="Teste direto do banco"
               >
@@ -336,8 +336,8 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               disabled={cacheInfo.caching || !isSupabaseConfigured()}
               className={`flex-1 rounded-lg p-2 border transition-all duration-200 ${
                 cacheInfo.caching 
-                  ? 'backdrop-blur-md bg-gray-200/30 border-gray-300/30 cursor-not-allowed' 
-                  : 'backdrop-blur-md bg-green-200/30 hover:bg-green-200/50 border-green-300/30'
+                  ? 'bg-gray-200/40 border-gray-300/50 cursor-not-allowed' 
+                  : 'bg-green-200/40 hover:bg-green-200/60 border-green-300/50'
               } ${!isSupabaseConfigured() ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="text-center">
@@ -353,7 +353,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
             {canPopulateDatabase && (
               <button
                 onClick={handleOpenPasswordModal}
-                className="flex-1 backdrop-blur-md bg-purple-200/30 hover:bg-purple-200/50 border border-purple-300/30 rounded-lg p-2 transition-all duration-200"
+                className="flex-1 bg-purple-200/40 hover:bg-purple-200/60 border border-purple-300/50 rounded-lg p-2 transition-all duration-200"
                 type="button"
               >
                 <div className="text-center">
@@ -365,8 +365,8 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           </div>
         </div>
 
-        {/* Content - Compacto com scroll interno */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-6 allow-scroll">
+        {/* Content - Área rolável entre header e footer */}
+        <div className="config-content-scrollable px-4 py-3 space-y-6">
           
           {/* Time Duration Section */}
           <section>
@@ -383,10 +383,10 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   <button
                     key={option.id}
                     onClick={() => setSelectedDuration(option.value)}
-                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 backdrop-blur-md ${
+                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 ${
                       isSelected 
-                        ? 'border-blue-400/60 bg-blue-300/40' 
-                        : 'border-gray-400/20 bg-gray-200/10 hover:border-gray-400/40 hover:bg-gray-200/20'
+                        ? 'border-blue-400/60 bg-blue-300/50' 
+                        : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50 hover:bg-gray-200/30'
                     }`}
                   >
                     <div className="text-center">
@@ -432,16 +432,16 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                 };
                 
                 const difficultyColors: { [key: string]: string } = { 
-                  facil: isSelected ? 'border-green-400/60 bg-green-300/40' : 'border-gray-400/20 bg-gray-200/10 hover:border-gray-400/40',
-                  medio: isSelected ? 'border-orange-400/60 bg-orange-300/40' : 'border-gray-400/20 bg-gray-200/10 hover:border-gray-400/40',
-                  dificil: isSelected ? 'border-purple-400/60 bg-purple-300/40' : 'border-gray-400/20 bg-gray-200/10 hover:border-gray-400/40'
+                  facil: isSelected ? 'border-green-400/60 bg-green-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50',
+                  medio: isSelected ? 'border-orange-400/60 bg-orange-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50',
+                  dificil: isSelected ? 'border-purple-400/60 bg-purple-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50'
                 };
                 
                 return (
                   <button
                     key={level.id}
                     onClick={() => setSelectedDifficulty(level)}
-                    className={`relative w-full p-3 rounded-lg border-2 transition-all duration-200 backdrop-blur-md hover:bg-gray-200/20 ${difficultyColors[level.id] || 'border-gray-400/20 bg-gray-200/10'}`}
+                    className={`relative w-full p-3 rounded-lg border-2 transition-all duration-200 hover:bg-gray-200/30 ${difficultyColors[level.id] || 'border-gray-400/30 bg-gray-200/20'}`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="text-xl">
@@ -470,11 +470,11 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           </section>
         </div>
 
-        {/* Save Button */}
-        <div className="flex-none backdrop-blur-lg bg-black/5 border-t border-white/10 p-4">
+        {/* Footer Fixo - Botão sempre visível na parte inferior */}
+        <div className="config-footer-fixed bg-white/10 border-t border-white/20 p-4">
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-3 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md"
+            className="w-full bg-blue-600/70 hover:bg-blue-700/70 text-white font-medium py-3 rounded-lg transition-all duration-200 border border-blue-500/30 drop-shadow-md"
           >
             Salvar e Voltar
           </button>
@@ -483,9 +483,9 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
 
       {/* Stats Modal */}
       {showStatsModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="backdrop-blur-xl bg-black/20 rounded-lg w-full max-w-sm max-h-[85vh] border border-gray-400/20 flex flex-col">
-            <div className="sticky top-0 backdrop-blur-lg bg-black/10 p-4 border-b border-gray-400/20 rounded-t-lg">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white/90 rounded-lg w-full max-w-sm max-h-[85vh] border border-gray-400/30 flex flex-col">
+            <div className="sticky top-0 bg-white/80 p-4 border-b border-gray-400/30 rounded-t-lg">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-medium text-gray-900 drop-shadow-md">Estatísticas</h2>
                 <button
@@ -497,7 +497,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               </div>
             </div>
             
-            <div className="p-4 overflow-y-auto allow-scroll flex-1">
+            <div className="config-content-scrollable p-4">
               {dbStats.loading ? (
                 <div className="text-center py-6">
                   <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
