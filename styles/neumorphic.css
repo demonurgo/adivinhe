@@ -1,0 +1,282 @@
+/* Neumorphic Design System - Complementary Styles */
+
+/* Base variables from design system */
+:root {
+  /* Refined Neumorphic Colors for better integration */
+  --neumorphic-bg: #f0f0f3;
+  --neumorphic-surface: #f5f5f7;
+  --neumorphic-accent: #4285f4;
+  --neumorphic-text-primary: #333333;
+  --neumorphic-text-secondary: #666666;
+  --neumorphic-text-muted: #999999;
+  
+  /* Refined Shadow System */
+  --neumorphic-shadow-light: rgba(255, 255, 255, 0.7);
+  --neumorphic-shadow-dark: rgba(0, 0, 0, 0.15);
+  --neumorphic-shadow-accent: rgba(66, 133, 244, 0.3);
+  
+  /* Optimized Shadow combinations */
+  --shadow-raised: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.7);
+  --shadow-pressed: inset 3px 3px 6px rgba(0, 0, 0, 0.15), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+  --shadow-floating: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
+  --shadow-subtle: 2px 2px 4px rgba(0, 0, 0, 0.1), -2px -2px 4px rgba(255, 255, 255, 0.8);
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bouncy: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Base neumorphic classes */
+.neumorphic-raised {
+  box-shadow: var(--shadow-raised);
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+}
+
+.neumorphic-pressed {
+  box-shadow: var(--shadow-pressed);
+  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+}
+
+.neumorphic-floating {
+  box-shadow: var(--shadow-floating);
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+}
+
+.neumorphic-subtle {
+  box-shadow: var(--shadow-subtle);
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+}
+
+/* Interactive states */
+.neumorphic-button {
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+  box-shadow: var(--shadow-raised);
+  transition: all var(--transition-normal);
+  transform: translateY(0);
+}
+
+.neumorphic-button:hover {
+  box-shadow: var(--shadow-floating);
+  transform: translateY(-1px);
+}
+
+.neumorphic-button:active {
+  box-shadow: var(--shadow-pressed);
+  transform: translateY(0);
+}
+
+.neumorphic-button:focus {
+  outline: none;
+  box-shadow: var(--shadow-pressed), 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+/* Input styles */
+.neumorphic-input {
+  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+  box-shadow: var(--shadow-pressed);
+  border: none;
+  transition: all var(--transition-normal);
+}
+
+.neumorphic-input:focus {
+  outline: none;
+  box-shadow: var(--shadow-pressed), 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+/* Card styles */
+.neumorphic-card {
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+  box-shadow: var(--shadow-raised);
+  transition: all var(--transition-normal);
+}
+
+.neumorphic-card:hover {
+  box-shadow: var(--shadow-floating);
+}
+
+/* Welcome screen specific enhancements */
+.welcome-container {
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(160, 160, 160, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(180, 180, 180, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(140, 140, 140, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #f0f0f3 0%, #e8e8eb 100%);
+  min-height: 100vh;
+}
+
+/* Neumorphic hover effects for better integration */
+.neumorphic-hover:hover {
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+.neumorphic-active:active {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  transform: translateY(1px);
+}
+
+/* Typography enhancements */
+.neumorphic-title {
+  color: var(--neumorphic-text-primary);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.neumorphic-subtitle {
+  color: var(--neumorphic-text-secondary);
+  font-weight: 500;
+}
+
+.neumorphic-caption {
+  color: var(--neumorphic-text-muted);
+  font-weight: 400;
+}
+
+/* Animation utilities */
+.fade-in {
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+.slide-up {
+  animation: slideUp var(--transition-smooth) ease-out;
+}
+
+.scale-in {
+  animation: scaleIn var(--transition-bouncy) ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .welcome-main-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .neumorphic-title {
+    font-size: 2rem;
+  }
+  
+  .play-button-main {
+    padding: 1rem;
+  }
+  
+  .secondary-button {
+    padding: 0.75rem;
+  }
+}
+
+/* Statistics Screen specific styles */
+.statistics-container {
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(160, 160, 160, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(180, 180, 180, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(140, 140, 140, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #f0f0f3 0%, #e8e8eb 100%);
+  min-height: 100vh;
+}
+
+.statistics-card {
+  background: linear-gradient(145deg, #ffffff, #f0f0f3);
+  box-shadow: var(--shadow-raised);
+  transition: all var(--transition-normal);
+}
+
+.statistics-tab-active {
+  background: linear-gradient(145deg, #e8e8eb, #f0f0f3);
+  box-shadow: var(--shadow-pressed);
+}
+
+.statistics-tab-inactive {
+  background: linear-gradient(145deg, #f5f5f7, #e8e8eb);
+  box-shadow: var(--shadow-raised);
+}
+
+.statistics-stat-card {
+  background: linear-gradient(145deg, #e8e8eb, #f0f0f3);
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+}
+
+.statistics-section-card {
+  background: linear-gradient(145deg, #f5f5f7, #e8e8eb);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.8);
+}
+
+.statistics-game-card {
+  background: linear-gradient(145deg, #f5f5f7, #e8e8eb);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8);
+  transition: all var(--transition-normal);
+}
+
+.statistics-game-card:hover {
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+.statistics-badge {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.statistics-icon-button {
+  background: linear-gradient(145deg, #f5f5f7, #e8e8eb);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8);
+  transition: all var(--transition-normal);
+}
+
+.statistics-icon-button:hover {
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+.statistics-icon-button:active {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  transform: translateY(1px);
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neumorphic-bg: #2d2d30;
+    --neumorphic-surface: #3a3a3d;
+    --neumorphic-text-primary: #ffffff;
+    --neumorphic-text-secondary: #cccccc;
+    --neumorphic-text-muted: #999999;
+    --neumorphic-shadow-light: rgba(255, 255, 255, 0.05);
+    --neumorphic-shadow-dark: rgba(0, 0, 0, 0.3);
+    
+    --shadow-raised: 6px 6px 12px rgba(0, 0, 0, 0.3), -6px -6px 12px rgba(255, 255, 255, 0.05);
+    --shadow-pressed: inset 3px 3px 6px rgba(0, 0, 0, 0.3), inset -3px -3px 6px rgba(255, 255, 255, 0.05);
+    --shadow-floating: 8px 8px 16px rgba(0, 0, 0, 0.3), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    --shadow-subtle: 3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.05);
+  }
+}

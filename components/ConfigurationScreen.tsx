@@ -290,92 +290,189 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
   };
 
   return (
-    <div className="config-screen-layout">
+    <div className="config-screen-container min-h-screen w-full flex items-center justify-center p-6 relative">
       
-      {/* Main container - Layout otimizado para configurações */}
-      <div className={`config-screen-layout w-full max-w-sm mx-auto transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-        
-        {/* Header Fixo - Sempre visível no topo */}
-        <div className="config-header-fixed bg-white/10 border-b border-white/20 px-4 py-4">
-          <div className="text-center">
-            <h1 className="text-lg font-semibold text-gray-900 mb-1 drop-shadow-md">Configurações</h1>
-            <p className="text-xs text-gray-700 drop-shadow-sm">Personalize sua experiência</p>
-          </div>
-          
-          {/* Action Buttons - Compacto */}
-          <div className="flex gap-2 mt-3">
-            <button
-            onClick={() => setShowStatsModal(true)}
-            className="flex-1 bg-blue-200/40 hover:bg-blue-200/60 border border-blue-300/50 rounded-lg p-2 transition-all duration-200"
-            type="button"
-            >
-            <div className="text-center">
-            <div className="text-sm mb-1">📊</div>
-            <div className="text-[10px] font-medium text-blue-900 drop-shadow-sm">
-            {dbStats.loading ? 'Carregando' : formatNumber(dbStats.totalWords)}
-            </div>
-            </div>
-            </button>
-              
-              <button
-                onClick={testDatabaseDirectly}
-                className="flex-1 bg-yellow-200/40 hover:bg-yellow-200/60 border border-yellow-300/50 rounded-lg p-2 transition-all duration-200"
-                type="button"
-                title="Teste direto do banco"
-              >
-                <div className="text-center">
-                  <div className="text-sm mb-1">🔍</div>
-                  <div className="text-[10px] font-medium text-yellow-900 drop-shadow-sm">
-                    Teste
-                  </div>
-                </div>
-              </button>
+      {/* Background subtle patterns */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-10 w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-1 h-1 bg-gray-300 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute bottom-32 left-1/4 w-1 h-1 bg-gray-400 rounded-full animate-pulse delay-2000"></div>
+        <div className="absolute bottom-20 right-1/3 w-0.5 h-0.5 bg-gray-300 rounded-full animate-pulse delay-500"></div>
+      </div>
 
+      <div 
+        className={`
+          w-full max-w-md mx-auto rounded-3xl
+          transition-all duration-500 ease-out relative z-10
+          ${mounted ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-6'}
+        `}
+        style={{
+          background: 'linear-gradient(145deg, #f0f0f3, #e6e6e9)',
+          boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.7)',
+        }}
+      >
+        
+        {/* Header Section */}
+        <header 
+          className={`
+            p-8 text-center transition-all duration-700 delay-200 ease-out
+            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+          `}
+        >
+          <h1 className="neumorphic-title text-4xl mb-4 tracking-tight">
+            Configurações
+          </h1>
+          
+          {/* Decorative element */}
+          <div 
+            className="h-1 w-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"
+            style={{
+              boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.1), -2px -2px 4px rgba(255, 255, 255, 0.8)'
+            }}
+          ></div>
+          
+          <p className="neumorphic-subtitle text-sm">
+            Personalize sua experiência de jogo
+          </p>
+        </header>
+
+        {/* Quick Stats Row */}
+        <div 
+          className={`
+            px-8 mb-6 transition-all duration-700 delay-400 ease-out
+            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+          `}
+        >
+          <div className="grid grid-cols-4 gap-2">
+            
+            {/* Database Stats Button */}
+            <button
+              onClick={() => setShowStatsModal(true)}
+              className="p-3 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+              style={{
+                background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                e.currentTarget.style.transform = 'translateY(1px)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div className="text-center">
+                <div className="text-blue-600 text-lg mb-1">📊</div>
+                <div className="neumorphic-caption text-xs">
+                  {dbStats.loading ? '...' : formatNumber(dbStats.totalWords)}
+                </div>
+              </div>
+            </button>
+
+            {/* Test Button */}
+            <button
+              onClick={testDatabaseDirectly}
+              className="p-3 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+              style={{
+                background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                e.currentTarget.style.transform = 'translateY(1px)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div className="text-center">
+                <div className="text-yellow-600 text-lg mb-1">🔍</div>
+                <div className="neumorphic-caption text-xs">Teste</div>
+              </div>
+            </button>
+
+            {/* Cache Button */}
             <button
               onClick={cacheWordsLocally}
               disabled={cacheInfo.caching || !isSupabaseConfigured()}
-              className={`flex-1 rounded-lg p-2 border transition-all duration-200 ${
-                cacheInfo.caching 
-                  ? 'bg-gray-200/40 border-gray-300/50 cursor-not-allowed' 
-                  : 'bg-green-200/40 hover:bg-green-200/60 border-green-300/50'
-              } ${!isSupabaseConfigured() ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className="p-3 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+              style={{
+                background: (cacheInfo.caching || !isSupabaseConfigured()) 
+                  ? 'linear-gradient(145deg, #e8e8eb, #d4d4d6)' 
+                  : 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                boxShadow: (cacheInfo.caching || !isSupabaseConfigured()) 
+                  ? 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                  : '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+                opacity: (cacheInfo.caching || !isSupabaseConfigured()) ? 0.6 : 1
+              }}
+              onMouseDown={(e) => {
+                if (!cacheInfo.caching && isSupabaseConfigured()) {
+                  e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                  e.currentTarget.style.transform = 'translateY(1px)';
+                }
+              }}
+              onMouseUp={(e) => {
+                if (!cacheInfo.caching && isSupabaseConfigured()) {
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
             >
               <div className="text-center">
-                <div className="text-sm mb-1">
+                <div className="text-green-600 text-lg mb-1">
                   {cacheInfo.caching ? '⏳' : '💾'}
                 </div>
-                <div className="text-[10px] font-medium text-green-900 drop-shadow-sm">
+                <div className="neumorphic-caption text-xs">
                   {cacheInfo.totalCachedWords > 0 ? formatNumber(cacheInfo.totalCachedWords) : 'Cache'}
                 </div>
               </div>
             </button>
 
+            {/* Generate Button */}
             {canPopulateDatabase && (
               <button
                 onClick={handleOpenPasswordModal}
-                className="flex-1 bg-purple-200/40 hover:bg-purple-200/60 border border-purple-300/50 rounded-lg p-2 transition-all duration-200"
-                type="button"
+                className="p-3 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+                style={{
+                  background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                  e.currentTarget.style.transform = 'translateY(1px)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
                 <div className="text-center">
-                  <div className="text-sm mb-1">🤖</div>
-                  <div className="text-[10px] font-medium text-purple-900 drop-shadow-sm">Gerar</div>
+                  <div className="text-purple-600 text-lg mb-1">🤖</div>
+                  <div className="neumorphic-caption text-xs">Gerar</div>
                 </div>
               </button>
             )}
           </div>
         </div>
 
-        {/* Content - Área rolável entre header e footer */}
-        <div className="config-content-scrollable px-4 py-3 space-y-6">
+        {/* Content Scrollable Area */}
+        <div className="px-8 pb-6 max-h-96 overflow-y-auto scrollbar-hide">
           
           {/* Time Duration Section */}
-          <section>
-            <div className="mb-3">
-              <h2 className="text-base font-medium text-gray-900 mb-1 drop-shadow-md">Duração do Jogo</h2>
-              <p className="text-xs text-gray-700 drop-shadow-sm">Escolha quanto tempo você quer jogar</p>
+          <section 
+            className={`
+              mb-8 transition-all duration-700 delay-600 ease-out
+              ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            `}
+          >
+            <div className="mb-4">
+              <h2 className="neumorphic-title text-lg mb-2">Duração do Jogo</h2>
+              <p className="neumorphic-subtitle text-sm">Escolha quanto tempo você quer jogar</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {timeOptions.map((option) => {
                 const isSelected = selectedDuration === option.value;
                 
@@ -383,30 +480,48 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   <button
                     key={option.id}
                     onClick={() => setSelectedDuration(option.value)}
-                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 ${
-                      isSelected 
-                        ? 'border-blue-400/60 bg-blue-300/50' 
-                        : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50 hover:bg-gray-200/30'
-                    }`}
+                    className="relative p-4 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+                    style={{
+                      background: isSelected 
+                        ? 'linear-gradient(145deg, #e8e8eb, #f0f0f3)'
+                        : 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                      boxShadow: isSelected
+                        ? 'inset 3px 3px 6px rgba(0, 0, 0, 0.15), inset -3px -3px 6px rgba(255, 255, 255, 0.8)'
+                        : '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                    }}
+                    onMouseDown={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                        e.currentTarget.style.transform = 'translateY(1px)';
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
                     <div className="text-center">
-                      <div className="text-lg mb-1">
+                      <div className="text-2xl mb-2">
                         {option.value <= 60 ? '⚡' : option.value <= 90 ? '⏰' : '🕐'}
                       </div>
-                      <div className={`text-xs font-medium mb-1 drop-shadow-sm ${
-                        isSelected ? 'text-blue-900' : 'text-gray-900'
-                      }`}>
+                      <div className="neumorphic-subtitle text-sm font-medium mb-1">
                         {option.name}
                       </div>
-                      <div className={`text-[10px] drop-shadow-sm ${
-                        isSelected ? 'text-blue-800' : 'text-gray-700'
-                      }`}>
+                      <div className="neumorphic-caption text-xs">
                         {option.value}s
                       </div>
                     </div>
                     {isSelected && (
-                      <div className="absolute top-1 right-1 w-4 h-4 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                        <span className="text-[10px]">✓</span>
+                      <div 
+                        className="absolute top-2 right-2 w-5 h-5 text-white rounded-full flex items-center justify-center"
+                        style={{
+                          background: 'linear-gradient(145deg, #4285f4, #3367d6)',
+                          boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.8)'
+                        }}
+                      >
+                        <span className="text-xs">✓</span>
                       </div>
                     )}
                   </button>
@@ -416,13 +531,18 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           </section>
 
           {/* Difficulty Section */}
-          <section>
-            <div className="mb-3">
-              <h2 className="text-base font-medium text-gray-900 mb-1 drop-shadow-md">Nível de Dificuldade</h2>
-              <p className="text-xs text-gray-700 drop-shadow-sm">Selecione o desafio ideal para você</p>
+          <section 
+            className={`
+              mb-8 transition-all duration-700 delay-800 ease-out
+              ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            `}
+          >
+            <div className="mb-4">
+              <h2 className="neumorphic-title text-lg mb-2">Nível de Dificuldade</h2>
+              <p className="neumorphic-subtitle text-sm">Selecione o desafio ideal para você</p>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               {difficulties.map((level) => {
                 const isSelected = selectedDifficulty.id === level.id;
                 const difficultyIcons: { [key: string]: string } = { 
@@ -431,35 +551,53 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   dificil: '💎' 
                 };
                 
-                const difficultyColors: { [key: string]: string } = { 
-                  facil: isSelected ? 'border-green-400/60 bg-green-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50',
-                  medio: isSelected ? 'border-orange-400/60 bg-orange-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50',
-                  dificil: isSelected ? 'border-purple-400/60 bg-purple-300/50' : 'border-gray-400/30 bg-gray-200/20 hover:border-gray-400/50'
-                };
-                
                 return (
                   <button
                     key={level.id}
                     onClick={() => setSelectedDifficulty(level)}
-                    className={`relative w-full p-3 rounded-lg border-2 transition-all duration-200 hover:bg-gray-200/30 ${difficultyColors[level.id] || 'border-gray-400/30 bg-gray-200/20'}`}
+                    className="relative w-full p-4 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
+                    style={{
+                      background: isSelected 
+                        ? 'linear-gradient(145deg, #e8e8eb, #f0f0f3)'
+                        : 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                      boxShadow: isSelected
+                        ? 'inset 3px 3px 6px rgba(0, 0, 0, 0.15), inset -3px -3px 6px rgba(255, 255, 255, 0.8)'
+                        : '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                    }}
+                    onMouseDown={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                        e.currentTarget.style.transform = 'translateY(1px)';
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="text-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl">
                         {difficultyIcons[level.id] || '⭐'}
                       </div>
                       <div className="flex-1 text-left">
-                        <div className="text-sm font-medium text-gray-900 drop-shadow-sm">
+                        <div className="neumorphic-subtitle text-base font-medium">
                           {level.name}
                         </div>
-                        <div className={`text-xs drop-shadow-sm ${
-                          isSelected ? 'text-gray-800' : 'text-gray-700'
-                        }`}>
+                        <div className="neumorphic-caption text-sm">
                           Nível {level.name.toLowerCase()}
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                          <span className="text-xs">✓</span>
+                        <div 
+                          className="w-6 h-6 text-white rounded-full flex items-center justify-center"
+                          style={{
+                            background: 'linear-gradient(145deg, #4285f4, #3367d6)',
+                            boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.8)'
+                          }}
+                        >
+                          <span className="text-sm">✓</span>
                         </div>
                       )}
                     </div>
@@ -470,74 +608,140 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
           </section>
         </div>
 
-        {/* Footer Fixo - Botão sempre visível na parte inferior */}
-        <div className="config-footer-fixed bg-white/10 border-t border-white/20 p-4">
+        {/* Save Button */}
+        <div 
+          className={`
+            p-8 transition-all duration-700 delay-1000 ease-out
+            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+          `}
+        >
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600/70 hover:bg-blue-700/70 text-white font-medium py-3 rounded-lg transition-all duration-200 border border-blue-500/30 drop-shadow-md"
+            className="w-full p-4 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200 font-medium"
+            style={{
+              background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+              boxShadow: '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)',
+              color: '#333333'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.8)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.boxShadow = 'inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.8)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.boxShadow = '8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.8)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
           >
-            Salvar e Voltar
+            {/* Inner blue accent */}
+            <div 
+              className="w-full py-3 px-6 rounded-lg flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(145deg, #4285f4, #3367d6)',
+                boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              <span className="text-white text-lg font-medium tracking-wide">
+                Salvar e Voltar
+              </span>
+            </div>
           </button>
         </div>
       </div>
 
+
+
       {/* Stats Modal */}
       {showStatsModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white/90 rounded-lg w-full max-w-sm max-h-[85vh] border border-gray-400/30 flex flex-col">
-            <div className="sticky top-0 bg-white/80 p-4 border-b border-gray-400/30 rounded-t-lg">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div 
+            className="w-full max-w-sm rounded-2xl flex flex-col max-h-[85vh]"
+            style={{
+              background: 'linear-gradient(145deg, #f0f0f3, #e6e6e9)',
+              boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.8)',
+            }}
+          >
+            <div className="p-6 border-b border-gray-300/20">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium text-gray-900 drop-shadow-md">Estatísticas</h2>
+                <h2 className="neumorphic-title text-xl">Estatísticas</h2>
                 <button
                   onClick={() => setShowStatsModal(false)}
-                  className="text-gray-600 hover:text-gray-800 transition-colors duration-200 text-xl"
+                  className="p-2 rounded-full border-none cursor-pointer focus:outline-none transition-all duration-200"
+                  style={{
+                    background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                    boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.8)'
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.boxShadow = '3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.8)';
+                  }}
                 >
-                  ✕
+                  <span className="neumorphic-subtitle text-lg">✕</span>
                 </button>
               </div>
             </div>
             
-            <div className="config-content-scrollable p-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {dbStats.loading ? (
-                <div className="text-center py-6">
-                  <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-                  <p className="text-gray-800 drop-shadow-md text-sm">Carregando...</p>
+                <div className="text-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="neumorphic-subtitle">Carregando...</p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
-                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Total Geral</h3>
-                    <p className="text-lg font-semibold text-gray-900 drop-shadow-sm">{formatNumber(dbStats.totalWords)} palavras</p>
-                    <div className="text-[10px] text-gray-600 mt-1 drop-shadow-sm">
+                <div className="space-y-4">
+                  <div 
+                    className="p-4 rounded-xl"
+                    style={{
+                      background: 'linear-gradient(145deg, #e8e8eb, #f0f0f3)',
+                      boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                    }}
+                  >
+                    <h3 className="neumorphic-subtitle text-sm font-medium mb-3">Total Geral</h3>
+                    <p className="neumorphic-title text-lg font-semibold">{formatNumber(dbStats.totalWords)} palavras</p>
+                    <div className="neumorphic-caption text-xs mt-2">
                       Soma: {formatNumber((dbStats.byDifficulty.facil || 0) + (dbStats.byDifficulty.medio || 0) + (dbStats.byDifficulty.dificil || 0))}
                     </div>
                   </div>
                   
-                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
-                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Por Dificuldade</h3>
-                    <div className="space-y-1">
+                  <div 
+                    className="p-4 rounded-xl"
+                    style={{
+                      background: 'linear-gradient(145deg, #e8e8eb, #f0f0f3)',
+                      boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                    }}
+                  >
+                    <h3 className="neumorphic-subtitle text-sm font-medium mb-3">Por Dificuldade</h3>
+                    <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
+                        <span className="neumorphic-subtitle flex items-center gap-2 text-sm">
                           <span>🌱</span> Fácil
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.facil || 0)}</span>
+                        <span className="neumorphic-title font-medium text-sm">{formatNumber(dbStats.byDifficulty.facil || 0)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
+                        <span className="neumorphic-subtitle flex items-center gap-2 text-sm">
                           <span>🔥</span> Médio
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.medio || 0)}</span>
+                        <span className="neumorphic-title font-medium text-sm">{formatNumber(dbStats.byDifficulty.medio || 0)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 flex items-center gap-1 drop-shadow-sm text-xs">
+                        <span className="neumorphic-subtitle flex items-center gap-2 text-sm">
                           <span>💎</span> Difícil
                         </span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(dbStats.byDifficulty.dificil || 0)}</span>
+                        <span className="neumorphic-title font-medium text-sm">{formatNumber(dbStats.byDifficulty.dificil || 0)}</span>
                       </div>
-                      {/* Debug info - remove depois de testar */}
                       {Object.keys(dbStats.byDifficulty).length > 0 && (
-                        <div className="mt-2 pt-2 border-t border-gray-400/20">
-                          <div className="text-[10px] text-gray-600 drop-shadow-sm">
+                        <div className="mt-3 pt-3 border-t border-gray-300/30">
+                          <div className="neumorphic-caption text-xs">
                             Debug: {JSON.stringify(dbStats.byDifficulty)}
                           </div>
                         </div>
@@ -546,37 +750,59 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                   </div>
                   
                   {testResults && (
-                    <div className="backdrop-blur-md bg-yellow-200/20 p-3 rounded-lg border border-yellow-400/20">
-                      <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Teste Direto</h3>
-                      <div className="text-[10px] text-gray-800 drop-shadow-sm">
+                    <div 
+                      className="p-4 rounded-xl"
+                      style={{
+                        background: 'linear-gradient(145deg, #fef3cd, #fcf4dd)',
+                        boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                      }}
+                    >
+                      <h3 className="neumorphic-subtitle text-sm font-medium mb-3">Teste Direto</h3>
+                      <div className="neumorphic-caption text-xs">
                         {testResults}
                       </div>
                     </div>
                   )}
                   
-                  <div className="backdrop-blur-md bg-gray-200/20 p-3 rounded-lg border border-gray-400/20">
-                    <h3 className="text-xs font-medium text-gray-900 mb-2 drop-shadow-sm">Cache Local</h3>
-                    <div className="space-y-1">
+                  <div 
+                    className="p-4 rounded-xl"
+                    style={{
+                      background: 'linear-gradient(145deg, #e8e8eb, #f0f0f3)',
+                      boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                    }}
+                  >
+                    <h3 className="neumorphic-subtitle text-sm font-medium mb-3">Cache Local</h3>
+                    <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 drop-shadow-sm text-xs">Status</span>
-                        <span className={`font-medium drop-shadow-sm text-xs ${cacheInfo.isEnabled ? 'text-green-800' : 'text-red-800'}`}>
+                        <span className="neumorphic-subtitle text-sm">Status</span>
+                        <span className={`font-medium text-sm ${cacheInfo.isEnabled ? 'text-green-700' : 'text-red-700'}`}>
                           {cacheInfo.isEnabled ? 'Ativo' : 'Inativo'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-800 drop-shadow-sm text-xs">Palavras em cache</span>
-                        <span className="font-medium text-gray-900 drop-shadow-sm text-xs">{formatNumber(cacheInfo.totalCachedWords)}</span>
+                        <span className="neumorphic-subtitle text-sm">Palavras em cache</span>
+                        <span className="neumorphic-title font-medium text-sm">{formatNumber(cacheInfo.totalCachedWords)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-              
             </div>
-            <div className="p-4 border-t border-gray-400/20">
+            
+            <div className="p-6 border-t border-gray-300/20">
               <button 
                 onClick={() => setShowStatsModal(false)} 
-                className="w-full bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white font-medium py-2 rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-md text-sm"
+                className="w-full py-3 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200 font-medium text-white"
+                style={{
+                  background: 'linear-gradient(145deg, #4285f4, #3367d6)',
+                  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.15), -4px -4px 8px rgba(255, 255, 255, 0.7)'
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.1)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.15), -4px -4px 8px rgba(255, 255, 255, 0.7)';
+                }}
               >
                 Fechar
               </button>
@@ -585,36 +811,73 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         </div>
       )}
 
+      {/* Database Populator */}
       {showDatabasePopulator && (
         <DatabasePopulator onClose={() => setShowDatabasePopulator(false)} />
       )}
 
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="backdrop-blur-xl bg-black/20 p-5 rounded-lg w-full max-w-sm border border-gray-400/20">
-            <h2 className="text-lg font-medium text-gray-900 mb-3 drop-shadow-md">Acesso Restrito</h2>
-            <p className="text-sm text-gray-800 mb-4 drop-shadow-sm">Digite a senha para gerar palavras com IA:</p>
+          <div 
+            className="w-full max-w-sm p-6 rounded-2xl"
+            style={{
+              background: 'linear-gradient(145deg, #f0f0f3, #e6e6e9)',
+              boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.8)',
+            }}
+          >
+            <h2 className="neumorphic-title text-xl mb-4">Acesso Restrito</h2>
+            <p className="neumorphic-subtitle text-sm mb-6">Digite a senha para gerar palavras com IA:</p>
+            
             <input
               type="password"
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="w-full p-3 backdrop-blur-md bg-gray-200/30 border border-gray-400/30 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 outline-none transition-all duration-200 text-gray-900 placeholder-gray-700"
+              className="w-full p-4 rounded-xl border-none outline-none transition-all duration-200 mb-4"
+              style={{
+                background: 'linear-gradient(145deg, #e8e8eb, #f5f5f7)',
+                boxShadow: 'inset 3px 3px 6px rgba(0, 0, 0, 0.1), inset -3px -3px 6px rgba(255, 255, 255, 0.8)',
+                color: '#333333'
+              }}
               placeholder="Senha de administrador"
             />
+            
             {passwordError && (
-              <p className="text-red-800 text-sm mt-3 drop-shadow-sm">{passwordError}</p>
+              <p className="text-red-700 text-sm mb-4">{passwordError}</p>
             )}
-            <div className="mt-5 flex gap-3">
+            
+            <div className="flex gap-3">
               <button 
                 onClick={handlePasswordModalClose} 
-                className="flex-1 px-4 py-2 text-gray-800 backdrop-blur-md bg-gray-200/20 hover:bg-gray-200/30 border border-gray-400/20 rounded-lg transition-all duration-200 drop-shadow-sm"
+                className="flex-1 py-3 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200"
+                style={{
+                  background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
+                  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+                  color: '#666666'
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                }}
               >
                 Cancelar
               </button>
+              
               <button 
                 onClick={handlePasswordSubmit} 
-                className="flex-1 px-4 py-2 bg-blue-600/60 hover:bg-blue-700/60 backdrop-blur-sm text-white rounded-lg transition-all duration-200 border border-blue-500/20 drop-shadow-sm"
+                className="flex-1 py-3 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200 font-medium text-white"
+                style={{
+                  background: 'linear-gradient(145deg, #4285f4, #3367d6)',
+                  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.15), -4px -4px 8px rgba(255, 255, 255, 0.7)'
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.1)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.15), -4px -4px 8px rgba(255, 255, 255, 0.7)';
+                }}
               >
                 Confirmar
               </button>

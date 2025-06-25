@@ -1,0 +1,231 @@
+{
+  "designSystem": {
+    "name": "Neumorphic UI System",
+    "version": "1.0.0",
+    "description": "Soft, raised interface design with subtle depth and tactile appearance",
+    
+    "colorPalette": {
+      "primary": {
+        "background": "#f0f0f3",
+        "surface": "#ffffff",
+        "accent": "#4285f4",
+        "text": {
+          "primary": "#333333",
+          "secondary": "#666666",
+          "muted": "#999999"
+        }
+      },
+      "shadows": {
+        "light": "rgba(255, 255, 255, 0.8)",
+        "dark": "rgba(0, 0, 0, 0.1)",
+        "accent": "rgba(66, 133, 244, 0.3)"
+      },
+      "variants": {
+        "light": "#f8f9fa",
+        "medium": "#e9ecef",
+        "dark": "#6c757d"
+      }
+    },
+
+    "typography": {
+      "fontFamily": {
+        "primary": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "secondary": "inherit"
+      },
+      "fontSize": {
+        "xs": "0.75rem",
+        "sm": "0.875rem", 
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem"
+      },
+      "fontWeight": {
+        "normal": "400",
+        "medium": "500",
+        "semibold": "600",
+        "bold": "700"
+      }
+    },
+
+    "spacing": {
+      "xs": "0.25rem",
+      "sm": "0.5rem", 
+      "md": "1rem",
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "2xl": "3rem"
+    },
+
+    "borderRadius": {
+      "none": "0",
+      "sm": "0.375rem",
+      "md": "0.75rem", 
+      "lg": "1rem",
+      "xl": "1.5rem",
+      "full": "9999px"
+    },
+
+    "shadows": {
+      "neumorphic": {
+        "raised": "6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.8)",
+        "pressed": "inset 3px 3px 6px rgba(0, 0, 0, 0.1), inset -3px -3px 6px rgba(255, 255, 255, 0.8)",
+        "floating": "8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.8)",
+        "subtle": "3px 3px 6px rgba(0, 0, 0, 0.08), -3px -3px 6px rgba(255, 255, 255, 0.8)"
+      }
+    },
+
+    "components": {
+      "button": {
+        "base": {
+          "padding": "0.75rem 1.5rem",
+          "borderRadius": "md",
+          "border": "none",
+          "cursor": "pointer",
+          "fontWeight": "medium",
+          "transition": "all 0.2s ease",
+          "boxShadow": "raised"
+        },
+        "variants": {
+          "primary": {
+            "background": "linear-gradient(145deg, #ffffff, #f0f0f3)",
+            "color": "#333333"
+          },
+          "accent": {
+            "background": "linear-gradient(145deg, #4285f4, #3367d6)",
+            "color": "#ffffff"
+          }
+        },
+        "states": {
+          "hover": {
+            "transform": "translateY(-1px)",
+            "boxShadow": "floating"
+          },
+          "active": {
+            "boxShadow": "pressed",
+            "transform": "translateY(0)"
+          }
+        }
+      },
+
+      "input": {
+        "base": {
+          "padding": "0.75rem 1rem",
+          "borderRadius": "lg",
+          "border": "none",
+          "background": "linear-gradient(145deg, #f8f9fa, #ffffff)",
+          "boxShadow": "pressed",
+          "transition": "all 0.2s ease"
+        },
+        "states": {
+          "focus": {
+            "outline": "none",
+            "boxShadow": "pressed, 0 0 0 3px rgba(66, 133, 244, 0.1)"
+          }
+        }
+      },
+
+      "card": {
+        "base": {
+          "padding": "1.5rem",
+          "borderRadius": "xl",
+          "background": "linear-gradient(145deg, #ffffff, #f0f0f3)",
+          "boxShadow": "raised"
+        }
+      },
+
+      "toggle": {
+        "base": {
+          "width": "3rem",
+          "height": "1.5rem",
+          "borderRadius": "full",
+          "background": "linear-gradient(145deg, #e9ecef, #f8f9fa)",
+          "boxShadow": "pressed",
+          "position": "relative"
+        },
+        "thumb": {
+          "width": "1.25rem",
+          "height": "1.25rem",
+          "borderRadius": "full",
+          "background": "linear-gradient(145deg, #ffffff, #f0f0f3)",
+          "boxShadow": "subtle",
+          "transition": "all 0.2s ease"
+        },
+        "active": {
+          "background": "linear-gradient(145deg, #4285f4, #3367d6)"
+        }
+      },
+
+      "dropdown": {
+        "base": {
+          "padding": "0.75rem 1rem",
+          "borderRadius": "lg",
+          "background": "linear-gradient(145deg, #ffffff, #f0f0f3)",
+          "boxShadow": "raised",
+          "border": "none"
+        }
+      },
+
+      "searchBar": {
+        "base": {
+          "padding": "0.75rem 1rem 0.75rem 2.5rem",
+          "borderRadius": "xl",
+          "background": "linear-gradient(145deg, #f8f9fa, #ffffff)",
+          "boxShadow": "pressed",
+          "border": "none"
+        }
+      }
+    },
+
+    "patterns": {
+      "interactionStates": {
+        "default": "raised shadow with subtle gradient",
+        "hover": "increased elevation and slight upward movement",
+        "active": "pressed/inset shadow with downward movement",
+        "focus": "maintain pressed state with colored outline"
+      },
+      
+      "layoutPrinciples": {
+        "spacing": "consistent use of 8px grid system",
+        "grouping": "related elements clustered with adequate whitespace",
+        "hierarchy": "size and shadow depth indicate importance",
+        "alignment": "clean grid-based alignment with generous margins"
+      },
+
+      "visualHierarchy": {
+        "primary": "larger size, stronger shadow, accent colors",
+        "secondary": "medium size, standard shadow, neutral colors", 
+        "tertiary": "smaller size, subtle shadow, muted colors"
+      }
+    },
+
+    "animations": {
+      "duration": {
+        "fast": "0.15s",
+        "normal": "0.2s", 
+        "slow": "0.3s"
+      },
+      "easing": {
+        "default": "ease",
+        "bouncy": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "smooth": "cubic-bezier(0.4, 0, 0.2, 1)"
+      }
+    },
+
+    "designPrinciples": {
+      "tactile": "Elements should feel physically touchable and responsive",
+      "minimal": "Clean, uncluttered layouts with purposeful whitespace",
+      "consistent": "Uniform application of shadows, spacing, and interactions",
+      "accessible": "High contrast ratios and clear interactive states",
+      "performant": "Smooth animations that enhance rather than distract"
+    },
+
+    "implementationGuidelines": {
+      "shadows": "Always pair light and dark shadows for authentic neumorphic effect",
+      "gradients": "Use subtle gradients to enhance the raised appearance",
+      "states": "Clearly differentiate between raised (default) and pressed (active) states", 
+      "spacing": "Maintain consistent spacing using the defined scale",
+      "colors": "Stick to the light, monochromatic palette with selective accent usage"
+    }
+  }
+}

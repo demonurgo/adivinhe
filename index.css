@@ -94,6 +94,9 @@
   }
 }
 
+/* Import Neumorphic Design System */
+@import './styles/neumorphic.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -518,6 +521,16 @@ html {
     display: none;
   }
   
+  /* Hide scrollbar for general scrollable content */
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  
   /* Otimização para emojis em categorias */
   .category-emoji {
     font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
@@ -880,6 +893,19 @@ html {
     background-color: #81D4FA !important;
   }
   
+  /* Otimizações específicas para configurações em mobile */
+  .config-screen-container {
+    height: 100vh;
+    height: 100dvh;
+    height: -webkit-fill-available;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
   /* Garantir que html e body cubram toda a tela em mobile */
   html {
     height: 100vh;
@@ -1053,6 +1079,17 @@ html {
     right: 0;
     bottom: 0;
     background: transparent;
+  }
+  
+  /* Otimizações específicas para configurações em iOS */
+  .config-screen-container {
+    height: -webkit-fill-available;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 }
 
