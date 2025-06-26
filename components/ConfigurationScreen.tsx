@@ -61,7 +61,6 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
   });
   
   const [showStatsModal, setShowStatsModal] = useState(false);
-  const [testResults, setTestResults] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -148,55 +147,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
     }
   };
 
-  const testDatabaseDirectly = async () => {
-    if (!isSupabaseConfigured()) {
-      setTestResults('Supabase não configurado');
-      return;
-    }
 
-    try {
-      const supabase = getSupabaseClient();
-      if (!supabase) return;
-
-      // Primeiro, tenta usar a função RPC otimizada
-      const { data: rpcStats, error: rpcError } = await supabase
-        .rpc('get_complete_word_stats');
-      
-      if (!rpcError && rpcStats) {
-        setTestResults(`RPC Stats: ${JSON.stringify(rpcStats, null, 2)}`);
-        return;
-      }
-      
-      // Se RPC falhar, faz consulta manual direta
-      const { data: manualCount } = await supabase
-        .from('palavras')
-        .select('dificuldade')
-        .limit(50000); // Busca mais registros para garantir que pegue todos
-        
-      if (manualCount) {
-        const counts = { facil: 0, medio: 0, dificil: 0, outros: 0 };
-        const uniqueValues = new Set();
-        
-        manualCount.forEach(row => {
-          uniqueValues.add(row.dificuldade);
-          if (row.dificuldade === 'facil') counts.facil++;
-          else if (row.dificuldade === 'medio') counts.medio++;
-          else if (row.dificuldade === 'dificil') counts.dificil++;
-          else counts.outros++;
-        });
-        
-        setTestResults(
-          `Teste Manual (${manualCount.length} registros): \n` +
-          `Fácil: ${counts.facil}, Médio: ${counts.medio}, Difícil: ${counts.dificil}\n` +
-          `Outros: ${counts.outros}\n` +
-          `Valores únicos: ${Array.from(uniqueValues).join(', ')}`
-        );
-      }
-      
-    } catch (error) {
-      setTestResults(`Erro: ${error instanceof Error ? error.message : 'Unknown'}`);
-    }
-  };
 
   const initializeCache = async () => {
     try {
@@ -343,7 +294,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
             ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             
             {/* Database Stats Button */}
             <button
@@ -370,28 +321,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               </div>
             </button>
 
-            {/* Test Button */}
-            <button
-              onClick={testDatabaseDirectly}
-              className="p-3 rounded-xl border-none cursor-pointer group focus:outline-none transition-all duration-200"
-              style={{
-                background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
-                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(1px)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.boxShadow = '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div className="text-center">
-                <div className="text-yellow-600 text-lg mb-1">🔍</div>
-                <div className="neumorphic-caption text-xs">Teste</div>
-              </div>
-            </button>
+
 
             {/* Cache Button */}
             <button
@@ -617,7 +547,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
         >
           <button
             onClick={handleSave}
-            className="w-full p-4 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200 font-medium"
+            className="w-full py-4 px-6 rounded-xl border-none cursor-pointer focus:outline-none transition-all duration-200 font-medium text-lg tracking-wide"
             style={{
               background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
               boxShadow: '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)',
@@ -640,18 +570,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
           >
-            {/* Inner blue accent */}
-            <div 
-              className="w-full py-3 px-6 rounded-lg flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(145deg, #4285f4, #3367d6)',
-                boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <span className="text-white text-lg font-medium tracking-wide">
-                Salvar e Voltar
-              </span>
-            </div>
+            Salvar e Voltar
           </button>
         </div>
       </div>
@@ -748,21 +667,7 @@ const ConfigurationScreen: React.FC<ConfigurationScreenProps> = ({
                       )}
                     </div>
                   </div>
-                  
-                  {testResults && (
-                    <div 
-                      className="p-4 rounded-xl"
-                      style={{
-                        background: 'linear-gradient(145deg, #fef3cd, #fcf4dd)',
-                        boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
-                      }}
-                    >
-                      <h3 className="neumorphic-subtitle text-sm font-medium mb-3">Teste Direto</h3>
-                      <div className="neumorphic-caption text-xs">
-                        {testResults}
-                      </div>
-                    </div>
-                  )}
+
                   
                   <div 
                     className="p-4 rounded-xl"

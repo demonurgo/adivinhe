@@ -106,7 +106,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }}
               >
-                <div className="text-blue-600 text-xl transition-transform duration-200 group-hover:scale-110">
+                <div className="text-blue-600 text-xl">
                   {ChartBarIcon}
                 </div>
               </button>
@@ -131,7 +131,7 @@ const CategorySelectionScreen: React.FC<CategorySelectionScreenProps> = ({
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }}
               >
-                <div className="text-orange-600 text-xl transition-transform duration-200 group-hover:rotate-90 group-hover:scale-110">
+                <div className="text-orange-600 text-xl">
                   {CogIcon}
                 </div>
               </button>

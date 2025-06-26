@@ -6,9 +6,10 @@
 1. **`/styles/neumorphic.css`** - Sistema de design neumórfico completo
 2. **`/REFORMULACAO_NEUMORFICA.md`** - Esta documentação
 
-### ✅ Arquivos Modificados:
-1. **`/components/WelcomeScreen.tsx`** - Componente completamente reformulado
-2. **`/index.css`** - Adicionada importação dos estilos neumórficos
+### ✅ Modificações atualizadas:
+1. **`/components/WelcomeScreen.tsx`** - Componente completamente reformulado (SEM animações nos ícones)
+2. **`/components/CategorySelectionScreen.tsx`** - Ícones sem animações (atualizado 26/06/2025)
+3. **`/index.css`** - Adicionada importação dos estilos neumórficos
 
 ## 🎯 Principais Mudanças Implementadas
 
@@ -176,5 +177,36 @@ A WelcomeScreen agora oferece:
 5. Criar testes automatizados para os componentes
 
 ---
+
+## 🔧 **ATUALIZAÇÃO 26/06/2025 - Remoção de Animações dos Ícones**
+
+### 📝 **Solicitação Cliente**
+Remover todas as animações dos ícones dos botões de estatísticas e configurações.
+
+### ✅ **Implementação Realizada**
+- **WelcomeScreen.tsx**: Removidas animações de escala e rotação dos ícones
+- **CategorySelectionScreen.tsx**: Removidas animações de escala e rotação dos ícones
+- **ConfigurationScreen.tsx**: Já estava correto (emojis estáticos)
+- **StatisticsScreen.tsx**: Já estava correto (emojis estáticos)
+
+### 🎯 **Resultado**
+- ✅ Botões mantêm efeito neumórfico de afundar
+- ✅ Ícones permanecem completamente estáticos
+- ✅ UX preservada, apenas ícones mais discretos
+- ✅ Performance ligeiramente melhorada
+
+### 📋 **Classes Removidas**
+```css
+/* REMOVIDO */
+transition-transform duration-300 ease-out
+group-hover:scale-110
+group-hover:rotate-90  
+scale-90 (nos estados pressed)
+```
+
+**Status: ✅ 100% Concluído**
+
+---
 *Reformulação realizada em: 25/06/2025*
+*Correção de animações: 26/06/2025*
 *Sistema neumórfico implementado com sucesso! 🎨*

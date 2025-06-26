@@ -19,12 +19,29 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 }) => {
   const [mounted, setMounted] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
   
   // Animate elements on mount with staggered timing
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 150);
     return () => clearTimeout(timer);
   }, []);
+
+  // Function to handle button press with neumorphic animation
+  const handleButtonPress = (buttonType: string, callback: () => void) => {
+    if (isNavigating) return; // Prevent multiple clicks
+    
+    setIsNavigating(true);
+    setPressedButton(buttonType);
+    
+    // Animate button press (inward) then navigate
+    setTimeout(() => {
+      setPressedButton(null);
+      setIsNavigating(false);
+      callback();
+    }, 300); // 300ms for the press animation
+  };
 
   // Format version string
   const versionString = `v${APP_VERSION.version}${APP_VERSION.isDirty ? '*' : ''}`;
@@ -87,14 +104,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             `}
           >
             <button
-              onClick={onStartGame}
-              disabled={!canStartGame}
+              onClick={() => canStartGame && handleButtonPress('play', onStartGame)}
+              disabled={!canStartGame || isNavigating}
               className={`
                 p-4 rounded-full border-none cursor-pointer
                 transition-all duration-200 ease-out
                 focus:outline-none
                 disabled:opacity-60 disabled:cursor-not-allowed
                 group relative overflow-hidden
+                ${isNavigating ? 'pointer-events-none' : ''}
               `}
               style={{
                 background: 'transparent'
@@ -104,48 +122,42 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               <div 
                 className={`
                   flex items-center justify-center w-16 h-16 rounded-full text-white
-                  transition-all duration-200 ease-out
+                  transition-all duration-300 ease-out
                   ${!canStartGame ? 'opacity-60' : ''}
+                  ${pressedButton === 'play' ? 'scale-95' : ''}
                 `}
                 style={{
                   background: canStartGame 
                     ? 'linear-gradient(145deg, #f5f5f7, #e8e8eb)' 
                     : 'linear-gradient(145deg, #ebebed, #d4d4d6)',
-                  boxShadow: canStartGame 
-                    ? '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)'
-                    : 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                  boxShadow: pressedButton === 'play' && canStartGame
+                    ? 'inset 4px 4px 8px rgba(0, 0, 0, 0.2), inset -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                    : canStartGame 
+                      ? '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)'
+                      : 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.8)',
+                  transform: pressedButton === 'play' ? 'translateY(2px)' : 'translateY(0)'
                 }}
                 onMouseEnter={(e) => {
-                  if (canStartGame) {
+                  if (canStartGame && !isNavigating && pressedButton !== 'play') {
                     e.currentTarget.style.boxShadow = '8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.8)';
                     e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (canStartGame) {
+                  if (canStartGame && !isNavigating && pressedButton !== 'play') {
                     e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)';
                     e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                  }
-                }}
-                onMouseDown={(e) => {
-                  if (canStartGame) {
-                    e.currentTarget.style.boxShadow = 'inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.8)';
-                    e.currentTarget.style.transform = 'translateY(0) scale(0.95)';
-                  }
-                }}
-                onMouseUp={(e) => {
-                  if (canStartGame) {
-                    e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.7)';
-                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
                   }
                 }}
               >
                 {/* Inner play icon */}
                 <div 
-                  className="flex items-center justify-center w-8 h-8 rounded-full"
+                  className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ease-out`}
                   style={{
                     background: 'linear-gradient(145deg, #5b9bd5, #4285f4)',
-                    boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.2)'
+                    boxShadow: pressedButton === 'play' 
+                      ? 'inset 2px 2px 4px rgba(0, 0, 0, 0.4), inset -1px -1px 2px rgba(255, 255, 255, 0.2)'
+                      : '2px 2px 4px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.2)'
                   }}
                 >
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5 text-white">
@@ -166,26 +178,27 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             
             {/* Statistics Button */}
             <button
-              onClick={onNavigateToStatistics}
-              className="border-none cursor-pointer group focus:outline-none transition-all duration-200 p-4 rounded-xl"
-              onMouseEnter={() => setHoveredButton('stats')}
+              onClick={() => handleButtonPress('stats', onNavigateToStatistics)}
+              disabled={isNavigating}
+              className={`
+                border-none cursor-pointer group focus:outline-none transition-all duration-300 p-4 rounded-xl
+                ${isNavigating ? 'pointer-events-none' : ''}
+                ${pressedButton === 'stats' ? 'scale-95' : ''}
+              `}
+              onMouseEnter={() => !isNavigating && setHoveredButton('stats')}
               onMouseLeave={() => setHoveredButton(null)}
               title="Estatísticas e Histórico"
               style={{
                 background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
-                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(1px)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                boxShadow: pressedButton === 'stats'
+                  ? 'inset 4px 4px 8px rgba(0, 0, 0, 0.2), inset -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                  : '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+                transform: pressedButton === 'stats' ? 'translateY(2px)' : 'translateY(0)',
+                opacity: isNavigating && pressedButton !== 'stats' ? 0.7 : 1
               }}
             >
               <div className="flex flex-col items-center gap-2">
-                <div className="text-blue-600 text-xl transition-transform duration-200 group-hover:scale-110">
+                <div className="text-blue-600 text-xl">
                   {ChartBarIcon}
                 </div>
               </div>
@@ -193,26 +206,27 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
             {/* Configuration Button */}
             <button
-              onClick={onNavigateToConfiguration}
-              className="border-none cursor-pointer group focus:outline-none transition-all duration-200 p-4 rounded-xl"
-              onMouseEnter={() => setHoveredButton('config')}
+              onClick={() => handleButtonPress('config', onNavigateToConfiguration)}
+              disabled={isNavigating}
+              className={`
+                border-none cursor-pointer group focus:outline-none transition-all duration-300 p-4 rounded-xl
+                ${isNavigating ? 'pointer-events-none' : ''}
+                ${pressedButton === 'config' ? 'scale-95' : ''}
+              `}
+              onMouseEnter={() => !isNavigating && setHoveredButton('config')}
               onMouseLeave={() => setHoveredButton(null)}
               title="Configurações"
               style={{
                 background: 'linear-gradient(145deg, #f5f5f7, #e8e8eb)',
-                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.boxShadow = 'inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(1px)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                boxShadow: pressedButton === 'config'
+                  ? 'inset 4px 4px 8px rgba(0, 0, 0, 0.2), inset -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                  : '4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.8)',
+                transform: pressedButton === 'config' ? 'translateY(2px)' : 'translateY(0)',
+                opacity: isNavigating && pressedButton !== 'config' ? 0.7 : 1
               }}
             >
               <div className="flex flex-col items-center gap-2">
-                <div className="text-orange-600 text-xl transition-transform duration-200 group-hover:rotate-90 group-hover:scale-110">
+                <div className="text-orange-600 text-xl">
                   {CogIcon}
                 </div>
               </div>
@@ -224,6 +238,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             className={`
               p-4 rounded-xl mb-6 transition-all duration-700 delay-700 ease-out
               ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+              ${isNavigating ? 'opacity-50' : ''}
             `}
             style={{
               background: 'linear-gradient(145deg, #e8e8eb, #f0f0f3)',
@@ -269,7 +284,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 </div>
               </div>
               
-              {!canStartGame && (
+              {!canStartGame && !isNavigating && (
                 <div 
                   className="mt-3 p-2 rounded-lg text-xs text-orange-700"
                   style={{
@@ -280,6 +295,19 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   ⚠️ Configure pelo menos uma fonte de palavras para jogar
                 </div>
               )}
+              
+              {isNavigating && (
+                <div 
+                  className="mt-3 p-2 rounded-lg text-xs text-blue-700 flex items-center justify-center gap-2"
+                  style={{
+                    background: 'linear-gradient(145deg, #e0f2fe, #b3e5fc)',
+                    boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.9)'
+                  }}
+                >
+                  <div className="w-3 h-3 rounded-full bg-blue-600 animate-pulse"></div>
+                  Carregando...
+                </div>
+              )}
             </div>
           </div>
 
@@ -288,13 +316,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             className={`
               text-center transition-all duration-700 delay-800 ease-out
               ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+              ${isNavigating ? 'opacity-30' : ''}
             `}
           >
             <div className="neumorphic-caption text-xs group cursor-default">
-              <span className="transition-colors duration-200 group-hover:text-gray-600">
+              <span className={`transition-colors duration-200 ${!isNavigating ? 'group-hover:text-gray-600' : ''}`}>
                 {versionString}
               </span>
-              {APP_VERSION.build && (
+              {APP_VERSION.build && !isNavigating && (
                 <div className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   Build {APP_VERSION.build}
                   {APP_VERSION.lastUpdate && ` • ${APP_VERSION.lastUpdate}`}

@@ -40,7 +40,7 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
     return date.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric',
+      year: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -529,7 +529,7 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
                                 boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.8)'
                               }}
                             >
-                              <span className="text-white text-sm font-bold">
+                              <span className="text-white text-xs font-bold">
                                 {game.score} pts
                               </span>
                             </div>
@@ -541,9 +541,6 @@ const StatisticsScreen: React.FC<StatisticsScreenProps> = ({ onBack }) => {
                               }}
                             >
                               <span>{getDifficultyIcon(game.difficulty)}</span>
-                              <span className="neumorphic-subtitle">
-                                {getDifficultyName(game.difficulty)}
-                              </span>
                             </div>
                           </div>
                           <div className="neumorphic-caption text-xs">
